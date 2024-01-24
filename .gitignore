@@ -2,6 +2,7 @@
 *.env
 *.DS_Store
 *.vscode/
+*.code-workspace
 
 # Java related ignore
 # Compiled class file

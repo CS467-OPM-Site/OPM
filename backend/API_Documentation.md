@@ -22,7 +22,7 @@ Versioning of the API will occur in a prefix of the URL routes used. For example
 
 <code><b>/api/v1</b></code>
 
-All endpoints should used this format as a prefix in their requests. For example, user authentication would be:
+All endpoints should use this format as a prefix in their requests. For example, user authentication would be:
 
 <code><b>/api/v1/user/auth</b></code>
 
@@ -165,7 +165,7 @@ All endpoints should used this format as a prefix in their requests. For example
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the project resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Project name for that team already exists"}` | Project name for team already exists. Teams must have unique project names. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist."}` | Chosen team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Chosen team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -205,7 +205,7 @@ All endpoints should used this format as a prefix in their requests. For example
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Returns all of a user's projects. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
@@ -303,7 +303,7 @@ All endpoints should used this format as a prefix in their requests. For example
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Modify the project name. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
@@ -345,7 +345,7 @@ All endpoints should used this format as a prefix in their requests. For example
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Project deleted."}` | Successful deletion. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Cannot delete if tasks remain"}` | Tasks must be removed to delete a project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
@@ -377,7 +377,7 @@ All endpoints should used this format as a prefix in their requests. For example
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Returns all users associated with a project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
@@ -420,7 +420,7 @@ All endpoints should used this format as a prefix in their requests. For example
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/project/{projectID}/user</b></code> <code>(Add user to project)</code></summary>
+ <summary><code>POST</code> <code><b>/project/{projectID}/user</b></code> <code>(add user to project)</code></summary>
 
 ##### Parameters
 
@@ -440,8 +440,9 @@ All endpoints should used this format as a prefix in their requests. For example
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `{"code":"200","message":"{username} added to project."}` | Successfully adds user to project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `200`         | `application/json`                | `{"code":"200","message":"{username} added to project."}` | Successfully added user to project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"User already in project"}` | User to add already in in this project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | Adding user not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | Username not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
@@ -459,7 +460,7 @@ All endpoints should used this format as a prefix in their requests. For example
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/project/{projectID}/user</b></code> <code>(Remove user from project)</code></summary>
+ <summary><code>DELETE</code> <code><b>/project/{projectID}/user</b></code> <code>(remove user from project)</code></summary>
 
 ##### Parameters
 
@@ -479,8 +480,9 @@ All endpoints should used this format as a prefix in their requests. For example
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `{"code":"200","message":"{username} removed project."}` | Successfully removes user from project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `200`         | `application/json`                | `{"code":"200","message":"{username} removed from project."}` | Successfully removed user from project. |
+> | `400`         | `application/json`                | `{"code":"403","message":"User not in project"}` | User to delete not in this project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | Deleting user not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | Username not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
@@ -550,6 +552,192 @@ All endpoints should used this format as a prefix in their requests. For example
 > ```bash
 > curl -X GET \
 >  https://opm-api.propersi.me/api/v1/user/1/projects \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+------------------------------------------------------------------------------------------
+
+#### Columns Management
+
+<details>
+ <summary><code>POST</code> <code><b>/project/{projectID}/column</b></code> <code>(adds a column to a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Request Payload
+
+> ```json
+> {
+>   "columnName": "New Column Here"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `201`         | `application/json`                | `See below.` | Successfully added column to project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Column exists"}` | Column already exists. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "columnName": "New Column Here",
+>     "columnIndex": 1,         # New column always placed at end
+>     "columnID": 1,
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/project/1/column \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"columnName":"New Column Here"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/project/{projectID}/column/{columnID}/name</b></code> <code>(modifies column name)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+
+##### Request Payload
+
+> ```json
+> {
+>   "columnName": "New Column Name Here"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully modified column name in project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Column exists in project"}` | Column already exists in project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "columnName": "New Column Name Here",
+>     "columnIndex": 0,      # Keeps previous column index
+>     "columnID": 1,
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/project/1/column/1/name \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"columnName":"New Column Name Here"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/project/{projectID}/column/{columnID}/order</b></code> <code>(modifies column order)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+
+##### Request Payload
+
+> ```json
+> {
+>   "columnIndex": 1
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully modified column index in project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "columnName": "project1",
+>     "columnIndex": 0,      # Keeps previous column index
+>     "columnID": 1,
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/project/1/column/1/name \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"columnName":"New Column Name Here"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/project/{projectID}/column/{columnID}</b></code> <code>(deletes a column from a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Column removed from project"}` | Successfully deleted column from project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Cannot remove if tasks remain in column"}` | Tasks still in column. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/project/1/column/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 

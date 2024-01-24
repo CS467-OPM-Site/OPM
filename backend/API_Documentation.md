@@ -33,7 +33,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### User Authentication
 
 <details>
- <summary><code>POST</code> <code><b>/user/register</b></code> <code>(registers user information if they don't have an account)</code></summary>
+ <summary><code>POST</code> <code><b>/users/register</b></code> <code>(registers user information if they don't have an account)</code></summary>
 
 ##### Request Payload
 
@@ -56,7 +56,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X POST \
->  https://opm-api.propersi.me/api/v1/user/register \
+>  https://opm-api.propersi.me/api/v1/users/register \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"username":"my_username"}' 
@@ -65,7 +65,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/user/auth</b></code> <code>(authenticates user)</code></summary>
+ <summary><code>POST</code> <code><b>/users/auth</b></code> <code>(authenticates user)</code></summary>
 
 ##### Responses
 
@@ -79,7 +79,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X POST \
->  https://opm-api.propersi.me/api/v1/user/auth \
+>  https://opm-api.propersi.me/api/v1/users/auth \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
@@ -112,22 +112,22 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "projectName": "project1",
 >           "projectID": 1,
 >           "lastUpdated": "2023-10-31T15:45:00Z",
->           "projectLocation": "/api/v1/project/1",
+>           "projectLocation": "/api/v1/projects/1",
 >           "team": {
 >               "teamName": "team1",
 >               "teamID": 1, 
->               "teamLocation": "/api/v1/team/1"
+>               "teamLocation": "/api/v1/teams/1"
 >           }
 >       },
 >       {
 >           "projectName": "project2",
 >           "projectID": 2,
 >           "lastUpdated": "2023-10-31T15:45:00Z",
->           "projectLocation": "/api/v1/project/2",
+>           "projectLocation": "/api/v1/projects/2",
 >           "team": {
 >               "teamName": "team2",
 >               "teamID": 2, 
->               "teamLocation": "/api/v1/team/2"
+>               "teamLocation": "/api/v1/teams/2"
 >           }
 >       } 
 >     ]
@@ -145,7 +145,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/project</b></code> <code>(creates a new project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects</b></code> <code>(creates a new project)</code></summary>
 
 ##### Request Payload
 
@@ -181,7 +181,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X POST \
->  https://opm-api.propersi.me/api/v1/project \
+>  https://opm-api.propersi.me/api/v1/projects \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{
@@ -192,7 +192,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 </details>
 <details>
- <summary><code>GET</code> <code><b>/project/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
 
 ##### Parameters
 
@@ -216,18 +216,18 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "projectName": "project1",
 >     "projectID": 1,
 >     "lastUpdated": "2023-10-31T15:45:00Z",
->     "projectLocation": "/api/v1/project/1",
+>     "projectLocation": "/api/v1/projects/1",
 >     "team": {
 >         "teamName": "Team1",
 >         "teamID": 1,
->         "teamLocation": "/api/v1/team/1"
+>         "teamLocation": "/api/v1/teams/1"
 >      },
 >     "columns": [
 >      {
 >           "columnName": "Todo",
 >           "columnID": 1,
 >           "columnIndex": 0,       # Indicates location on board
->           "columnLocation": "/api/v1/project/1/column/1",
+>           "columnLocation": "/api/v1/projects/1/columns/1",
 >           "tasks": [
 >            {
 >                 "title": "task1",
@@ -239,18 +239,18 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                       "startDate": "2023-10-31",
 >                       "endDate": "2023-11-01",
 >                       "sprintID": 1,
->                       "sprintLocation": "api/v1/project/1/sprint/1"
+>                       "sprintLocation": "api/v1/projects/1/sprints/1"
 >                  } or null,
 >                 "comments": [
 >                  {
 >                       "commentID": 1,
 >                       "commentBody": "This is a comment",
 >                       "commenter": "username-here",
->                       "commentLocation": "/api/v1/project/1/task/1/comment/1"
+>                       "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
 >                  },
 >                 ],
 >                 "customFields": [ ... ],
->                 "taskLocation": "/api/v1/project/1/task/1"
+>                 "taskLocation": "/api/v1/projects/1/tasks/1"
 >            },
 >           ]
 >      },
@@ -258,14 +258,14 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "columnName": "In progress",
 >           "columnID": 2,
 >           "columnIndex": 1,       # Indicates location on board
->           "columnLocation": "/api/v1/project/1/column/2",
+>           "columnLocation": "/api/v1/projects/1/columns/2",
 >           "tasks": []
 >      },
 >      {
 >           "columnName": "Done",
 >           "columnID": 3,
 >           "columnIndex": 2,       # Indicates location on board
->           "columnLocation": "/api/v1/project/1/column/3",
+>           "columnLocation": "/api/v1/projects/1/columns/3",
 >           "tasks": []
 >      },
 >     ]
@@ -276,14 +276,14 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X GET \
->  https://opm-api.propersi.me/api/v1/project/1 \
+>  https://opm-api.propersi.me/api/v1/projects/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/project/{projectID}</b></code> <code>(modifies specific project details)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}</b></code> <code>(modifies specific project details)</code></summary>
 
 ##### Parameters
 
@@ -314,7 +314,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "new-name",
 >     "projectID": 1,
->     "projectLocation": "/api/v1/project/1",
+>     "projectLocation": "/api/v1/projects/1",
 >     "lastUpdated": "2023-10-31T15:45:00Z",
 > }
 > ```
@@ -323,7 +323,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X PUT \
->  https://opm-api.propersi.me/api/v1/projects \
+>  https://opm-api.propersi.me/api/v1/projects/1 \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"projectName":"new-name"}' 
@@ -332,7 +332,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/project/{projectID}</b></code> <code>(deletes a project)</code></summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}</b></code> <code>(deletes a project)</code></summary>
 
 ##### Parameters
 
@@ -354,7 +354,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X DELETE \
->  https://opm-api.propersi.me/api/v1/project/1 \
+>  https://opm-api.propersi.me/api/v1/projects/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
@@ -365,7 +365,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Users and Project Management
 
 <details>
- <summary><code>GET</code> <code><b>/project/{projectID}/users</b></code> <code>(gets all users associated with a project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/users</b></code> <code>(gets all users associated with a project)</code></summary>
 
 ##### Parameters
 
@@ -389,11 +389,11 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "projectName": "project1",
 >     "projectID": 1,
 >     "lastUpdated": "2023-10-31T15:45:00Z",
->     "projectLocation": "/api/v1/project/1",
+>     "projectLocation": "/api/v1/projects/1",
 >     "team": {
 >         "teamName": "Team1",
 >         "teamID": 1,
->         "teamLocation": "/api/v1/team/1"
+>         "teamLocation": "/api/v1/teams/1"
 >      },
 >     "users": [
 >       {
@@ -414,14 +414,14 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X GET \
->  https://opm-api.propersi.me/api/v1/project/1/users \
+>  https://opm-api.propersi.me/api/v1/projects/1/users \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/project/{projectID}/user</b></code> <code>(add user to project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/user</b></code> <code>(add user to project)</code></summary>
 
 ##### Parameters
 
@@ -452,7 +452,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X POST \
->  https://opm-api.propersi.me/api/v1/project/1/user \
+>  https://opm-api.propersi.me/api/v1/projects/1/user \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"username":"another_username"}' 
@@ -461,7 +461,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/project/{projectID}/user</b></code> <code>(remove user from project)</code></summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/user</b></code> <code>(remove user from project)</code></summary>
 
 ##### Parameters
 
@@ -492,7 +492,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X DELETE \
->  https://opm-api.propersi.me/api/v1/project/1/user \
+>  https://opm-api.propersi.me/api/v1/projects/1/user \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"username":"another_username"}' 
@@ -527,21 +527,21 @@ All endpoints should use this format as a prefix in their requests. For example,
 >       {
 >           "projectName": "project1",
 >           "projectID": 1,
->           "projectLocation": "/api/v1/project/1",
+>           "projectLocation": "/api/v1/projects/1",
 >           "team": {
 >               "teamName": "Team1",
 >               "teamID": 1,
->               "teamLocation": "/api/v1/team/1"
+>               "teamLocation": "/api/v1/teams/1"
 >           }
 >       },
 >       {
 >           "projectName": "project2",
 >           "projectID": 2,
->           "projectLocation": "/api/v1/project/2",
+>           "projectLocation": "/api/v1/projects/2",
 >           "team": {
 >               "teamName": "Team2",
 >               "teamID": 2,
->               "teamLocation": "/api/v1/team/2"
+>               "teamLocation": "/api/v1/teams/2"
 >           }
 >       },
 >     ]
@@ -552,7 +552,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X GET \
->  https://opm-api.propersi.me/api/v1/user/1/projects \
+>  https://opm-api.propersi.me/api/v1/users/1/projects \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
@@ -563,7 +563,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Columns Management
 
 <details>
- <summary><code>POST</code> <code><b>/project/{projectID}/column</b></code> <code>(adds a column to a project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/columns</b></code> <code>(adds a column to a project)</code></summary>
 
 ##### Parameters
 
@@ -583,7 +583,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `201`         | `application/json`                | `See below.` | Successfully added column to project. |
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the column resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Column exists"}` | Column already exists. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
@@ -595,7 +595,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "columnName": "New Column Here",
 >     "columnIndex": 1,         # New column always placed at end
->     "columnID": 1,
+>     "columnID": 1
 > }
 > ```
 
@@ -603,7 +603,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X POST \
->  https://opm-api.propersi.me/api/v1/project/1/column \
+>  https://opm-api.propersi.me/api/v1/project/1/columns \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"columnName":"New Column Here"}' 
@@ -612,7 +612,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/project/{projectID}/column/{columnID}/name</b></code> <code>(modifies column name)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/name</b></code> <code>(modifies column name)</code></summary>
 
 ##### Parameters
 
@@ -647,6 +647,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "columnName": "New Column Name Here",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
+>     "columnLocation": "/api/v1/projects/1/columns/1
 > }
 > ```
 
@@ -654,7 +655,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X PUT \
->  https://opm-api.propersi.me/api/v1/project/1/column/1/name \
+>  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"columnName":"New Column Name Here"}' 
@@ -663,7 +664,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/project/{projectID}/column/{columnID}/order</b></code> <code>(modifies column order)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/order</b></code> <code>(modifies column order)</code></summary>
 
 ##### Parameters
 
@@ -697,6 +698,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "columnName": "project1",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
+>     "columnLocation": "/api/v1/projects/1/columns/1
 > }
 > ```
 
@@ -704,7 +706,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X PUT \
->  https://opm-api.propersi.me/api/v1/project/1/column/1/name \
+>  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{"columnName":"New Column Name Here"}' 
@@ -713,7 +715,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/project/{projectID}/column/{columnID}</b></code> <code>(deletes a column from a project)</code></summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/columns/{columnID}</b></code> <code>(deletes a column from a project)</code></summary>
 
 ##### Parameters
 
@@ -738,7 +740,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X DELETE \
->  https://opm-api.propersi.me/api/v1/project/1/column/1 \
+>  https://opm-api.propersi.me/api/v1/projects/1/columns/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
@@ -749,7 +751,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Task Management
 
 <details>
- <summary><code>GET</code> <code><b>/project/{projectID}/tasks</b></code> <code>(gets all tasks associated with a project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/tasks</b></code> <code>(gets all tasks associated with a project)</code></summary>
 
 ##### Parameters
 
@@ -773,7 +775,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "projectName": "project1",
 >     "projectID": 1,
 >     "lastUpdated": "2023-10-31T15:45:00Z",
->     "projectLocation": "/api/v1/project/1",
+>     "projectLocation": "/api/v1/projects/1",
 >     "tasks": [
 >      {
 >           "title": "Task 1",
@@ -786,18 +788,18 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                 "startDate": "2023-10-31",
 >                 "endDate": "2023-11-01",
 >                 "sprintID": 1,
->                 "sprintLocation": "api/v1/project/1/sprint/1"
+>                 "sprintLocation": "api/v1/projects/1/sprints/1"
 >            } or null,
 >           "comments": [
 >            {
 >                 "commentID": 1,
 >                 "commentBody": "This is a comment",
 >                 "commenter": "username-here",
->                 "commentLocation": "/api/v1/project/1/task/1/comment/1"
+>                 "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
 >            },
 >           ],
 >           "customFields": [ ... ],
->           "taskLocation": "/api/v1/project/1/task/1",
+>           "taskLocation": "/api/v1/projects/1/tasks/1",
 >      },
 >      {
 >           "title": "Task 2",
@@ -810,18 +812,18 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                 "startDate": "2023-10-31",
 >                 "endDate": "2023-11-01",
 >                 "sprintID": 1,
->                 "sprintLocation": "api/v1/project/1/sprint/1"
+>                 "sprintLocation": "api/v1/projects/1/sprints/1"
 >            } or null,
 >           "comments": [
 >            {
 >                 "commentID": 2,
 >                 "commentBody": "This is another comment",
 >                 "commenter": "username-here",
->                 "commentLocation": "/api/v1/project/1/task/2/comment/2"
+>                 "commentLocation": "/api/v1/projects/1/tasks/2/comments/2"
 >            },
 >           ],
 >           "customFields": [ ... ],
->           "taskLocation": "/api/v1/project/1/task/2",
+>           "taskLocation": "/api/v1/projects/1/tasks/2",
 >      },
 >     ]
 > }
@@ -831,14 +833,71 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```bash
 > curl -X GET \
->  https://opm-api.propersi.me/api/v1/project/1/tasks \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/project/{projectID}/column/{columnID}/task</b></code> <code>(adds task to column in project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/tasks</b></code> <code>(adds task to column in project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+
+##### Request Payload
+
+> ```json
+> {
+>     "column": {
+>           "columnID": 1,
+>           "columnName": "column to add to"
+>      },
+>     "title": "Task 1",
+>     "description": "This is another task!",
+>     "assignedTo": "username-of-assignee" or null,
+>     "priority": "High",
+>     "sprintID": 1 or null,
+>     "customFields": [ ... ],
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "title": "Task 1",
+>     "taskID": 1,
+>     "taskColumnIndex": 0,       # Indicates location on board, default first column
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/project/{projectID}/task/{taskID}</b></code> <code>(adds task to column in project)</code></summary>
 
 ##### Parameters
 

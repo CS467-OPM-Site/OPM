@@ -233,7 +233,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                 "title": "task1",
 >                 "taskID": 1, 
 >                 "description": "This is a task!",
->                 "assignedTo": "username-of-assignee" or null,
+>                 "assignedTo": {
+>                       "username": "username-of-assignee",
+>                       "userID": 1
+>                  } or null,       
 >                 "priority": "High",
 >                 "sprint": {
 >                       "startDate": "2023-10-31",
@@ -782,7 +785,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "taskID": 1,
 >           "taskColumnIndex": 0,       # Indicates location on board
 >           "description": "This is a task!",
->           "assignedTo": "username-of-assignee" or null,
+>           "assignedTo": {
+>                 "username": "username-of-assignee",
+>                 "userID": 1
+>            } or null,       
 >           "priority": "High",
 >           "sprint": {
 >                 "startDate": "2023-10-31",
@@ -806,7 +812,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "taskID": 2,
 >           "taskColumnIndex": 1,       # Indicates location on board
 >           "description": "This is another task!",
->           "assignedTo": "username-of-assignee" or null,
+>           "assignedTo": {
+>                 "username": "username-of-assignee",
+>                 "userID": 1
+>            } or null,       
 >           "priority": "High",
 >           "sprint": {
 >                 "startDate": "2023-10-31",
@@ -856,11 +865,14 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "column": {
 >           "columnID": 1,
 >           "columnName": "column to add to"
->      },
+>      },       # Optional, defaults to first column if not included
 >     "title": "Task 1",
->     "description": "This is another task!",
->     "assignedTo": "username-of-assignee" or null,
->     "priority": "High",
+>     "description": "This is another task!" or null,
+>     "assignedTo": {
+>           "username": "username-of-assignee",
+>           "userID": 1
+>      } or null,       
+>     "priority": "High" or null,
 >     "sprintID": 1 or null,
 >     "customFields": [ ... ],
 > }
@@ -872,7 +884,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. Project must have at least one column. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Invalid task attribute"}` | Invalid task attribute in request. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Sprint not found"}` | Sprint not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Assignee not found"}` | Assignee not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
@@ -891,35 +906,176 @@ All endpoints should use this format as a prefix in their requests. For example,
 > ```bash
 > curl -X POST \
 >  https://opm-api.propersi.me/api/v1/projects/1/tasks \
+>  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"title":"Task title"}' 
 > ```
 
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/project/{projectID}/task/{taskID}</b></code> <code>(adds task to column in project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/tasks/{taskID}</b></code> <code>(gets specific task details in a project)</code></summary>
 
 ##### Parameters
 
 > | name   |  type      | data type      | description                                          |
 > |--------|------------|----------------|------------------------------------------------------|
 > | `projectID` |  required  | int ($int64) | The unique ID of the project |
-> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
 
-##### Request Payload
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved the task details. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
 
 > ```json
 > {
 >     "title": "Task 1",
->     "description": "This is another task!",
->     "assignedTo": "username-of-assignee" or null,
->     "priority": "High",
+>     "taskID": 1,
+>     "taskColumnIndex": 0,       # Indicates location on board
+>     "column": {
+>           "columnName": "Column",
+>           "columnIndex": 0,
+>           "columnID": 1,
+>           "columnLocation": "api/v1/projects/1/columns/1"
+>      },
+>     "description": "This is a task!",
+>     "assignedTo": {
+>           "username": "username-of-assignee",
+>           "userID": 1
+>      } or null,       
+>     "priority": "High" or null,
 >     "sprint": {
 >           "startDate": "2023-10-31",
 >           "endDate": "2023-11-01",
 >           "sprintID": 1,
->           "sprintLocation": "api/v1/project/1/sprint/1"
+>           "sprintLocation": "api/v1/projects/1/sprints/1"
 >      } or null,
+>     "comments": [
+>      {
+>           "commentID": 1,
+>           "commentBody": "This is a comment",
+>           "commenter": "username-here",
+>           "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
+>      },
+>     ],
+>     "customFields": [ ... ],
+>     "taskLocation": "/api/v1/projects/1/tasks/1",
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/users/{userID}/tasks</b></code> <code>(gets all tasks for a user in a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `userID` |  required  | int ($int64) | The unique ID of the user |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved the task details. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | Searching user not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | User not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "title": "Task 1",
+>     "taskID": 1,
+>     "taskColumnIndex": 0,       # Indicates location on board
+>     "column": {
+>           "columnName": "Column",
+>           "columnIndex": 0,
+>           "columnID": 1,
+>           "columnLocation": "api/v1/projects/1/columns/1"
+>      },
+>     "description": "This is a task!",
+>     "assignedTo": {
+>           "username": "username-of-assignee",
+>           "userID": 1
+>      } or null,       
+>     "priority": "High" or null,
+>     "sprint": {
+>           "startDate": "2023-10-31",
+>           "endDate": "2023-11-01",
+>           "sprintID": 1,
+>           "sprintLocation": "api/v1/projects/1/sprints/1"
+>      } or null,
+>     "comments": [
+>      {
+>           "commentID": 1,
+>           "commentBody": "This is a comment",
+>           "commenter": "username-here",
+>           "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
+>      },
+>     ],
+>     "customFields": [ ... ],
+>     "taskLocation": "/api/v1/projects/1/tasks/1",
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/projects/1/users/1/tasks \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}</b></code> <code>(modifies task in column in project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+
+##### Request Payload
+
+Any parameter may be null, in which case that field is deleted. 
+To keep the attribute the same, do not include the task attribute in the request payload.
+
+> ```json
+> {
+>     "title": "New Title",
+>     "description": "This is another task!",
+>     "assignedTo": {
+>           "username": "username-of-assignee",
+>           "userID": 1
+>      } or null,       
+>     "priority": "High",
+>     "sprintID": 1 or null,
 >     "customFields": [ ... ],
 > }
 > ```
@@ -928,28 +1084,84 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `201`         | `application/json`                | `See below.` | Successfully added task to column in project. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Task modified"}` | Successfully modified task. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Invalid task"}` | Task attribute not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Invalid sprint"}` | Sprint not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Assignee"}` | Assignee not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
-
-###### 201 HTTP Code Response Body
-
-> ```json
-> {
->     "title": "Task 1",
->     "taskID": 1,
->     "taskColumnIndex": 0,       # Indicates location on board
->     "taskLocation": "/api/v1/project/1/task/1",
-> }
-> ```
 
 ##### Example cURL
 
 > ```bash
-> curl -X GET \
->  https://opm-api.propersi.me/api/v1/project/1/tasks \
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1 \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"title":"New title."}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/project/{projectID}/tasks/{taskID}/columns/{columnID}</b></code> <code>(moves task to other column in project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+> | `columnID` |  required  | int ($int64) | The unique ID of the column |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Task moved"}` | Successfully moved task. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1/columns/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/project/{projectID}/tasks/{taskID}</b></code> <code>(removes task from project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Task moved"}` | Successfully deleted task. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found in project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 

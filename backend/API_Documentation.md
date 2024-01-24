@@ -28,6 +28,8 @@ All endpoints should used this format as a prefix in their requests. For example
 
 ------------------------------------------------------------------------------------------
 
+### Endpoints
+
 #### User Authentication
 
 <details>
@@ -64,10 +66,6 @@ All endpoints should used this format as a prefix in their requests. For example
 
 <details>
  <summary><code>POST</code> <code><b>/user/auth</b></code> <code>(authenticates user)</code></summary>
-
-##### Request Payload
-
-None.
 
 ##### Responses
 
@@ -147,7 +145,54 @@ None.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
+ <summary><code>POST</code> <code><b>/project</b></code> <code>(creates a new project)</code></summary>
+
+##### Request Payload
+
+> ```json
+> {
+>   "projectName": "New Project Name",
+>   "team": {
+>       "teamName": "team1",
+>       "teamID": 1, 
+>   }
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the project resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"Project name for that team already exists"}` | Project name for team already exists. Teams must have unique project names. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist."}` | Chosen team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "projectName": "New Project Name",
+>     "projectID": 1,
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/project \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{
+>   "projectName": "New Project Name",
+>   "team": {"teamName": "team1", "teamID", 1}
+>      }' 
+> ```
+
+</details>
+<details>
+ <summary><code>GET</code> <code><b>/project/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
 
 ##### Parameters
 
@@ -161,7 +206,7 @@ None.
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Returns all of a user's projects. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
-> | `404`         | `application/json`                | `{"code":"403","message":"Project does not exist"}` | Project ID not in table. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -171,6 +216,7 @@ None.
 >     "projectName": "project1",
 >     "projectID": 1,
 >     "lastUpdated": "2023-10-31T15:45:00Z",
+>     "projectLocation": "/api/v1/project/1",
 >     "team": {
 >         "teamName": "Team1",
 >         "teamID": 1,
@@ -229,7 +275,281 @@ None.
 
 > ```bash
 > curl -X GET \
+>  https://opm-api.propersi.me/api/v1/project/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/project/{projectID}</b></code> <code>(modifies specific project details)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Request Payload
+
+> ```json
+> {
+>   "projectName": "new-name",
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Modify the project name. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "projectName": "new-name",
+>     "projectID": 1,
+>     "projectLocation": "/api/v1/project/1",
+>     "lastUpdated": "2023-10-31T15:45:00Z",
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
 >  https://opm-api.propersi.me/api/v1/projects \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"projectName":"new-name"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/project/{projectID}</b></code> <code>(deletes a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Project deleted."}` | Successful deletion. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Cannot delete if tasks remain"}` | Tasks must be removed to delete a project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/project/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+------------------------------------------------------------------------------------------
+
+#### Users and Project Management
+
+<details>
+ <summary><code>GET</code> <code><b>/project/{projectID}/users</b></code> <code>(gets all users associated with a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Returns all users associated with a project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "projectName": "project1",
+>     "projectID": 1,
+>     "lastUpdated": "2023-10-31T15:45:00Z",
+>     "projectLocation": "/api/v1/project/1",
+>     "team": {
+>         "teamName": "Team1",
+>         "teamID": 1,
+>         "teamLocation": "/api/v1/team/1"
+>      },
+>     "users": [
+>       {
+>           "username": "username1",
+>           "userID": 1,
+>           "userInProjectTeam": true,       
+>       },
+>       {
+>           "username": "username2",
+>           "userID": 2,
+>           "userInProjectTeam": false,       
+>       },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/project/1/users \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/project/{projectID}/user</b></code> <code>(Add user to project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Request Payload
+
+> ```json
+> {
+>   "username": "username-here"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"{username} added to project."}` | Successfully adds user to project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | Username not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/project/1/user \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"username":"another_username"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/project/{projectID}/user</b></code> <code>(Remove user from project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Request Payload
+
+> ```json
+> {
+>   "username": "username-here"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"{username} removed project."}` | Successfully removes user from project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | Username not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/project/1/user \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"username":"another_username"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/users/{userID}/projects</b></code> <code>(gets all projects associated with a user)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `userID` |  required  | int ($int64) | The unique ID of the user |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Returns all projects associated with a user. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | User not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "username": "my-username",
+>     "userID": 1,
+>     "projects": [
+>       {
+>           "projectName": "project1",
+>           "projectID": 1,
+>           "projectLocation": "/api/v1/project/1",
+>           "team": {
+>               "teamName": "Team1",
+>               "teamID": 1,
+>               "teamLocation": "/api/v1/team/1"
+>           }
+>       },
+>       {
+>           "projectName": "project2",
+>           "projectID": 2,
+>           "projectLocation": "/api/v1/project/2",
+>           "team": {
+>               "teamName": "Team2",
+>               "teamID": 2,
+>               "teamLocation": "/api/v1/team/2"
+>           }
+>       },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/user/1/projects \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 

@@ -92,10 +92,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 <details>
  <summary><code>GET</code> <code><b>/projects</b></code> <code>(gets all of a user's projects)</code></summary>
 
-##### Parameters
-
-> None
-
 ##### Responses
 
 > | http code     | content-type                      | response  | details |
@@ -241,6 +237,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                 "sprint": {
 >                       "startDate": "2023-10-31",
 >                       "endDate": "2023-11-01",
+>                       "sprintName": "Sprint Name",
 >                       "sprintID": 1,
 >                       "sprintLocation": "api/v1/projects/1/sprints/1"
 >                  } or null,
@@ -793,6 +790,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "sprint": {
 >                 "startDate": "2023-10-31",
 >                 "endDate": "2023-11-01",
+>                 "sprintName": "Sprint Name",
 >                 "sprintID": 1,
 >                 "sprintLocation": "api/v1/projects/1/sprints/1"
 >            } or null,
@@ -820,6 +818,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "sprint": {
 >                 "startDate": "2023-10-31",
 >                 "endDate": "2023-11-01",
+>                 "sprintName": "Sprint Name",
 >                 "sprintID": 1,
 >                 "sprintLocation": "api/v1/projects/1/sprints/1"
 >            } or null,
@@ -955,6 +954,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "sprint": {
 >           "startDate": "2023-10-31",
 >           "endDate": "2023-11-01",
+>           "sprintName": "Sprint Name",
 >           "sprintID": 1,
 >           "sprintLocation": "api/v1/projects/1/sprints/1"
 >      } or null,
@@ -1025,6 +1025,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "sprint": {
 >           "startDate": "2023-10-31",
 >           "endDate": "2023-11-01",
+>           "sprintName": "Sprint Name",
 >           "sprintID": 1,
 >           "sprintLocation": "api/v1/projects/1/sprints/1"
 >      } or null,
@@ -1162,6 +1163,779 @@ To keep the attribute the same, do not include the task attribute in the request
 > ```bash
 > curl -X DELETE \
 >  https://opm-api.propersi.me/api/v1/projects/1/tasks/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+------------------------------------------------------------------------------------------
+
+#### Comment Management
+
+<details>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments</b></code> <code>(gets all comments associated with a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved all comments for the task. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "taskID": 1,
+>     "taskLocation": "/api/v1/projects/1/tasks/1",
+>     "comments": [
+>      {
+>           "commentID": 1,
+>           "commentBody": "This is another comment!",
+>           "commenter": {
+>                 "username": "commenter",
+>                 "userID": 1
+>            },       
+>           "commentLocation": "/api/v1/projects/1/tasks/1/comments/1",
+>      },
+>      {
+>           "commentID": 2,
+>           "commentBody": "This is a second comment!",
+>           "commenter": {
+>                 "username": "commenter2",
+>                 "userID": 2
+>            },       
+>           "commentLocation": "/api/v1/projects/1/tasks/1/comments/2",
+>      },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1/comments \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments</b></code> <code>(add a comment to a task)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+
+##### Request Payload
+
+> ```json
+> {
+>     "commentBody": "New comment body."    # Cannot be empty or just spaces
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | **Includes a URI to the comment resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "commentID": 1,
+>     "commentBody": "This is a comment.",
+>     "commenter":{
+>           "username": "commenter",
+>           "userID": 1
+>      }
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1/comments \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"commentBody":"New comment stuff."}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(modify a comment on a task)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+> | `commentID` |  required  | int ($int64) | The unique ID of the comment |
+
+##### Request Payload
+
+> ```json
+> {
+>     "commentBody": "New comment body."    # Cannot be empty or just spaces
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Comment modified."}` | Successfully edited the comment. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. Delete instead. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Comment does not exist"}` | Comment not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1/comments/1 \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"commentBody":"New comment stuff."}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(delete a comment on a task)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `taskID` |  required  | int ($int64) | The unique ID of the task |
+> | `commentID` |  required  | int ($int64) | The unique ID of the comment |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Comment deleted."}` | Successfully deleted the comment. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Comment does not exist"}` | Comment not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/projects/1/tasks/1/comments/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+------------------------------------------------------------------------------------------
+
+#### Sprint Management
+
+<details>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(gets all sprints associated with a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved all sprints for the task. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "projectID": 1,
+>     "projectLocation": "/api/v1/projects/1",
+>     "sprints": [
+>      {
+>           "sprintID": 1,
+>           "sprintName": "Sprint Name1",
+>           "startDate": "2023-10-31",
+>           "endDate": "2023-11-15",
+>           "sprintLocation": "/api/v1/projects/1/sprints/1"
+>      },
+>      {
+>           "sprintID": 2,
+>           "sprintName": "Sprint Name2",
+>           "startDate": "2023-10-31",
+>           "endDate": "2023-11-16",
+>           "sprintLocation": "/api/v1/projects/1/sprints/2"
+>      },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/projects/1/sprints \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(adds a sprint to a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+
+##### Request Payload
+
+> ```json
+> {
+>     "startDate": "2023-11-15",
+>     "endDate": "2023-11-30",
+>     "sprintName": "Sprint Name"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the sprint resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"Sprint name must be unique for project"}` | Sprint name must be unique for this project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Invalid date range"}` | Invalid date range for sprint. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 201 HTTP Code Response Body
+
+> ```json
+> {
+>     "sprintID": 1,
+>     "startDate": "2023-11-15",
+>     "endDate": "2023-11-30",
+>     "sprintName": "Sprint Name"
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/projects/1/sprints \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{
+>   "sprintName": "Sprint name",
+>   "startDate": "2023-11-15",
+>   "endDate": "2023-11-30",
+>      }' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(get all tasks associated with a sprint in a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `sprintID` |  required  | int ($int64) | The unique ID of the sprint |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved all tasks for the sprint. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "sprintID": 1,
+>     "sprintName": "Sprint Name",
+>     "startDate": "2023-10-31",
+>     "endDate": "2023-11-15",
+>     "tasks": [
+>      {
+>           "title": "Task 1",
+>           "taskID": 1,
+>           "taskColumnIndex": 0,       # Indicates location on board
+>           "description": "This is a task!",
+>           "assignedTo": {
+>                 "username": "username-of-assignee",
+>                 "userID": 1
+>            } or null,       
+>           "priority": "High",
+>           "comments": [
+>            {
+>                 "commentID": 1,
+>                 "commentBody": "This is a comment",
+>                 "commenter": "username-here",
+>                 "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
+>            },
+>           ],
+>           "customFields": [ ... ],
+>           "taskLocation": "/api/v1/projects/1/tasks/1",
+>      },
+>      {
+>           "title": "Task 2",
+>           "taskID": 2,
+>           "taskColumnIndex": 1,       # Indicates location on board
+>           "description": "This is another task!",
+>           "assignedTo": {
+>                 "username": "username-of-assignee",
+>                 "userID": 1
+>            } or null,       
+>           "priority": "High",
+>           "comments": [
+>            {
+>                 "commentID": 2,
+>                 "commentBody": "This is another comment",
+>                 "commenter": "username-here",
+>                 "commentLocation": "/api/v1/projects/1/tasks/2/comments/2"
+>            },
+>           ],
+>           "customFields": [ ... ],
+>           "taskLocation": "/api/v1/projects/1/tasks/2",
+>      },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/projects/1/sprints/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(modifies a sprint in a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `sprintID` |  required  | int ($int64) | The unique ID of the sprint |
+
+##### Request Payload
+
+If a field is included, it is assumed that user is trying to edit that field.
+Leaving the field out of the payload will keep the field's original value.
+
+> ```json
+> {
+>     "startDate": "2023-11-15",
+>     "endDate": "2023-11-30",
+>     "sprintName": "Sprint Name"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully modified the sprint. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Sprint name must be unique for project"}` | Sprint name must be unique for this project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Invalid date range"}` | Invalid date range for sprint. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Invalid sprint attributes"}` | Invalid sprint attributes. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "sprintID": 1,
+>     "startDate": "2023-11-15",
+>     "endDate": "2023-11-30",
+>     "sprintName": "Sprint Name"
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X PUT \
+>  https://opm-api.propersi.me/api/v1/projects/1/sprints/1 \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{
+>   "sprintName": "Sprint name",
+>   "startDate": "2023-11-15",
+>   "endDate": "2023-11-30",
+>      }' 
+> ```
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(deletes a sprint in a project)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `projectID` |  required  | int ($int64) | The unique ID of the project |
+> | `sprintID` |  required  | int ($int64) | The unique ID of the sprint |
+
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Not authorized"}` | Sprint successfully deleted. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/projects/1/sprints/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+</details>
+
+------------------------------------------------------------------------------------------
+
+#### Team Management
+
+<details>
+ <summary><code>GET</code> <code><b>/teams</b></code> <code>(gets all teams associated with a user)</code></summary>
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully retrieved all teams for the user. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "teams": [
+>      {
+>           "teamID": 1,
+>           "teamName": "Team Name 1",
+>           "teamLocation": "/api/v1/teams/1",
+>      },
+>      {
+>           "teamID": 2,
+>           "teamName": "Team Name 2",
+>           "teamLocation": "/api/v1/teams/2",
+>      },
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/teams \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/teams</b></code> <code>(make a new team)</code></summary>
+
+##### Request Payload
+
+> ```json
+> {
+>     "teamName": "My new team",
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the team resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"Already in a team with that name"}` | Users must be in unique teams. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "teamID": 1,
+>     "teamName": "Team Name 1",
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/teams \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"teamName":"my_username"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/teams/{teamID}</b></code> <code>(get all projects associated with a team)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `teamID` |  required  | int ($int64) | The unique ID of the team |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Gets all projects associated with a team. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "teamID": 1,
+>     "teamName": "Team Name 1",
+>     "projects": [
+>       {
+>           "projectName": "project1",
+>           "projectID": 1,
+>           "lastUpdated": "2023-10-31T15:45:00Z",
+>           "projectLocation": "/api/v1/projects/1",
+>       },
+>       {
+>           "projectName": "project2",
+>           "projectID": 2,
+>           "lastUpdated": "2023-10-31T15:45:00Z",
+>           "projectLocation": "/api/v1/projects/2",
+>       } 
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/teams/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}</b></code> <code>(delete a team)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `teamID` |  required  | int ($int64) | The unique ID of the team |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"Team deleted"}` | Team deleted. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team, or not creator of team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/teams/1 \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/teams/{teamID}/members</b></code> <code>(get all members associated with a team)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `teamID` |  required  | int ($int64) | The unique ID of the team |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Gets all members associated with a team. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "teamID": 1,
+>     "teamName": "Team Name 1",
+>     "members": [
+>       {
+>           "username": "user1",
+>           "userID": 1,
+>       },
+>       {
+>           "username": "user2",
+>           "userID": 2,
+>       } 
+>     ]
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X GET \
+>  https://opm-api.propersi.me/api/v1/teams/1/members \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+> ```
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/teams/{teamID}/members</b></code> <code>(add team member to a team)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `teamID` |  required  | int ($int64) | The unique ID of the team |
+
+##### Request Payload
+
+> ```json
+> {
+>   "username": "username-here"
+> }
+> ```
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `See below.` | Successfully added member to team. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User to add does not exist"}` | User to add does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+###### 200 HTTP Code Response Body
+
+> ```json
+> {
+>     "code": 200,
+>     "message": "User added",
+>     "username": "username",
+>     "userID": 1,
+> }
+> ```
+
+##### Example cURL
+
+> ```bash
+> curl -X POST \
+>  https://opm-api.propersi.me/api/v1/teams/1/members \
+>  -H 'Content-Type: application/json' \
+>  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+>  -d '{"username":"my_username"}' 
+> ```
+
+</details>
+
+<details>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}/members/{memberID}</b></code> <code>(remove team member from team)</code></summary>
+
+##### Parameters
+
+> | name   |  type      | data type      | description                                          |
+> |--------|------------|----------------|------------------------------------------------------|
+> | `teamID` |  required  | int ($int64) | The unique ID of the team |
+> | `memberID` |  required  | int ($int64) | The unique ID of the user |
+
+##### Responses
+
+> | http code     | content-type                      | response  | details |
+> |---------------|-----------------------------------|-----------|---------------------------------------------------------|
+> | `200`         | `application/json`                | `{"code":"200","message":"User removed"}` | Successfully removed user from team. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User to add does not exist, or is not in team"}` | User to remove does not exist, or not in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
+
+##### Example cURL
+
+> ```bash
+> curl -X DELETE \
+>  https://opm-api.propersi.me/api/v1/teams/1/members/1 \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 > ```
 

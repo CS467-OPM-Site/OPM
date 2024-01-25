@@ -1,0 +1,48 @@
+.splash-container {
+    background-color: #1b4332; /* dark green color */
+    color: white; /* ensures legibility */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A clean, modern font */
+    text-align: center; /* Centers your text */
+    padding: 50px 20px; /* Spacing around the content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full view height */
+  }
+
+.google-sign-in {
+    background-color: #4285F4; /* Google's brand color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    /* additional styling */
+}
+
+.github-sign-in {
+    background-color: #333; /* GitHub's brand color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    /* additional styling */
+}
+
+.facebook-sign-in {
+    background-color: #4267B2; /* Facebook's brand color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    /* additional styling */
+}

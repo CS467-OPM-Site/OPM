@@ -46,3 +46,27 @@
     margin: 5px;
     /* additional styling */
 }
+
+.microsoft-sign-in{
+    background-color: #00A4EF; /* Microsoft's brand color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    /* additional styling */
+}
+
+.twitter-sign-in{
+    background-color: #1DA1F2; /* Twitter's brand color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    /* additional styling */
+}

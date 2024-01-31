@@ -4,6 +4,9 @@
 *.vscode/
 *.code-workspace
 
+# Ignore environment variables in the frontend directory
+frontend/.env
+
 # Java related ignore
 # Compiled class file
 *.class

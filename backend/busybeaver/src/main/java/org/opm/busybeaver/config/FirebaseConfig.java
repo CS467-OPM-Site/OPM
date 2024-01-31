@@ -20,7 +20,7 @@ public class FirebaseConfig {
     public void initialize() throws FileNotFoundException, SecurityException {
         FileInputStream configFile = new FileInputStream(
                 BusyBeavConstants.RESOURCES_DIR.getValue() +
-                        System.getenv(EnvVariables.FIREBASE_ADMIN_SDK_KEY.getValue())
+                        System.getProperty(EnvVariables.FIREBASE_ADMIN_SDK_KEY.getValue())
         );
 
         try {

@@ -32,10 +32,10 @@ public class FirebaseAuthenticationService  {
 
             email = firebaseToken.getEmail();
             uid = firebaseToken.getUid();
-            isAuthenticated = false;
+            isAuthenticated = true;
 
         } catch (FirebaseAuthException e) {
-            isAuthenticated = true;
+            isAuthenticated = false;
         }
     }
 

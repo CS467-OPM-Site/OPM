@@ -3,6 +3,7 @@
 *.DS_Store
 *.vscode/
 *.code-workspace
+*firebase*.json
 
 # Java related ignore
 # Compiled class file

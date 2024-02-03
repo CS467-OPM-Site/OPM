@@ -1,6 +1,9 @@
 /*
     PostgreSQL creation script for Opinionated Project Management, CS467, at Oregon State University.
 
+    Recreates database from scratch. Any data currently within database will be dropped, and tables
+    will be made new.
+
     Project title: Busy Beaver
 
     Team:

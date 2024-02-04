@@ -5,9 +5,16 @@
 *.code-workspace
 *firebase*.json
 
+# Ignore environment variables in the frontend directory
+frontend/.env
+
 # Java related ignore
 # Compiled class file
 *.class
+
+# Python related
+*venv/
+*__pycache__/
 
 # Log file
 *.log
@@ -162,3 +169,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+.idea

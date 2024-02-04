@@ -11,6 +11,10 @@ frontend/.env
 # Compiled class file
 *.class
 
+# Python related
+*venv/
+*__pycache__/
+
 # Log file
 *.log
 
@@ -164,3 +168,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+.idea

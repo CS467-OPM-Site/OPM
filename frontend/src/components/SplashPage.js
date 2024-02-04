@@ -1,7 +1,7 @@
 import React from 'react';
 
 import '../styles/SplashPage.css';
-import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import app from '../firebaseConfig';
 
@@ -35,23 +35,18 @@ const SplashPage = () => {
     const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider)
       .then((result) => {
-        // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-        // const credential = GithubAuthProvider.credentialFromResult(result);
-        // const token = credential.accessToken;
-        // The signed-in user info.
-        // const user = result.user;
-        // ...
-      }).catch((error) => {
-        // Handle Errors here.
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // The email of the user's account used.
-        // const email = error.email;
-        // The AuthCredential type that was used.
-        // const credential = GithubAuthProvider.credentialFromError(error);
-        // ...
+        // Process sign-in result
+      })
+      .catch((error) => {
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          // Display message to user if they already have an account with the same email address but different sign-in method
+          alert("An account with this email already exists. Please sign in using your existing Google account.");
+        } 
       });
-  }
+  };
+  
+          
+
 
   
   return (

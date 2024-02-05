@@ -37,16 +37,20 @@ dependencies {
 }
 
 // Referenced jooq plugin - https://github.com/etiennestuder/gradle-jooq-plugin
-// Build code generated classes by running './gradlew clean build generateJooq'
+// Build code generated classes by running './gradlew generateJooq'
+// Requires DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT environment variables
 jooq {
     configurations {
         main {
+            // Omit task dependency from compileJava to generateJooq
+            generateSchemaSourceOnCompilation = false
+
             generationTool {
                 jdbc {
                     driver = 'org.postgresql.Driver'
 
                     // Define locally, example: 'jdbc:postgresql://localhost:5432/{database_name}
-                    url = 'jdbc:postgresql://localhost:5432/opm'
+                    url = 'jdbc:postgresql://localhost:' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME')
 
                     // Define locally using DB_USERNAME, DB_PASSWORD
                     user = System.getenv('DB_USERNAME')
@@ -69,6 +73,15 @@ jooq {
     }
 }
 
+tasks.named('generateJooq').configure {
+    println("CHECK: generateJooq checking for environment variables: DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT...")
+    onlyIf("Required environment variables: DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT") {
+        System.getenv('DB_USERNAME') != null
+        System.getenv('DB_PASSWORD') != null
+        System.getenv('DB_PORT') != null
+        System.getenv('DB_NAME') != null
+    }
+}
 
 tasks.named('test') {
     outputs.dir snippetsDir

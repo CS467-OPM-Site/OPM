@@ -28,7 +28,10 @@ const SplashPage = () => {
         navigate('/home');
       })
       .catch((error) => {
-        // Handle Errors here.
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          // Display message to user if they already have an account with the same email address but different sign-in method
+          alert("An account with this email already exists. Please sign in using your existing Google account.");
+        } 
       });
   };
 

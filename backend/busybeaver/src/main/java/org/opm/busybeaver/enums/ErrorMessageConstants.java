@@ -2,6 +2,11 @@ package org.opm.busybeaver.enums;
 
 public enum ErrorMessageConstants {
 
+    MESSAGE("message"),
+    CODE("code"),
+    INVALID_ARGUMENT("Invalid argument"),
+    USER_ALREADY_EXISTS("User already exists with those details"),
+    USER_DOES_NOT_EXIST("User does not exist"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

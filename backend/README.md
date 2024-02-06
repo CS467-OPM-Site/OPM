@@ -48,8 +48,9 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | **Includes a URI to the user resource in the Location Header** |
-> | `400`         | `application/json`                | `{"code":"400","message":"User already registered"}` | User already registered. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Username exists"}` | User chose a username that already exists. |
+> | `400`         | `application/json`                | `{"code":400,"message":"User already exists with those details"}` | User details already exist in database. |
+> | `400`         | `application/json`                | `{"code":400,"message":"Username is required"}` | Username field required. |
+> | `400`         | `application/json`                | `{"code":400,"message":"Username must be 3 to 100 characters"}` | Username length requirement. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL

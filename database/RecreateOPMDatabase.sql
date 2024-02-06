@@ -46,6 +46,7 @@ CREATE TABLE Projects (
     project_name VARCHAR(50) NOT NULL,
     current_sprint_id INTEGER,
     team_id INTEGER REFERENCES Teams(team_id) NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     -- Enforce uniqueness of project per team
     CONSTRAINT unique_project_per_team UNIQUE (project_name, team_id)
@@ -97,7 +98,9 @@ CREATE TABLE Tasks (
     title VARCHAR(100) NOT NULL,
     description VARCHAR(500), -- Enforcing 500 character maximum
     custom_fields JSONB,
-    task_created TIMESTAMP
+    task_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    task_index SMALLINT DEFAULT -1
 );
 
 DROP TABLE IF EXISTS Comments CASCADE;

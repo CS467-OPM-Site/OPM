@@ -37,7 +37,10 @@ CREATE TABLE TeamUsers (
     user_team_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES BeaverUsers(user_id) NOT NULL,
     team_id INTEGER REFERENCES Teams(team_id) NOT NULL,
-    user_team_role VARCHAR(20) DEFAULT 'User' CHECK (user_team_role IN ('User', 'Creator', 'Mod'))
+    user_team_role VARCHAR(20) DEFAULT 'User' CHECK (user_team_role IN ('User', 'Creator', 'Mod')),
+
+    -- Enforce user can't be in table twice
+    CONSTRAINT unique_user_per_team UNIQUE (user_id, team_id)
 );
 
 DROP TABLE IF EXISTS Projects CASCADE;
@@ -58,6 +61,9 @@ CREATE TABLE ProjectUsers (
     user_id INTEGER REFERENCES BeaverUsers(user_id) NOT NULL,
     project_id INTEGER REFERENCES Projects(project_id) NOT NULL,
     user_project_role VARCHAR(20) Default 'Member' CHECK (user_project_role IN ('Member', 'Dev', 'Project Manager', 'Manager', 'External', 'Manager'))
+
+    -- Enforce user can't be in team twice
+    CONSTRAINT unique_user_per_project UNIQUE (user_id, project_id)
 );
 
 DROP TABLE IF EXISTS Sprints CASCADE;

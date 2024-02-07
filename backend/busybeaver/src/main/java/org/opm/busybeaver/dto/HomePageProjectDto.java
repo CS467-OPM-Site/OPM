@@ -1,19 +1,23 @@
 package org.opm.busybeaver.dto;
 
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.springframework.cglib.core.Local;
 
 import java.beans.ConstructorProperties;
+import java.time.LocalDateTime;
 
 public class HomePageProjectDto {
     private final String projectName;
     private final Integer projectID;
+    private final LocalDateTime lastUpdated;
     private String projectLocation;
     private final HomePageProjectTeamDto team;
 
-    @ConstructorProperties({"project_name", "project_id", "team_id", "team_name"})
-    public HomePageProjectDto(String projectName, int projectID, int teamID, String teamName) {
+    @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
+    public HomePageProjectDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
         this.projectName = projectName;
         this.projectID = projectID;
+        this.lastUpdated = lastUpdated;
         this.team = new HomePageProjectTeamDto(teamName, teamID);
     }
 
@@ -42,5 +46,9 @@ public class HomePageProjectDto {
 
     public String getProjectLocation() {
         return projectLocation;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
     }
 }

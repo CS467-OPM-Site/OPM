@@ -1,7 +1,6 @@
 package org.opm.busybeaver.dto;
 
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.springframework.cglib.core.Local;
 
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
@@ -22,8 +21,7 @@ public class HomePageProjectDto {
     }
 
     public void setProjectAndTeamLocation(String contextPath) {
-        final String PATH = contextPath +
-                BusyBeavPaths.V1.getValue();
+        final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.projectLocation = PATH +
                 BusyBeavPaths.PROJECTS.getValue() +

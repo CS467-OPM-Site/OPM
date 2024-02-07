@@ -30,7 +30,9 @@ public class ProjectRepository {
         // IN
         //      (SELECT ProjectUsers.project_id
         //          FROM ProjectUsers
-        //          WHERE ProjectUsers.user_id=userId);
+        //          WHERE ProjectUsers.user_id=userId
+        //          )
+        // ORDER BY Projects.last_updated DESC;
         return create
                 .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, PROJECTS.LAST_UPDATED, PROJECTS.TEAM_ID, TEAMS.TEAM_NAME)
                 .from(PROJECTS)

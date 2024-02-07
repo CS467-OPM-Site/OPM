@@ -1,8 +1,11 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/SplashPage.css';
 import app from '../firebaseConfig';
+// import the image file from the assets folder
 import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import BusyBeaverImage from '../assets/BusyBeaverImage.webp';
+// // Citation for BusyBeaverImage: OpenAI DALL E Image Generator (https://openai.com/research/dall-e/)
+// Downloaded image at 2024-02-07 14:27:00 with prompt "generate some good logos to go on the front page and maybe like a corner icon for this project that match the css. It's our senior computer science capstone project at Oregon State university and we want our project management site to be called BusyBeaver (like oregon state beavers)"
 
 const SplashPage = () => {
   const navigate = useNavigate();
@@ -35,10 +38,15 @@ const SplashPage = () => {
       });
   };
 
+  
   return (
     <div className="splash-container">
-      <h1>Let us solve your project management needs.</h1>
-      <h4>Our Opinionated Project Management software manages projects efficiently and effectively.</h4>
+      
+      <h1>Welcome to Busy Beaver</h1>
+      
+      
+      <img src={BusyBeaverImage} alt="Busy Beaver" />  
+      <h4>Let us solve your project management needs.</h4>
       <p>Team Members: James Adelhelm, Ryu Barrett, Giovanni Propersi</p>
       <p>Course: CS467 Online Capstone Project W2024.</p>
       <div className="auth-buttons">

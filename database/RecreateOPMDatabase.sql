@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS Teams CASCADE;
 CREATE TABLE Teams (
     team_id SERIAL PRIMARY KEY,
     team_name VARCHAR(50) NOT NULL,
-    team_creator INTEGER REFERENCES BeaverUsers(user_id) NOT NULL,
+    team_creator INTEGER NOT NULL REFERENCES BeaverUsers(user_id),
 
     -- Enforce uniqueness per team creator of team name
     CONSTRAINT unique_team_per_creator UNIQUE (team_name, team_creator)
@@ -35,8 +35,8 @@ CREATE TABLE Teams (
 DROP TABLE IF EXISTS TeamUsers CASCADE;
 CREATE TABLE TeamUsers (
     user_team_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES BeaverUsers(user_id) NOT NULL ON DELETE CASCADE,
-    team_id INTEGER REFERENCES Teams(team_id) NOT NULL ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES BeaverUsers(user_id) ON DELETE CASCADE,
+    team_id INTEGER NOT NULL REFERENCES Teams(team_id) ON DELETE CASCADE,
     user_team_role VARCHAR(20) DEFAULT 'User' CHECK (user_team_role IN ('User', 'Creator', 'Mod')),
 
     -- Enforce user can't be in table twice
@@ -48,7 +48,7 @@ CREATE TABLE Projects (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(50) NOT NULL,
     current_sprint_id INTEGER,
-    team_id INTEGER REFERENCES Teams(team_id) NOT NULL ON DELETE CASCADE,
+    team_id INTEGER NOT NULL REFERENCES Teams(team_id) ON DELETE CASCADE,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     -- Enforce uniqueness of project per team
@@ -58,9 +58,9 @@ CREATE TABLE Projects (
 DROP TABLE IF EXISTS ProjectUsers CASCADE;
 CREATE TABLE ProjectUsers (
     user_project_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES BeaverUsers(user_id) NOT NULL ON DELETE CASCADE,
-    project_id INTEGER REFERENCES Projects(project_id) NOT NULL ON DELETE CASCADE,
-    user_project_role VARCHAR(20) Default 'Member' CHECK (user_project_role IN ('Member', 'Dev', 'Project Manager', 'Manager', 'External', 'Manager'))
+    user_id INTEGER NOT NULL REFERENCES BeaverUsers(user_id) ON DELETE CASCADE,
+    project_id INTEGER NOT NULL REFERENCES Projects(project_id) ON DELETE CASCADE,
+    user_project_role VARCHAR(20) Default 'Member' CHECK (user_project_role IN ('Member', 'Dev', 'Project Manager', 'Manager', 'External', 'Manager')),
 
     -- Enforce user can't be in team twice
     CONSTRAINT unique_user_per_project UNIQUE (user_id, project_id)
@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS Sprints CASCADE;
 CREATE TABLE Sprints (
     sprint_id SERIAL PRIMARY KEY,
     sprint_name VARCHAR(50) NOT NULL,
-    project_id INTEGER REFERENCES Projects(project_id) NOT NULL ON DELETE CASCADE,
+    project_id INTEGER NOT NULL REFERENCES Projects(project_id) ON DELETE CASCADE,
     begin_date DATE NOT NULL,
     end_date DATE NOT NULL,
 
@@ -84,7 +84,7 @@ ALTER TABLE Projects ADD CONSTRAINT fk_project_sprint FOREIGN KEY (current_sprin
 DROP TABLE IF EXISTS Columns CASCADE;
 CREATE TABLE Columns (
     column_id SERIAL PRIMARY KEY,
-    project_id INTEGER REFERENCES Projects(project_id) NOT NULL ON DELETE CASCADE,
+    project_id INTEGER NOT NULL REFERENCES Projects(project_id) ON DELETE CASCADE,
     column_title VARCHAR(50) NOT NULL,
     column_index SMALLINT NOT NULL, -- The order of the column in the Project
 

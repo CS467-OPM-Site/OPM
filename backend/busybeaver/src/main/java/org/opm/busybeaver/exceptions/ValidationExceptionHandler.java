@@ -25,7 +25,6 @@ public class ValidationExceptionHandler {
 
         Map<String, Object> result = new HashMap<>();
         result.put(ErrorMessageConstants.MESSAGE.getValue(), errorUnique);
-
         result.put(ErrorMessageConstants.CODE.getValue(), HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -39,7 +38,7 @@ public class ValidationExceptionHandler {
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 HttpStatus.BAD_REQUEST
-);
+        );
     }
 
     @ExceptionHandler(UserDoesNotExistException.class)
@@ -60,7 +59,6 @@ public class ValidationExceptionHandler {
 
     private HashMap<String, Object> generateResponse(String message, Integer errorCode) {
         HashMap<String, Object> result = new HashMap<>();
-
         result.put(ErrorMessageConstants.MESSAGE.getValue(), message);
         result.put(ErrorMessageConstants.CODE.getValue(), errorCode);
 

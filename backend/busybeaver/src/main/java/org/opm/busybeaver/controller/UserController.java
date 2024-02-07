@@ -6,6 +6,7 @@ import org.opm.busybeaver.dto.AuthenticatedUser;
 import org.opm.busybeaver.dto.UserDto;
 import org.opm.busybeaver.dto.UserRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
+import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
 import org.opm.busybeaver.service.FirebaseAuthenticationService;
 import org.opm.busybeaver.service.UserService;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.opm.busybeaver.utils.Utils.parseToken;
 
 @ApiPrefixController
 @RestController
@@ -27,24 +30,24 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users/register")
-    public AuthenticatedUser registerUser(HttpServletRequest request, @Valid @RequestBody UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
+    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
+    public AuthenticatedUser registerUser(
+            HttpServletRequest request,
+            @Valid @RequestBody UserRegisterDto userRegisterDto
+    ) throws UserAlreadyExistsException {
+
         FirebaseAuthenticationService firebaseAuthenticationService =
                 (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
 
-        userRegisterDto.setEmail(
-                firebaseAuthenticationService.getEmail()
-        );
-        userRegisterDto.setFirebase_id(
-                firebaseAuthenticationService.getUid()
-        );
+        userRegisterDto.setEmail(firebaseAuthenticationService.getEmail());
+        userRegisterDto.setFirebase_id(firebaseAuthenticationService.getUid());
 
         userService.registerUser(userRegisterDto);
 
         return new AuthenticatedUser(userRegisterDto.getUsername(), BusyBeavConstants.SUCCESS.getValue());
     }
 
-    @PostMapping("/users/auth")
+    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)
     public AuthenticatedUser authenticateUser(HttpServletRequest request) {
         UserDto userDto = parseToken(
                 (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
@@ -53,10 +56,4 @@ public class UserController {
         return userService.getUserByEmailAndId(userDto);
     }
 
-    private UserDto parseToken(FirebaseAuthenticationService firebaseAuthenticationService) {
-        return new UserDto(
-                firebaseAuthenticationService.getEmail(),
-                firebaseAuthenticationService.getUid()
-        );
-    }
 }

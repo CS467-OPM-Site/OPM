@@ -32,7 +32,7 @@ public class ProjectRepository {
         //          FROM ProjectUsers
         //          WHERE ProjectUsers.user_id=userId);
         return create
-                .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, PROJECTS.TEAM_ID, TEAMS.TEAM_NAME)
+                .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, PROJECTS.LAST_UPDATED, PROJECTS.TEAM_ID, TEAMS.TEAM_NAME)
                 .from(PROJECTS)
                 .join(TEAMS)
                 .on(TEAMS.TEAM_ID.eq(PROJECTS.TEAM_ID))
@@ -42,6 +42,7 @@ public class ProjectRepository {
                             .where(PROJECTUSERS.USER_ID.eq(userId))
                         )
                 )
+                .orderBy(PROJECTS.LAST_UPDATED.desc())
                 .fetchInto(HomePageProjectDto.class);
 
     }

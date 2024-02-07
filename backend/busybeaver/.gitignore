@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Keep jooq generated classes out of source control
+jooq/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -45,9 +45,6 @@
   padding: 20px;
   border-radius: 8px;
   color: white;
-  display: flex; /* Display teams vertically */
-  flex-direction: column; /* Arrange teams vertically */
-  gap: 10px; /* Increase the spacing between teams */
 }
 
 .team-card {
@@ -55,15 +52,27 @@
   padding: 20px;
   border-radius: 8px;
   color: white;
-  margin-bottom: 10px; /* Add margin to separate team cards */
-  display: flex;
+  margin-bottom: 10px;
+  transition: all 0.3s ease; /* Smooth transition for expanding effect */
+  position: relative; /* Needed for absolute positioning of the close button */
+}
+
+.team-card.selected .team-details-container {
+  display: flex; /* Display the grey box with team details when selected */
+}
+
+.team-card .team-details-container {
+  display: none; /* Hide the grey box by default */
+  background-color: #d1d1d1; /* Flint grey background */
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
   flex-direction: column;
-  align-items: center;
+  gap: 10px;
 }
 
 .team-button {
   padding: 10px 15px;
-  margin-bottom: 10px; /* Add margin to separate team cards */
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -76,75 +85,10 @@
   background-color: #679267; /* Slightly darker green on hover */
 }
 
-.team-details {
-  background-color: #2d6a4f; /* Slightly lighter green for expanded card */
-  padding: 20px;
-  border-radius: 8px;
-  color: white;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.team-details button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #81b29a; /* Lighter green for buttons */
-  color: white;
-}
-
-.team-details button:hover {
-  background-color: #679267; /* Slightly darker green on hover */
-}
-
-.team-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.team-actions button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #81b29a; /* Lighter green for buttons */
-  color: white;
-}
-
-.team-actions button:hover {
-  background-color: #679267; /* Slightly darker green on hover */
-}
-
-.team-members-list {
-  margin-bottom: 10px; /* Adds some space between the members list and the action buttons */
-}
-
-.team-actions button {
-  margin-right: 5px; /* Adds some space between buttons */
-}
-
-
-.project-list {
-  flex: 3;
-  background-color: #2d6a4f; /* Same green as sidebar for consistency */
-  padding: 20px;
-  border-radius: 8px;
-  color: white;
-}
-
-.selected {
-  background-color: #2d6a4f; /* Green background for selected team card */
-}
-
-..close-button {
+.close-button {
+  display: none; /* Hide by default */
   position: absolute;
-  top: -15px;
+  top: 10px;
   right: 10px;
   padding: 5px;
   border: none;
@@ -154,11 +98,15 @@
   background-color: #e74c3c; /* Red color for close button */
   color: white;
   font-size: 16px;
-  z-index: 1; /* Ensure it's above other elements */
+  z-index: 2; /* Ensure it's above other elements */
 }
 
 .close-button:hover {
   background-color: #d63031; /* Slightly darker red on hover */
+}
+
+.team-card.selected .close-button {
+  display: block; /* Show only when the team is selected */
 }
 
 .input-error {
@@ -170,5 +118,33 @@
   margin-top: 8px;
 }
 
+/* Additional styling for team actions */
+.team-actions button, .team-button, .delete-button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  margin: 2px;
+  text-transform: uppercase;
+}
+
+.team-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Additional styling for team members list */
+.team-members-list {
+  margin-bottom: 10px;
+}
+
+/* Styling for project list */
+.project-list {
+  flex: 3;
+  background-color: #2d6a4f; /* Same green as sidebar for consistency */
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+}
 
 /* Add more styling as needed */

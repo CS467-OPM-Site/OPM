@@ -5,7 +5,9 @@ import '../styles/UserHomepage.css'; // Make sure the path to your CSS file is c
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([
-    // Replace with actual API fetched data
+    // Mock data for testing
+    // Assuming the creator of the team is also the team creator
+    // Will need to fetch this data from the backend
     { teamID: 1, teamName: "Team Name 1", isTeamCreator: true, members: ["creator"] },
     { teamID: 2, teamName: "Team Name 2", isTeamCreator: true, members: ["creator",] },
   ]);
@@ -94,14 +96,15 @@ const UserHomepage = () => {
           <button onClick={() => handleTeamClick(team.teamID)} className="team-button">
             {team.teamName}
           </button>
-          {team.isTeamCreator && team.members.length === 1 && (
+          {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">Delete Team</button>
           )}
-          <button className="close-button" onClick={handleCloseTeam}>X</button>
+          {selectedTeam?.teamID === team.teamID && (
+            <button className="close-button" onClick={handleCloseTeam}>X</button>
+          )}
         </div>
-        {/* Render team members here, just above the action buttons */}
         {selectedTeam?.teamID === team.teamID && (
-          <>
+          <div className="team-details-container">
             <div className="team-members-list">
               {renderTeamMembers(team)}
             </div>
@@ -109,11 +112,12 @@ const UserHomepage = () => {
               <button onClick={handleAddMember}>Add Member</button>
               <button>Leave Team</button>
             </div>
-          </>
+          </div>
         )}
       </div>
     ));
   };
+  
   
 
   const renderTeamMembers = (team) => {

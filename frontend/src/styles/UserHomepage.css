@@ -121,6 +121,15 @@
   background-color: #679267; /* Slightly darker green on hover */
 }
 
+.team-members-list {
+  margin-bottom: 10px; /* Adds some space between the members list and the action buttons */
+}
+
+.team-actions button {
+  margin-right: 5px; /* Adds some space between buttons */
+}
+
+
 .project-list {
   flex: 3;
   background-color: #2d6a4f; /* Same green as sidebar for consistency */
@@ -151,5 +160,15 @@
 .close-button:hover {
   background-color: #d63031; /* Slightly darker red on hover */
 }
+
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  margin-top: 8px;
+}
+
 
 /* Add more styling as needed */

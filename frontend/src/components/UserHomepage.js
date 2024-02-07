@@ -1,56 +1,152 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/UserHomepage.css'; // Ensure this path is correct
+import '../styles/UserHomepage.css'; // Make sure the path to your CSS file is correct
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState([
+    // Replace with actual API fetched data
+    { teamID: 1, teamName: "Team Name 1", isTeamCreator: true, members: ["creator"] },
+    { teamID: 2, teamName: "Team Name 2", isTeamCreator: true, members: ["creator",] },
+  ]);
   const [teamName, setTeamName] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState(null); // Track the selected team
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Implement the logic to fetch projects and teams here
+    // Fetch projects and teams here
   }, []);
 
   const handleAddTeam = () => {
-    // Example logic to handle adding a new team using Flask API mock
-    const newTeam = { teamName, teamID: teams.length + 1, members: [] };
-    setTeams([...teams, newTeam]);
-    setTeamName(''); // Reset the input field after adding
+    if (!teamName.trim()) {
+      setError('Team name cannot be empty');
+      return;
+    }
+    
+    // Simulate adding a new team
+    const newTeam = {
+      teamID: teams.length + 1, // Assuming teamID is numeric and auto-incremented
+      teamName: teamName,
+      isTeamCreator: true, // Assuming the creator of the team is also the team creator
+      members: ["creator"], // Starting with a single member (the creator)
+    };
+  
+    setTeams(prevTeams => [...prevTeams, newTeam]); // Add the new team to the existing list
+    setTeamName(''); // Reset the team name input field
+    setError(''); // Clear any existing errors
   };
+  
 
   const handleTeamNameChange = (event) => {
     setTeamName(event.target.value);
   };
 
   const handleTeamClick = (teamID) => {
-    const team = teams.find(t => t.teamID === teamID);
-    setSelectedTeam(team); // Set the selected team
+    setSelectedTeam(teams.find(t => t.teamID === teamID));
   };
 
   const handleCloseTeam = () => {
-    setSelectedTeam(null); // Clear the selected team to close the card
+    setSelectedTeam(null);
+  };
+
+  const handleDeleteTeam = (teamID) => {
+    if (window.confirm('Are you sure you want to delete this team?')) {
+      // Delete team logic here (API call)
+      setTeams(teams.filter(team => team.teamID !== teamID));
+    }
   };
 
   const handleAddMember = () => {
-    // Logic to handle adding a member to the selected team
+    // Placeholder will incorporate API logic
+
+    // Ensure a team is selected
+    if (!selectedTeam) {
+      alert('Please select a team first.');
+      return;
+    }
+  
+    // Prompt user for the new member's name
+    const newMemberName = window.prompt('Enter the new team member\'s name:');
+    if (!newMemberName) {
+      alert('Member name cannot be empty.');
+      return;
+    }
+  
+    // Find the team and add the new member
+    setTeams(teams => teams.map(team => {
+      if (team.teamID === selectedTeam.teamID) {
+        return {
+          ...team,
+          members: [...team.members, newMemberName], // Add the new member to the existing members array
+        };
+      }
+      return team; // Return unmodified for other teams
+    }));
+  
+    alert('Member added successfully!');
   };
 
-  const renderTeamMembers = () => {
-    return selectedTeam?.members.map((member, index) => (
+  const renderTeams = () => {
+    return teams.map((team) => (
+      <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected' : ''}`}>
+        <div className="team-header">
+          <button onClick={() => handleTeamClick(team.teamID)} className="team-button">
+            {team.teamName}
+          </button>
+          {team.isTeamCreator && team.members.length === 1 && (
+            <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">Delete Team</button>
+          )}
+          <button className="close-button" onClick={handleCloseTeam}>X</button>
+        </div>
+        {/* Render team members here, just above the action buttons */}
+        {selectedTeam?.teamID === team.teamID && (
+          <>
+            <div className="team-members-list">
+              {renderTeamMembers(team)}
+            </div>
+            <div className="team-actions">
+              <button onClick={handleAddMember}>Add Member</button>
+              <button>Leave Team</button>
+            </div>
+          </>
+        )}
+      </div>
+    ));
+  };
+  
+
+  const renderTeamMembers = (team) => {
+    return team.members.map((member, index) => (
       <div key={index} className="team-member">
         {member}
+        {/* Add a button to remove a member. Hide or disable this for the team creator if needed */}
+        <button onClick={() => handleRemoveMember(team.teamID, member)} className="remove-member-button">Remove</button>
       </div>
     ));
   };
 
+  const handleRemoveMember = (teamID, memberToRemove) => {
+    setTeams(teams => teams.map(team => {
+      if (team.teamID === teamID) {
+        // Filter out the member to remove
+        return {
+          ...team,
+          members: team.members.filter(member => member !== memberToRemove),
+        };
+      }
+      return team; // Return unmodified for other teams
+    }));
+  };
+  
+  
+
   const handleAddProject = () => {
-    // Logic to handle adding a new project
+    // Add project logic here (API call)
   };
 
   const handleFilterTeam = () => {
-    // Logic to handle filtering projects by team
+    // Filter team logic here (API call)
   };
 
   const handleProjectClick = (projectId) => {
@@ -58,7 +154,6 @@ const UserHomepage = () => {
   };
 
   const handleLogout = () => {
-    // Logic to handle user logout
     navigate('/');
   };
 
@@ -67,37 +162,28 @@ const UserHomepage = () => {
       <header className="user-homepage-header">
         <h1>User Homepage</h1>
         <div className="user-homepage-buttons">
-          <input type="text" value={teamName} onChange={handleTeamNameChange} placeholder="Team Name"/>
+          <input 
+            type="text"
+            value={teamName}
+            onChange={handleTeamNameChange}
+            placeholder="Team Name"
+            className={error ? "input-error" : ""}
+          />
           <button onClick={handleAddTeam}>Add Team</button>
           <button onClick={handleAddProject}>Add Project</button>
           <button onClick={handleFilterTeam}>Team Filter</button>
           <button onClick={handleLogout}>Logout</button>
+          {error && <div className="error-message">{error}</div>}
         </div>
       </header>
       <div className="content-container">
         <aside className="team-list">
           <h2>Teams</h2>
-          {teams.map((team) => (
-            <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected' : ''}`}>
-              <div className="team-header">
-                <button onClick={() => handleTeamClick(team.teamID)} className="team-button">
-                  {team.teamName}
-                </button>
-                <button className="close-button" onClick={handleCloseTeam}>X</button>
-              </div>
-              {selectedTeam?.teamID === team.teamID && (
-                <div className="team-actions">
-                  <button onClick={handleAddMember}>Add Member</button>
-                  <button>Leave Team</button>
-                </div>
-              )}
-              {renderTeamMembers()}
-            </div>
-          ))}
+          {renderTeams()}
         </aside>
         <main className="project-list">
           <h2>Projects</h2>
-          {/* Render project list */}
+          {/* Render project list here */}
         </main>
       </div>
     </div>

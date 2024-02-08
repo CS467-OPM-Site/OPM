@@ -181,13 +181,13 @@ public class TeamService {
 
     public String addMemberToTeam(UserDto userDto, Integer teamID, UsernameDto usernameToAdd, String contextPath)
             throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException, UserAlreadyInTeamException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
-        BeaverusersRecord userToAdd = verifyUserExistsAndReturn(usernameToAdd.username(), userRepository);
+        BeaverusersRecord userToAdd = userRepository.verifyUserExistsAndReturn(usernameToAdd.username());
 
         teamRepository.addMemberToTeam(userToAdd, teamID);
 

@@ -6,6 +6,7 @@ import org.jooq.Record2;
 import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
+import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
@@ -27,6 +28,9 @@ public class TeamRepository {
     public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
 
     public TeamsRecord makeNewTeam(Integer userID, String teamName) throws TeamAlreadyExistsForUserException {
+        // INSERT INTO Teams (Teams.team_name, Teams.team_creator)
+        // VALUES
+        // (teamName, userID);
         try {
             TeamsRecord newTeamRecord = create.insertInto(TEAMS, TEAMS.TEAM_NAME, TEAMS.TEAM_CREATOR)
                     .values(teamName, userID)
@@ -34,6 +38,11 @@ public class TeamRepository {
                     .fetchSingleInto(TeamsRecord.class);
 
             if (newTeamRecord == null) throw new TeamAlreadyExistsForUserException(ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+
+            // Trigger option - Add the creator to the TeamUsers table, role of Creator
+            create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID, TEAMUSERS.USER_TEAM_ROLE)
+                    .values(newTeamRecord.getTeamId(), newTeamRecord.getTeamCreator(), DatabaseConstants.TEAMUSERS_CREATOR_ROLE.getValue())
+                    .execute();
 
             return newTeamRecord;
 
@@ -43,7 +52,6 @@ public class TeamRepository {
     }
 
     public List<TeamSummaryDto> getUserHomePageTeams(Integer userId) {
-        // TO model:
         // SELECT Teams.team_id, Teams.team_name, Teams.team_creator
         // FROM Teams
         // WHERE Teams.team_id IN (

@@ -15,14 +15,6 @@ public class NewTeamDto {
 
     private String teamLocation;
 
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public Integer getTeamID() {
-        return teamID;
-    }
-
     public void setTeamID(Integer teamID) {
         this.teamID = teamID;
     }
@@ -42,4 +34,21 @@ public class NewTeamDto {
                 BusyBeavPaths.TEAMS.getValue() +
                 "/" + getTeamID();
     }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public Integer getTeamID() {
+        return teamID;
+    }
+
+    public Integer getTeamCreator() {
+        return teamCreator;
+    }
+
+    public String getTeamLocation() {
+        return teamLocation;
+    }
+
 }

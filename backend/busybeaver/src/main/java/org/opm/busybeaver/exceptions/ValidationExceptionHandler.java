@@ -2,6 +2,7 @@ package org.opm.busybeaver.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
@@ -82,6 +83,17 @@ public class ValidationExceptionHandler {
                         HttpStatus.NOT_FOUND.value()
                 ),
                 HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(TeamAlreadyExistsForUserException.class)
+    public ResponseEntity<?> teamAlreadyExistsForUser() {
+        return new ResponseEntity<>(
+                generateResponse(
+                        ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
         );
     }
 

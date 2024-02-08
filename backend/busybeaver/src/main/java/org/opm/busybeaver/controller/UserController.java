@@ -27,7 +27,6 @@ public class UserController {
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
     public AuthenticatedUser registerUser(
-            HttpServletRequest request,
             @Valid @RequestBody UsernameRegisterDto usernameRegisterDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) throws UserAlreadyExistsException {
@@ -38,7 +37,6 @@ public class UserController {
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)
     public AuthenticatedUser authenticateUser(
-            HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto) {
 
         return userService.getUserByEmailAndId(userDto);

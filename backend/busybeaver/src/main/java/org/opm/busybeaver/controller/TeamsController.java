@@ -1,6 +1,7 @@
 package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.dto.Teams.MembersInTeamDto;
 import org.opm.busybeaver.dto.Teams.NewTeamDto;
@@ -34,10 +35,13 @@ public class TeamsController {
     @PostMapping(BusyBeavPaths.Constants.TEAMS)
     public NewTeamDto makeNewTeam(
             HttpServletRequest request,
-            @Valid @RequestBody NewTeamDto newTeamDto,
-            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+            @Valid @RequestBody NewTeamDto newTeamOnlyTeamNameDto,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
+            HttpServletResponse response
     ) {
-        return teamService.makeNewTeam(userDto, newTeamDto, request.getContextPath());
+        NewTeamDto newTeam = teamService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
+        response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
+        return newTeam;
     }
 
     @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")

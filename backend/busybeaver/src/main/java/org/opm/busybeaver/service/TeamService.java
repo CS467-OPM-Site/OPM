@@ -178,4 +178,20 @@ public class TeamService {
 
         return membersInTeamDto;
     }
+
+    public String addMemberToTeam(UserDto userDto, Integer teamID, UsernameDto usernameToAdd, String contextPath)
+            throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException, UserAlreadyInTeamException {
+        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        BeaverusersRecord userToAdd = verifyUserExistsAndReturn(usernameToAdd.username(), userRepository);
+
+        teamRepository.addMemberToTeam(userToAdd, teamID);
+
+        return contextPath + BusyBeavPaths.V1.getValue() + BusyBeavPaths.TEAMS.getValue() +
+                "/" + teamID + BusyBeavPaths.MEMBERS.getValue() + "/" + userToAdd.getUserId();
+    }
 }

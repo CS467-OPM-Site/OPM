@@ -47,7 +47,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | **Includes a URI to the user resource in the Location Header** |
+> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | Successfully registered user. |
 > | `400`         | `application/json`                | `{"code":400,"message":"User already exists with those details"}` | User details already exist in database. |
 > | `400`         | `application/json`                | `{"code":400,"message":"Username is required"}` | Username field required. |
 > | `400`         | `application/json`                | `{"code":400,"message":"Username must be 3 to 100 characters"}` | Username length requirement. |
@@ -1676,11 +1676,13 @@ Leaving the field out of the payload will keep the field's original value.
 >           "teamID": 1,
 >           "teamName": "Team Name 1",
 >           "teamLocation": "/api/v1/teams/1",
+            "isTeamCreator": false
 >      },
 >      {
 >           "teamID": 2,
 >           "teamName": "Team Name 2",
 >           "teamLocation": "/api/v1/teams/2",
+            "isTeamCreator": true
 >      },
 >     ]
 > }
@@ -1712,15 +1714,17 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the team resource in the Location Header** |
-> | `400`         | `application/json`                | `{"code":"400","message":"Already in a team with that name"}` | Users must be in unique teams. |
+> | `400`         | `application/json`                | `{"code":"400","message":"You have already made a team with this name"}` | Users must make unique teams. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
 
 > ```json
 > {
->     "teamID": 1,
 >     "teamName": "Team Name 1",
+>     "teamID": 1,
+>     "teamCreator": 1,
+>     "teamLocation": "/api/v1/teams/1",
 > }
 > ```
 
@@ -1750,8 +1754,7 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Gets all projects associated with a team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1760,6 +1763,7 @@ Leaving the field out of the payload will keep the field's original value.
 > {
 >     "teamID": 1,
 >     "teamName": "Team Name 1",
+      "teamLocation": "/api/v1/teams/1
 >     "projects": [
 >       {
 >           "projectName": "project1",
@@ -1829,8 +1833,7 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Gets all members associated with a team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1843,12 +1846,15 @@ Leaving the field out of the payload will keep the field's original value.
 >       {
 >           "username": "user1",
 >           "userID": 1,
+            "isTeamCreator": true
 >       },
 >       {
 >           "username": "user2",
 >           "userID": 2,
+            "isTeamCreator": false 
 >       } 
->     ]
+>     ],
+      "teamLocation": "/api/v1/teams/1"
 > }
 > ```
 

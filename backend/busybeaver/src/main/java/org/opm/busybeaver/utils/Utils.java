@@ -1,6 +1,5 @@
 package org.opm.busybeaver.utils;
 
-
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 
 import java.util.HashMap;

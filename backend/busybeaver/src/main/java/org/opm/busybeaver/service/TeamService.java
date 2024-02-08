@@ -155,4 +155,27 @@ public class TeamService {
 
         return homePageFilterProjectsByTeamDto;
     }
+
+    public MembersInTeamDto getMembersInTeam(
+            UserDto userDto,
+            Integer teamID,
+            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        List<MemberInTeamDto> memberInTeamDtos = teamRepository.getAllMembersInTeam(teamID);
+
+        MembersInTeamDto membersInTeamDto = new MembersInTeamDto(
+                memberInTeamDtos.getFirst().getTeamName(),
+                memberInTeamDtos.getFirst().getTeamID(),
+                memberInTeamDtos
+        );
+
+        membersInTeamDto.setTeamLocation(contextPath);
+
+        return membersInTeamDto;
+    }
 }

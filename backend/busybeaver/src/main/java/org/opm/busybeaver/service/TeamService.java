@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.opm.busybeaver.utils.Utils.verifyUserExistsAndReturn;
 
 @Service
 public class TeamService {
@@ -36,7 +35,7 @@ public class TeamService {
 
     public NewTeamDto makeNewTeam(UserDto userDto, NewTeamDto newTeamDto, String contextPath)
             throws TeamAlreadyExistsForUserException, UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         TeamsRecord newTeamRecord = teamRepository.makeNewTeam(beaverusersRecord.getUserId(), newTeamDto.getTeamName());
 
@@ -49,7 +48,7 @@ public class TeamService {
     }
 
     public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         List<TeamSummaryDto> teams =
                 teamRepository.getUserHomePageTeams(beaverusersRecord.getUserId());
@@ -66,7 +65,7 @@ public class TeamService {
             UserDto userDto,
             Integer teamID,
             String contextPath) throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
@@ -90,7 +89,7 @@ public class TeamService {
             UserDto userDto,
             Integer teamID,
             String contextPath) throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());

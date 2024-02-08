@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.service.FirebaseAuthenticationService;
@@ -18,8 +19,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import static org.opm.busybeaver.utils.Utils.parseToken;
 
 @Component
 @CrossOrigin
@@ -87,5 +86,12 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
         PrintWriter responseWriter = response.getWriter();
         responseWriter.print(jsonString);
         responseWriter.flush();
+    }
+
+    private static UserDto parseToken(FirebaseAuthenticationService firebaseAuthenticationService) {
+        return new UserDto(
+                firebaseAuthenticationService.getEmail(),
+                firebaseAuthenticationService.getUid()
+        );
     }
 }

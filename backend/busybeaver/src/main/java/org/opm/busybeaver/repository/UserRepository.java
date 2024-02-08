@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
+import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -49,5 +50,21 @@ public class UserRepository {
             // User with those details already exists
             throw new UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
         }
+    }
+
+    public BeaverusersRecord verifyUserExistsAndReturn(UserDto userDto) {
+        BeaverusersRecord beaverusersRecord = getUserByEmailAndId(userDto);
+        if (beaverusersRecord == null) {
+            throw new UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+        return beaverusersRecord;
+    }
+
+    public BeaverusersRecord verifyUserExistsAndReturn(String username) {
+        BeaverusersRecord beaverusersRecord = getUserByUsername(username);
+        if (beaverusersRecord == null) {
+            throw new UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+        return beaverusersRecord;
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.opm.busybeaver.utils.Utils.verifyUserExistsAndReturn;
 
 @Service
 public class ProjectService {
@@ -30,7 +29,7 @@ public class ProjectService {
     }
 
     public ProjectsSummariesDto getUserHomePageProjects(UserDto userDto, String contextPath) throws UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         List<ProjectSummaryDto> projects =
                 projectRepository.getUserHomePageProjects(beaverusersRecord.getUserId());

@@ -42,9 +42,7 @@ public class UserController {
         userRegisterDto.setEmail(firebaseAuthenticationService.getEmail());
         userRegisterDto.setFirebase_id(firebaseAuthenticationService.getUid());
 
-        userService.registerUser(userRegisterDto);
-
-        return new AuthenticatedUser(userRegisterDto.getUsername(), BusyBeavConstants.SUCCESS.getValue());
+        return userService.registerUser(userRegisterDto);
     }
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)

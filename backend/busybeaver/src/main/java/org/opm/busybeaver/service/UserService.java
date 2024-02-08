@@ -35,11 +35,12 @@ public class UserService {
         );
     }
 
-    public void registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
-        boolean validNewUser = userRepository.registerUser(userRegisterDto);
-        if (!validNewUser) {
-            throw new UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
-        }
+    public AuthenticatedUser registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
+        String newUsername = userRepository.registerUser(userRegisterDto);
 
+        return new AuthenticatedUser(
+                newUsername,
+                BusyBeavConstants.SUCCESS.getValue()
+        );
     }
 }

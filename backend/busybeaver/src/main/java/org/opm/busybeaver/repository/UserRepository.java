@@ -3,6 +3,8 @@ package org.opm.busybeaver.repository;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UserRegisterDto;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,20 +32,16 @@ public class UserRepository {
                 .fetchOne();
     }
 
-    public boolean registerUser(UserRegisterDto userRegisterDto) {
+    public String registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
         try {
-            create.insertInto(BEAVERUSERS)
-                    .set(BEAVERUSERS.EMAIL, userRegisterDto.getEmail())
-                    .set(BEAVERUSERS.FIREBASE_ID, userRegisterDto.getFirebase_id())
-                    .set(BEAVERUSERS.USERNAME, userRegisterDto.getUsername())
-                    .execute();
-            return true;
+            return create.insertInto(BEAVERUSERS, BEAVERUSERS.EMAIL, BEAVERUSERS.FIREBASE_ID, BEAVERUSERS.USERNAME)
+                    .values(userRegisterDto.getEmail(), userRegisterDto.getFirebase_id(), userRegisterDto.getUsername())
+                    .returningResult(BEAVERUSERS.USERNAME)
+                    .fetchSingle().component1();
+
         } catch(DuplicateKeyException e) {
             // User with those details already exists
-            return false;
+            throw new UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
         }
-
     }
-
-
 }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
-public class NewTeamDto {
+public final class NewTeamDto {
     @NotBlank(message = "Missing 'teamName' attribute to generate a new team")
     @Size(min = 3, max = 50, message = "Team name must be 3 to 50 characters")
     private String teamName;

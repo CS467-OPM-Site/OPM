@@ -1,4 +1,4 @@
-package org.opm.busybeaver.exceptions.service;
+package org.opm.busybeaver.exceptions.Users;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

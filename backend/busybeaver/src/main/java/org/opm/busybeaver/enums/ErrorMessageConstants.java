@@ -12,6 +12,7 @@ public enum ErrorMessageConstants {
     INVALID_HTTP_REQUEST("Invalid HTTP request made"),
     TEAM_ALREADY_EXISTS_FOR_USER("You have already made a team with this name"),
     USER_ALREADY_IN_TEAM("User already exists in this team"),
+    PROJECT_ALREADY_EXISTS_FOR_TEAM("Project name for that team already exists, please choose another project name"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

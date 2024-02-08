@@ -1,20 +1,16 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.jooq.Record2;
 import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
 import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
-import org.opm.busybeaver.exceptions.service.UserAlreadyInTeamException;
-import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
+import org.opm.busybeaver.exceptions.Teams.TeamAlreadyExistsForUserException;
+import org.opm.busybeaver.exceptions.Teams.UserAlreadyInTeamException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;

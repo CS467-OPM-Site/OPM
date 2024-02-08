@@ -7,7 +7,7 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
+import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
 import org.opm.busybeaver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

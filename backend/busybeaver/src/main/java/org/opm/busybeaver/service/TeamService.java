@@ -90,7 +90,7 @@ public class TeamService {
         return membersInTeamDto;
     }
 
-    public HomePageFilterProjectsByTeamDto getProjectsAssociatedWithTeam(
+    public ProjectsByTeamDto getProjectsAssociatedWithTeam(
             UserDto userDto,
             Integer teamID,
             String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
@@ -100,10 +100,10 @@ public class TeamService {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
-        List<HomePageFilterProjectByTeamDto> homePageFilterProjectByTeamDtos =
+        List<ProjectByTeamDto> homePageFilterProjectByTeamDtos =
                 teamRepository.getAllProjectsAssociatedWithTeam(beaverusersRecord.getUserId(), teamID);
 
-        HomePageFilterProjectsByTeamDto homePageFilterProjectsByTeamDto = new HomePageFilterProjectsByTeamDto(
+        ProjectsByTeamDto homePageFilterProjectsByTeamDto = new ProjectsByTeamDto(
                 homePageFilterProjectByTeamDtos.getFirst().getTeamName(),
                 homePageFilterProjectByTeamDtos.getFirst().getTeamID(),
                 homePageFilterProjectByTeamDtos

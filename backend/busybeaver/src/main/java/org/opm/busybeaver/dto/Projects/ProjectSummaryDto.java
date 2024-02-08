@@ -1,45 +1,37 @@
-package org.opm.busybeaver.dto;
+package org.opm.busybeaver.dto.Projects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
-public class HomePageFilterProjectByTeamDto {
-
-    @JsonIgnore
-    private final String teamName;
-    @JsonIgnore
-    private final Integer teamID;
+public class ProjectSummaryDto {
     private final String projectName;
     private final Integer projectID;
     private final LocalDateTime lastUpdated;
     private String projectLocation;
+    private final TeamSummaryInProjectSummaryDto team;
 
-    @ConstructorProperties({"team_name", "team_id", "project_name", "project_id", "last_updated"})
-    public HomePageFilterProjectByTeamDto(String teamName, Integer teamID, String projectName, Integer projectID, LocalDateTime lastUpdated) {
-        this.teamName = teamName;
-        this.teamID = teamID;
+    @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
+    public ProjectSummaryDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
         this.projectName = projectName;
         this.projectID = projectID;
         this.lastUpdated = lastUpdated;
+        this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
     }
 
-    public void setProjectLocation(String contextPath) {
+    public void setProjectAndTeamLocation(String contextPath) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.projectLocation = PATH +
                 BusyBeavPaths.PROJECTS.getValue() +
                 "/" + getProjectID();
+
+        this.team.setTeamLocation(PATH);
     }
 
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public Integer getTeamID() {
-        return teamID;
+    public TeamSummaryInProjectSummaryDto getTeam() {
+        return team;
     }
 
     public String getProjectName() {
@@ -50,11 +42,11 @@ public class HomePageFilterProjectByTeamDto {
         return projectID;
     }
 
-    public LocalDateTime getLastUpdated() {
-        return lastUpdated;
-    }
-
     public String getProjectLocation() {
         return projectLocation;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
     }
 }

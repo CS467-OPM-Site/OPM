@@ -1,8 +1,8 @@
 package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.opm.busybeaver.dto.HomePageProjectsDto;
-import org.opm.busybeaver.dto.UserDto;
+import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.service.FirebaseAuthenticationService;
@@ -25,7 +25,7 @@ public class ProjectController {
     public ProjectController(ProjectService projectService) { this.projectService = projectService; }
 
     @GetMapping(BusyBeavPaths.Constants.PROJECTS)
-    public HomePageProjectsDto getUserHomePageProjects(HttpServletRequest request) {
+    public ProjectsSummariesDto getUserHomePageProjects(HttpServletRequest request) {
         UserDto userDto = parseToken(
                 (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
         );

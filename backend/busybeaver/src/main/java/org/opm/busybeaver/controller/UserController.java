@@ -2,9 +2,9 @@ package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.opm.busybeaver.dto.AuthenticatedUser;
-import org.opm.busybeaver.dto.UserDto;
-import org.opm.busybeaver.dto.UserRegisterDto;
+import org.opm.busybeaver.dto.Users.AuthenticatedUser;
+import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;

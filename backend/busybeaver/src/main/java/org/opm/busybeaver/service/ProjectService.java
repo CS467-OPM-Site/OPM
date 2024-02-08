@@ -1,8 +1,8 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.HomePageProjectDto;
-import org.opm.busybeaver.dto.HomePageProjectsDto;
-import org.opm.busybeaver.dto.UserDto;
+import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
+import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.ProjectRepository;
@@ -29,14 +29,14 @@ public class ProjectService {
         this.userRepository = userRepository;
     }
 
-    public HomePageProjectsDto getUserHomePageProjects(UserDto userDto, String contextPath) throws UserDoesNotExistException {
+    public ProjectsSummariesDto getUserHomePageProjects(UserDto userDto, String contextPath) throws UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
 
-        List<HomePageProjectDto> projects =
+        List<ProjectSummaryDto> projects =
                 projectRepository.getUserHomePageProjects(beaverusersRecord.getUserId());
 
         projects.forEach( project -> project.setProjectAndTeamLocation(contextPath));
 
-        return new HomePageProjectsDto(projects);
+        return new ProjectsSummariesDto(projects);
     }
 }

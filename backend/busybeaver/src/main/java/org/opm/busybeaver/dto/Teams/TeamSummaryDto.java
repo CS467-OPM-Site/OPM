@@ -1,11 +1,11 @@
-package org.opm.busybeaver.dto;
+package org.opm.busybeaver.dto.Teams;
 
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
 import java.util.Objects;
 
-public class HomePageTeamDto {
+public class TeamSummaryDto {
     private final Integer teamID;
     private final String teamName;
     private String teamLocation;
@@ -13,7 +13,7 @@ public class HomePageTeamDto {
     private final Integer teamCreatorId;
 
     @ConstructorProperties({"team_id", "team_name", "team_creator"})
-    public HomePageTeamDto(Integer teamID, String teamName, Integer teamCreatorId) {
+    public TeamSummaryDto(Integer teamID, String teamName, Integer teamCreatorId) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.teamCreatorId = teamCreatorId;

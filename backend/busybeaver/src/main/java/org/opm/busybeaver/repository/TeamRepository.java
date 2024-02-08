@@ -1,8 +1,8 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
-import org.opm.busybeaver.dto.HomePageFilterProjectByTeamDto;
-import org.opm.busybeaver.dto.HomePageTeamDto;
+import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
+import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -19,7 +19,7 @@ public class TeamRepository {
     @Autowired
     public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
 
-    public List<HomePageTeamDto> getUserHomePageTeams(Integer userId) {
+    public List<TeamSummaryDto> getUserHomePageTeams(Integer userId) {
         // TO model:
         // SELECT Teams.team_id, Teams.team_name, Teams.team_creator
         // FROM Teams
@@ -37,7 +37,7 @@ public class TeamRepository {
                                         .where(TEAMUSERS.USER_ID.eq(userId))
                         )
                 )
-                .fetchInto(HomePageTeamDto.class);
+                .fetchInto(TeamSummaryDto.class);
     }
 
     public Boolean isUserInTeamAndDoesTeamExist(Integer userID, Integer teamID) {
@@ -53,7 +53,7 @@ public class TeamRepository {
                     );
     }
 
-    public List<HomePageFilterProjectByTeamDto> getAllProjectsAssociatedWithTeam(Integer userID, Integer teamID) {
+    public List<ProjectByTeamDto> getAllProjectsAssociatedWithTeam(Integer userID, Integer teamID) {
         // SELECT Teams.team_name, Teams.team_id, Projects.project_name, Projects.project_id, Projects.last_updated
         // FROM Teams
         // LEFT JOIN Projects
@@ -73,6 +73,6 @@ public class TeamRepository {
                 .on(PROJECTS.PROJECT_ID.eq(PROJECTUSERS.PROJECT_ID))
                 .and(PROJECTUSERS.USER_ID.eq(userID))
                 .where(TEAMS.TEAM_ID.eq(teamID))
-                .fetchInto(HomePageFilterProjectByTeamDto.class);
+                .fetchInto(ProjectByTeamDto.class);
     }
 }

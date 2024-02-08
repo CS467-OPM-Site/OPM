@@ -1,6 +1,6 @@
 package org.opm.busybeaver.utils;
 
-import org.opm.busybeaver.dto.UserDto;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;

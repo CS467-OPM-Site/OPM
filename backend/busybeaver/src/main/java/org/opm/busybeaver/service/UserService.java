@@ -1,8 +1,8 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.AuthenticatedUser;
-import org.opm.busybeaver.dto.UserDto;
-import org.opm.busybeaver.dto.UserRegisterDto;
+import org.opm.busybeaver.dto.Users.AuthenticatedUser;
+import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;

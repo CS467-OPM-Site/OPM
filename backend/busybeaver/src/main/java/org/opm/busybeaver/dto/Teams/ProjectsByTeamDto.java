@@ -1,19 +1,19 @@
-package org.opm.busybeaver.dto;
+package org.opm.busybeaver.dto.Teams;
 
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.util.List;
 
-public class HomePageFilterProjectsByTeamDto {
+public class ProjectsByTeamDto {
     private final String teamName;
     private final Integer teamId;
-    private List<HomePageFilterProjectByTeamDto> projects;
+    private final List<ProjectByTeamDto> projects;
 
     private String teamLocation;
 
-    public HomePageFilterProjectsByTeamDto(
+    public ProjectsByTeamDto(
             String teamName, Integer teamId,
-            List<HomePageFilterProjectByTeamDto> projects) {
+            List<ProjectByTeamDto> projects) {
 
         this.teamName = teamName;
         this.teamId = teamId;
@@ -39,7 +39,7 @@ public class HomePageFilterProjectsByTeamDto {
         return teamId;
     }
 
-    public List<HomePageFilterProjectByTeamDto> getProjects() {
+    public List<ProjectByTeamDto> getProjects() {
         return projects;
     }
 

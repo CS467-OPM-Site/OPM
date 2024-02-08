@@ -1,8 +1,8 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
-import org.opm.busybeaver.dto.UserDto;
-import org.opm.busybeaver.dto.UserRegisterDto;
+import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;

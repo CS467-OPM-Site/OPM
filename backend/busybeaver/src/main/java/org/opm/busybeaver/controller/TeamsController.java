@@ -1,9 +1,9 @@
 package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.opm.busybeaver.dto.HomePageFilterProjectsByTeamDto;
-import org.opm.busybeaver.dto.HomePageTeamsDto;
-import org.opm.busybeaver.dto.UserDto;
+import org.opm.busybeaver.dto.Teams.ProjectsByTeamDto;
+import org.opm.busybeaver.dto.Teams.TeamsSummariesDto;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.service.FirebaseAuthenticationService;
@@ -26,7 +26,7 @@ public class TeamsController {
     public TeamsController(TeamService teamService) { this.teamService = teamService; }
 
     @GetMapping(BusyBeavPaths.Constants.TEAMS)
-    public HomePageTeamsDto getUserHomePageTeams(HttpServletRequest request) {
+    public TeamsSummariesDto getUserHomePageTeams(HttpServletRequest request) {
         UserDto userDto = parseToken(
                 (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
         );
@@ -35,7 +35,7 @@ public class TeamsController {
     }
 
     @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")
-    public HomePageFilterProjectsByTeamDto getProjectsAssociatedWithTeam(HttpServletRequest request, @PathVariable Integer teamID) {
+    public ProjectsByTeamDto getProjectsAssociatedWithTeam(HttpServletRequest request, @PathVariable Integer teamID) {
         UserDto userDto = parseToken(
                 (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
         );

@@ -1,7 +1,7 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
-import org.opm.busybeaver.dto.HomePageProjectDto;
+import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -20,7 +20,7 @@ public class ProjectRepository {
     @Autowired
     public ProjectRepository(DSLContext dslContext) { this.create = dslContext; }
 
-    public List<HomePageProjectDto> getUserHomePageProjects(Integer userId) {
+    public List<ProjectSummaryDto> getUserHomePageProjects(Integer userId) {
         // TO model:
         // SELECT Projects.project_name, Projects.project_id, Projects.team_id, Teams.team_name
         // FROM Projects
@@ -45,7 +45,7 @@ public class ProjectRepository {
                         )
                 )
                 .orderBy(PROJECTS.LAST_UPDATED.desc())
-                .fetchInto(HomePageProjectDto.class);
+                .fetchInto(ProjectSummaryDto.class);
 
     }
 }

@@ -1,6 +1,10 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.*;
+import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
+import org.opm.busybeaver.dto.Teams.ProjectsByTeamDto;
+import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
+import org.opm.busybeaver.dto.Teams.TeamsSummariesDto;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
@@ -28,10 +32,10 @@ public class TeamService {
         this.userRepository = userRepository;
     }
 
-    public HomePageTeamsDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {
+    public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
 
-        List<HomePageTeamDto> teams =
+        List<TeamSummaryDto> teams =
                 teamRepository.getUserHomePageTeams(beaverusersRecord.getUserId());
 
         teams.forEach( team -> {
@@ -39,10 +43,10 @@ public class TeamService {
             team.setIsTeamCreator(beaverusersRecord.getUserId());
         });
 
-        return new HomePageTeamsDto(teams);
+        return new TeamsSummariesDto(teams);
     }
 
-    public HomePageFilterProjectsByTeamDto getProjectsAssociatedWithTeam(
+    public ProjectsByTeamDto getProjectsAssociatedWithTeam(
             UserDto userDto,
             Integer teamID,
             String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
@@ -52,10 +56,10 @@ public class TeamService {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
-        List<HomePageFilterProjectByTeamDto> homePageFilterProjectByTeamDtos =
+        List<ProjectByTeamDto> homePageFilterProjectByTeamDtos =
                 teamRepository.getAllProjectsAssociatedWithTeam(beaverusersRecord.getUserId(), teamID);
 
-        HomePageFilterProjectsByTeamDto homePageFilterProjectsByTeamDto = new HomePageFilterProjectsByTeamDto(
+        ProjectsByTeamDto homePageFilterProjectsByTeamDto = new ProjectsByTeamDto(
                 homePageFilterProjectByTeamDtos.getFirst().getTeamName(),
                 homePageFilterProjectByTeamDtos.getFirst().getTeamID(),
                 homePageFilterProjectByTeamDtos

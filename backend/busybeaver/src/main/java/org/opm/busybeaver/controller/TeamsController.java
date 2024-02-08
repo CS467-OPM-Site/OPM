@@ -1,6 +1,7 @@
 package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.opm.busybeaver.dto.Teams.MembersInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectsByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamsSummariesDto;
 import org.opm.busybeaver.dto.Users.UserDto;
@@ -41,5 +42,14 @@ public class TeamsController {
         );
 
         return teamService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
+    }
+
+    @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS)
+    public MembersInTeamDto getMembersInTeam(HttpServletRequest request, @PathVariable Integer teamID) {
+        UserDto userDto = parseToken(
+                (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
+        );
+
+        return teamService.getMembersInTeam(userDto, teamID, request.getContextPath());
     }
 }

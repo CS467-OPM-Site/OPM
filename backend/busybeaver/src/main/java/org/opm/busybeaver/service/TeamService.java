@@ -1,9 +1,6 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
-import org.opm.busybeaver.dto.Teams.ProjectsByTeamDto;
-import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
-import org.opm.busybeaver.dto.Teams.TeamsSummariesDto;
+import org.opm.busybeaver.dto.Teams.*;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
@@ -68,5 +65,28 @@ public class TeamService {
         homePageFilterProjectsByTeamDto.setProjectAndTeamLocations(contextPath);
 
         return homePageFilterProjectsByTeamDto;
+    }
+
+    public MembersInTeamDto getMembersInTeam(
+            UserDto userDto,
+            Integer teamID,
+            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        List<MemberInTeamDto> memberInTeamDtos = teamRepository.getAllMembersInTeam(teamID);
+
+        MembersInTeamDto membersInTeamDto = new MembersInTeamDto(
+                memberInTeamDtos.getFirst().getTeamName(),
+                memberInTeamDtos.getFirst().getTeamID(),
+                memberInTeamDtos
+        );
+
+        membersInTeamDto.setTeamLocation(contextPath);
+
+        return membersInTeamDto;
     }
 }

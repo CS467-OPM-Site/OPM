@@ -1,6 +1,7 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
+import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +75,24 @@ public class TeamRepository {
                 .and(PROJECTUSERS.USER_ID.eq(userID))
                 .where(TEAMS.TEAM_ID.eq(teamID))
                 .fetchInto(ProjectByTeamDto.class);
+    }
+
+    public List<MemberInTeamDto> getAllMembersInTeam(Integer teamID) {
+        // SELECT Teams.team_name, Teams.team_id, Teams.team_creator, BeaverUsers.username, BeaverUsers.user_id
+        // FROM Teams
+        // JOIN TeamUsers
+        // ON TeamUsers.team_id = Teams.team_id
+        // JOIN BeaverUsers
+        // ON BeaverUsers.user_id = TeamUsers.user_id
+        // WHERE Teams.team_id = teamID;
+
+        return create.select(TEAMS.TEAM_NAME, TEAMS.TEAM_ID, TEAMS.TEAM_CREATOR, BEAVERUSERS.USERNAME, BEAVERUSERS.USER_ID)
+                .from(TEAMS)
+                .join(TEAMUSERS)
+                .on(TEAMUSERS.TEAM_ID.eq(TEAMS.TEAM_ID))
+                .join(BEAVERUSERS)
+                .on(BEAVERUSERS.USER_ID.eq(TEAMUSERS.USER_ID))
+                .where(TEAMS.TEAM_ID.eq(teamID))
+                .fetchInto(MemberInTeamDto.class);
     }
 }

@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.opm.busybeaver.utils.Utils.parseToken;
-
 @Component
 @CrossOrigin
 public class FirebaseAuthenticationController extends OncePerRequestFilter {

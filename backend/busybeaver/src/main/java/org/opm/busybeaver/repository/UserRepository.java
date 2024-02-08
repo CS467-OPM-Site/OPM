@@ -2,7 +2,6 @@ package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -32,10 +31,10 @@ public class UserRepository {
                 .fetchOne();
     }
 
-    public String registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
+    public String registerUser(UserDto userDto) throws UserAlreadyExistsException {
         try {
             return create.insertInto(BEAVERUSERS, BEAVERUSERS.EMAIL, BEAVERUSERS.FIREBASE_ID, BEAVERUSERS.USERNAME)
-                    .values(userRegisterDto.getEmail(), userRegisterDto.getFirebase_id(), userRegisterDto.getUsername())
+                    .values(userDto.getEmail(), userDto.getFirebase_id(), userDto.getUsername())
                     .returningResult(BEAVERUSERS.USERNAME)
                     .fetchSingle().component1();
 

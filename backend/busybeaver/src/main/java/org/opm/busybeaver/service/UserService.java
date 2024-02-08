@@ -2,7 +2,6 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
@@ -35,8 +34,8 @@ public class UserService {
         );
     }
 
-    public AuthenticatedUser registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
-        String newUsername = userRepository.registerUser(userRegisterDto);
+    public AuthenticatedUser registerUser(UserDto userDto) throws UserAlreadyExistsException {
+        String newUsername = userRepository.registerUser(userDto);
 
         return new AuthenticatedUser(
                 newUsername,

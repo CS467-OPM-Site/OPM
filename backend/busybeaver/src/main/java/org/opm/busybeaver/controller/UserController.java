@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.dto.Users.UserRegisterDto;
+import org.opm.busybeaver.dto.Users.UsernameRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
@@ -33,16 +33,14 @@ public class UserController {
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
     public AuthenticatedUser registerUser(
             HttpServletRequest request,
-            @Valid @RequestBody UserRegisterDto userRegisterDto
+            @Valid @RequestBody UsernameRegisterDto usernameRegisterDto
     ) throws UserAlreadyExistsException {
+        UserDto userDto = parseToken(
+                (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue())
+        );
 
-        FirebaseAuthenticationService firebaseAuthenticationService =
-                (FirebaseAuthenticationService) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
-
-        userRegisterDto.setEmail(firebaseAuthenticationService.getEmail());
-        userRegisterDto.setFirebase_id(firebaseAuthenticationService.getUid());
-
-        return userService.registerUser(userRegisterDto);
+        userDto.setUsername(usernameRegisterDto.username());
+        return userService.registerUser(userDto);
     }
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)

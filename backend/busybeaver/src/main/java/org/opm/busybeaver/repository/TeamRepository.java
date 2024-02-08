@@ -9,8 +9,12 @@ import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
 import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
+import org.opm.busybeaver.exceptions.service.UserAlreadyInTeamException;
+import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
+import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -124,5 +128,20 @@ public class TeamRepository {
                 .on(BEAVERUSERS.USER_ID.eq(TEAMUSERS.USER_ID))
                 .where(TEAMS.TEAM_ID.eq(teamID))
                 .fetchInto(MemberInTeamDto.class);
+    }
+
+    public void addMemberToTeam(BeaverusersRecord userToAdd, Integer teamID) throws UserAlreadyInTeamException {
+        // INSERT INTO TeamUsers (user_id, team_id, user_team_role)
+        // VALUES (
+        //      teamID,
+        //      userToAdd.getUserId()
+        // );
+        try {
+            create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID)
+                    .values(teamID, userToAdd.getUserId())
+                    .execute();
+        } catch (DuplicateKeyException e) {
+            throw new UserAlreadyInTeamException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
     }
 }

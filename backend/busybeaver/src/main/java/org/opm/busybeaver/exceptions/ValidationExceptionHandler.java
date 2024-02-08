@@ -2,10 +2,7 @@ package org.opm.busybeaver.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
-import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
-import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
-import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
+import org.opm.busybeaver.exceptions.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -91,6 +88,17 @@ public class ValidationExceptionHandler {
         return new ResponseEntity<>(
                 generateResponse(
                         ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(UserAlreadyInTeamException.class)
+    public ResponseEntity<?> userAlreadyInTeam() {
+        return new ResponseEntity<>(
+                generateResponse(
+                        ErrorMessageConstants.USER_ALREADY_IN_TEAM.getValue(),
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 HttpStatus.BAD_REQUEST

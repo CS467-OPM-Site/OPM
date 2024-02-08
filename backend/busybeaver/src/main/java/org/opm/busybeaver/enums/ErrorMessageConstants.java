@@ -11,6 +11,7 @@ public enum ErrorMessageConstants {
     REQUIRED_REQUEST_BODY_IS_MISSING("Required request body is missing"),
     INVALID_HTTP_REQUEST("Invalid HTTP request made"),
     TEAM_ALREADY_EXISTS_FOR_USER("You have already made a team with this name"),
+    USER_ALREADY_IN_TEAM("User already exists in this team"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

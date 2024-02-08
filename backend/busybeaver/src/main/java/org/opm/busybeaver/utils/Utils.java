@@ -24,4 +24,12 @@ public final class Utils {
         return beaverusersRecord;
     }
 
+     public static BeaverusersRecord verifyUserExistsAndReturn(String username, UserRepository userRepository) {
+         BeaverusersRecord beaverusersRecord = userRepository.getUserByUsername(username);
+         if (beaverusersRecord == null) {
+             throw new UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+         }
+         return beaverusersRecord;
+     }
+
 }

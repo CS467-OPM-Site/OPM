@@ -2,8 +2,11 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Teams.*;
 import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.dto.Users.UsernameDto;
+import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
+import org.opm.busybeaver.exceptions.service.UserAlreadyInTeamException;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;

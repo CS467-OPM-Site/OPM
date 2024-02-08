@@ -3,15 +3,18 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Teams.MembersInTeamDto;
 import org.opm.busybeaver.dto.Teams.NewTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectsByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamsSummariesDto;
 import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -60,6 +63,26 @@ public class TeamsController {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return teamService.getMembersInTeam(userDto, teamID, request.getContextPath());
+    }
+
+    @PostMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS)
+    public SmallJsonResponse addMemberToTeam(
+            HttpServletRequest request,
+            @PathVariable Integer teamID,
+            @Valid @RequestBody UsernameDto usernameToAdd,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
+            HttpServletResponse response
+    ) {
+        String newUserInTeamLocation = teamService.addMemberToTeam(userDto, teamID, usernameToAdd, request.getContextPath());
+        response.setHeader(
+                BusyBeavConstants.LOCATION.getValue(),
+                newUserInTeamLocation
+                );
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                BusyBeavConstants.USER_ADDED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

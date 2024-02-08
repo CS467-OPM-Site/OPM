@@ -31,6 +31,13 @@ public class UserRepository {
                 .fetchOne();
     }
 
+    public BeaverusersRecord getUserByUsername(String username) {
+        return create
+                .selectFrom(BEAVERUSERS)
+                .where(BEAVERUSERS.USERNAME.eq(username))
+                .fetchOne();
+    }
+
     public String registerUser(UserDto userDto) throws UserAlreadyExistsException {
         try {
             return create.insertInto(BEAVERUSERS, BEAVERUSERS.EMAIL, BEAVERUSERS.FIREBASE_ID, BEAVERUSERS.USERNAME)

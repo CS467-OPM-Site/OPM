@@ -1,9 +1,9 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.HomePageTeamDto;
-import org.opm.busybeaver.dto.HomePageTeamsDto;
-import org.opm.busybeaver.dto.UserDto;
+import org.opm.busybeaver.dto.*;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
+import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.TeamRepository;
 import org.opm.busybeaver.repository.UserRepository;
@@ -40,5 +40,29 @@ public class TeamService {
         });
 
         return new HomePageTeamsDto(teams);
+    }
+
+    public HomePageFilterProjectsByTeamDto getProjectsAssociatedWithTeam(
+            UserDto userDto,
+            Integer teamID,
+            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        List<HomePageFilterProjectByTeamDto> homePageFilterProjectByTeamDtos =
+                teamRepository.getAllProjectsAssociatedWithTeam(beaverusersRecord.getUserId(), teamID);
+
+        HomePageFilterProjectsByTeamDto homePageFilterProjectsByTeamDto = new HomePageFilterProjectsByTeamDto(
+                homePageFilterProjectByTeamDtos.getFirst().getTeamName(),
+                homePageFilterProjectByTeamDtos.getFirst().getTeamID(),
+                homePageFilterProjectByTeamDtos
+        );
+
+        homePageFilterProjectsByTeamDto.setProjectAndTeamLocations(contextPath);
+
+        return homePageFilterProjectsByTeamDto;
     }
 }

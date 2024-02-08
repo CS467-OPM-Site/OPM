@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.opm.busybeaver.utils.Utils.parseToken;
+
 @Component
 @CrossOrigin
 public class FirebaseAuthenticationController extends OncePerRequestFilter {
@@ -59,7 +61,7 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
         FirebaseAuthenticationService authentication = new FirebaseAuthenticationService(authorizationHeader);
         if (authentication.isAuthenticated()) {
             // Store authenticated user details for user in Controllers
-            request.setAttribute(BusyBeavConstants.USER_KEY_VAL.getValue(), authentication);
+            request.setAttribute(BusyBeavConstants.USER_KEY_VAL.getValue(), parseToken(authentication));
             filterChain.doFilter(request, response);
             return;
         }

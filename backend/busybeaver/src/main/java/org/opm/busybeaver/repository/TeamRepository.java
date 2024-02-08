@@ -1,10 +1,16 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Record2;
 import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
+import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +25,22 @@ public class TeamRepository {
 
     @Autowired
     public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
+
+    public TeamsRecord makeNewTeam(Integer userID, String teamName) throws TeamAlreadyExistsForUserException {
+        try {
+            TeamsRecord newTeamRecord = create.insertInto(TEAMS, TEAMS.TEAM_NAME, TEAMS.TEAM_CREATOR)
+                    .values(teamName, userID)
+                    .returningResult(TEAMS.TEAM_NAME, TEAMS.TEAM_ID, TEAMS.TEAM_CREATOR)
+                    .fetchSingleInto(TeamsRecord.class);
+
+            if (newTeamRecord == null) throw new TeamAlreadyExistsForUserException(ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+
+            return newTeamRecord;
+
+        } catch (DuplicateKeyException e) {
+            throw new TeamAlreadyExistsForUserException(ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+        }
+    }
 
     public List<TeamSummaryDto> getUserHomePageTeams(Integer userId) {
         // TO model:

@@ -3,9 +3,11 @@ package org.opm.busybeaver.service;
 import org.opm.busybeaver.dto.Teams.*;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.service.TeamAlreadyExistsForUserException;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
+import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.opm.busybeaver.repository.TeamRepository;
 import org.opm.busybeaver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,20 @@ public class TeamService {
         this.userRepository = userRepository;
     }
 
+    public NewTeamDto makeNewTeam(UserDto userDto, NewTeamDto newTeamDto, String contextPath)
+            throws TeamAlreadyExistsForUserException, UserDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
+
+        TeamsRecord newTeamRecord = teamRepository.makeNewTeam(beaverusersRecord.getUserId(), newTeamDto.getTeamName());
+
+        newTeamDto.setTeamCreator(newTeamRecord.getTeamCreator());
+        newTeamDto.setTeamID(newTeamRecord.getTeamId());
+        newTeamDto.setTeamLocation(contextPath);
+        newTeamDto.setTeamName(newTeamRecord.getTeamName());
+
+        return newTeamDto;
+    }
+
     public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
 
@@ -46,7 +62,7 @@ public class TeamService {
     public ProjectsByTeamDto getProjectsAssociatedWithTeam(
             UserDto userDto,
             Integer teamID,
-            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
@@ -70,7 +86,7 @@ public class TeamService {
     public MembersInTeamDto getMembersInTeam(
             UserDto userDto,
             Integer teamID,
-            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = verifyUserExistsAndReturn(userDto, userRepository);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {

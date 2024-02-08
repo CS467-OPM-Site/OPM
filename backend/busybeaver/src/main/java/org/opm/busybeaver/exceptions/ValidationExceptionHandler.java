@@ -7,6 +7,7 @@ import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class ValidationExceptionHandler {
@@ -29,6 +31,25 @@ public class ValidationExceptionHandler {
         result.put(ErrorMessageConstants.CODE.getValue(), HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> invalidHttpMessage(HttpMessageNotReadableException err, HttpServletRequest request) {
+
+        if (err.getMessage().contains(ErrorMessageConstants.REQUIRED_REQUEST_BODY_IS_MISSING.getValue())) {
+            return new ResponseEntity<>(
+                    generateResponse(
+                            ErrorMessageConstants.REQUIRED_REQUEST_BODY_IS_MISSING.getValue(),
+                            HttpStatus.BAD_REQUEST.value()
+                    ), HttpStatus.BAD_REQUEST
+            );
+        }
+
+        return new ResponseEntity<>(
+                generateResponse(
+                        ErrorMessageConstants.INVALID_HTTP_REQUEST.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

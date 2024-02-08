@@ -78,7 +78,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | **Includes a URI to the user resource in the Location Header** |
+> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | Successfully registered user. |
 > | `400`         | `application/json`                | `{"code":400,"message":"User already exists with those details"}` | User details already exist in database. |
 > | `400`         | `application/json`                | `{"code":400,"message":"Username is required"}` | Username field required. |
 > | `400`         | `application/json`                | `{"code":400,"message":"Username must be 3 to 100 characters"}` | Username length requirement. |

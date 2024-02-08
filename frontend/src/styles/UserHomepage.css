@@ -1,5 +1,3 @@
-/* Styles for the User Homepage */
-
 .user-homepage-container {
   display: flex;
   flex-direction: column;
@@ -13,24 +11,51 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #081c15; /* Darker green for contrast */
-  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #2d6a4f; /* Light green background */
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 20px; /* Space between header and content */
+}
+
+.user-homepage-buttons {
+  display: flex;
+  gap: 10px; /* Space between elements */
+}
+
+.user-homepage-buttons input[type="text"] {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #a5becc; /* Lighter background for input */
+  color: #333;
+}
+
+.user-homepage-buttons input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #81b29a; /* Focus state */
 }
 
 .user-homepage-buttons button {
-  padding: 10px 15px;
-  margin-right: 10px;
+  padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  background-color: #81b29a; /* Lighter green for buttons */
+  background-color: #81b29a;
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
 }
 
 .user-homepage-buttons button:hover {
-  background-color: #679267; /* Slightly darker green on hover */
+  background-color: #679267;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.error-message {
+  color: #ff6b6b;
+  padding-left: 15px;
 }
 
 .content-container {
@@ -41,29 +66,29 @@
 
 .team-list {
   flex: 1;
-  background-color: #2d6a4f; /* Slightly lighter green for sidebar */
+  background-color: #2d6a4f;
   padding: 20px;
   border-radius: 8px;
   color: white;
 }
 
 .team-card {
-  background-color: #2d6a4f; /* Green background for team cards */
+  background-color: #2d6a4f;
   padding: 20px;
   border-radius: 8px;
   color: white;
   margin-bottom: 10px;
-  transition: all 0.3s ease; /* Smooth transition for expanding effect */
-  position: relative; /* Needed for absolute positioning of the close button */
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .team-card.selected .team-details-container {
-  display: flex; /* Display the grey box with team details when selected */
+  display: flex;
 }
 
 .team-card .team-details-container {
-  display: none; /* Hide the grey box by default */
-  background-color: #d1d1d1; /* Flint grey background */
+  display: none;
+  background-color: #d1d1d1;
   padding: 10px;
   border-radius: 8px;
   margin-top: 10px;
@@ -77,16 +102,16 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  background-color: #81b29a; /* Lighter green for buttons */
+  background-color: #81b29a;
   color: white;
 }
 
 .team-button:hover {
-  background-color: #679267; /* Slightly darker green on hover */
+  background-color: #679267;
 }
 
 .close-button {
-  display: none; /* Hide by default */
+  display: none;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -95,18 +120,18 @@
   border-radius: 50%;
   cursor: pointer;
   font-weight: bold;
-  background-color: #e74c3c; /* Red color for close button */
+  background-color: #e74c3c;
   color: white;
   font-size: 16px;
-  z-index: 2; /* Ensure it's above other elements */
+  z-index: 2;
 }
 
 .close-button:hover {
-  background-color: #d63031; /* Slightly darker red on hover */
+  background-color: #d63031;
 }
 
 .team-card.selected .close-button {
-  display: block; /* Show only when the team is selected */
+  display: block;
 }
 
 .input-error {
@@ -118,7 +143,6 @@
   margin-top: 8px;
 }
 
-/* Additional styling for team actions */
 .team-actions button, .team-button, .delete-button {
   font-size: 1rem;
   font-weight: 600;
@@ -133,18 +157,58 @@
   gap: 10px;
 }
 
-/* Additional styling for team members list */
 .team-members-list {
   margin-bottom: 10px;
 }
 
-/* Styling for project list */
 .project-list {
   flex: 3;
-  background-color: #2d6a4f; /* Same green as sidebar for consistency */
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-card {
+  background-color: #81b29a;
+  padding: 15px;
   border-radius: 8px;
+  margin-bottom: 10px;
   color: white;
 }
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.project-card h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.add-project-input {
+  padding: 10px;
+  margin-right: 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+}
+
+.add-project-button {
+  padding: 10px 20px;
+  background-color: #81b29a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-project-button:hover {
+  background-color: #679267;
+}
+
+/* Additional styles for the form or other interactive elements can go here */
 
 /* Add more styling as needed */

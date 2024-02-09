@@ -14,8 +14,8 @@ load_dotenv()
 database_url = os.getenv('DATABASE_URL')
 
 # File should be in same directory as python script
-CREATION_SQL_FILE = "database\RecreateOPMDatabase.sql"
-MOCKDATA_SQL_FILE = "database\MockDataOPMDatabase.sql"
+CREATION_SQL_FILE = "RecreateOPMDatabase.sql"
+MOCKDATA_SQL_FILE = "MockDataOPMDatabase.sql"
 
 
 # create the database using OPMdatabase.sql

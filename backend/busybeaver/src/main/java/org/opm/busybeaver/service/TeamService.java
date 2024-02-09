@@ -225,7 +225,8 @@ public class TeamService {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
-        if (!teamRepository.isUserInTeamAndDoesTeamExist(userIDtoDelete, teamID)) {
+        // Check if user to delete is in team, but short circuit if user to delete is also the requesting user
+        if (!beaverusersRecord.getUserId().equals(userIDtoDelete) && !teamRepository.isUserInTeamAndDoesTeamExist(userIDtoDelete, teamID)) {
             throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 

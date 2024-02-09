@@ -4,6 +4,13 @@
     align-items: center;
     padding: 20px;
     background-color: #1b4332; /* Dark green background */
+    color: #ffffff;
+  }
+
+  .username-setup-container img {
+    width: 150px;
+    height: auto;
+    margin-right: 0px;
   }
   
   .username-setup-form {

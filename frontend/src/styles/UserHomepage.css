@@ -18,6 +18,14 @@
   margin-bottom: 20px; /* Space between header and content */
 }
 
+
+.user-homepage-header img {
+  width: 150px;
+  height: auto;
+  margin-right: 0px;
+}
+
+
 .user-homepage-buttons {
   display: flex;
   gap: 10px; /* Space between elements */
@@ -163,11 +171,15 @@
 
 .project-list {
   flex: 3;
+  background-color: #2d6a4f;
   padding: 20px;
+  border-radius: 8px;
+  color: white;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 
 .project-card {
   background-color: #81b29a;
@@ -178,14 +190,20 @@
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .project-card h3 {
   margin: 0;
-  color: #333;
+  color: #ffffff;
   font-size: 1.25rem;
+}
+
+.project-header {
+  color: white;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .add-project-input {
@@ -208,7 +226,3 @@
 .add-project-button:hover {
   background-color: #679267;
 }
-
-/* Additional styles for the form or other interactive elements can go here */
-
-/* Add more styling as needed */

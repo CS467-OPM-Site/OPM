@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddProjectForm from './AddProjectForm';
 import '../styles/UserHomepage.css';
+import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
+  // This is mock data that we will pull in from our API, used to show UI components
   const [teams, setTeams] = useState([
     { teamID: 1, teamName: 'Team Name 1', isTeamCreator: true, members: ['creator'] },
     { teamID: 2, teamName: 'Team Name 2', isTeamCreator: true, members: ['creator'] },
@@ -85,13 +87,23 @@ const UserHomepage = () => {
   };
 
   const renderProjects = () => {
-    return projects.map(project => (
-      <div key={project.id} className="project-card">
-        <h3>{project.name}</h3>
-        {/* Additional project details can be added here */}
-      </div>
-    ));
+    return (
+      <>
+        <div className="project-list-header">
+          <h2 className="project-header">Projects</h2>
+          {/* If you want to add more details or a button here similar to the team section, add them here */}
+        </div>
+        {projects.map(project => (
+          <div key={project.id} className="project-card">
+            <h3>{project.name}</h3>
+            {/* Additional project details can be added here */}
+          </div>
+        ))}
+        <AddProjectForm onAddProject={handleAddProject} />
+      </>
+    );
   };
+  
 
   const renderTeamMembers = team => {
     return team.members.map((member, index) => (
@@ -130,6 +142,9 @@ const UserHomepage = () => {
   return (
     <div className="user-homepage-container">
       <header className="user-homepage-header">
+        <div className="busy-beaver-logo">
+          <img src={BusyBeaverNoBG} alt="Busy Beaver" />
+        </div>
         <div className="user-homepage-header-card">
           <h1>User Homepage</h1>
         </div>
@@ -142,7 +157,6 @@ const UserHomepage = () => {
             className={error ? "input-error" : ""}
           />
           <button onClick={handleAddTeam}>Add Team</button>
-          <button onClick={() => { /* Logic to show AddProjectForm */ }}>Add Project</button>
           <button onClick={handleFilterTeam}>Team Filter</button>
           <button onClick={handleLogout}>Logout</button>
           {error && <div className="error-message">{error}</div>}
@@ -154,10 +168,7 @@ const UserHomepage = () => {
           {renderTeams()}
         </aside>
         <main className="project-list">
-          <h2>Projects</h2>
           {renderProjects()}
-          {/* You might want to use a modal or another approach to show the form */}
-          <AddProjectForm onAddProject={handleAddProject} />
         </main>
       </div>
     </div>

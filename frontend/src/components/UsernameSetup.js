@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/UsernameSetup.css'; 
+import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
 const UsernameSetup = () => {
     const [username, setUsername] = useState('');
@@ -47,6 +48,8 @@ const UsernameSetup = () => {
   
     return (
         <div className="username-setup-container">
+          <h1>Welcome to BusyBeaver</h1>
+          <img src={BusyBeaverNoBG} alt="Busy Beaver" />
           <form className="username-setup-form" onSubmit={handleSubmit}>
             {/* If you have an error state, display error messages here */}
             <input

@@ -58,7 +58,7 @@ public class TeamRepository {
         // WHERE Teams.team_id IN (
         //      SELECT TeamUsers.team_id
         //      FROM TeamUsers
-        //      WHERE TeamUsers.user_id = 1
+        //      WHERE TeamUsers.user_id = userId
         //      );
         return create
                 .select(TEAMS.TEAM_ID, TEAMS.TEAM_NAME, TEAMS.TEAM_CREATOR)
@@ -83,6 +83,28 @@ public class TeamRepository {
                         .where(TEAMUSERS.TEAM_ID.eq(teamID))
                         .and(TEAMUSERS.USER_ID.eq(userID))
                     );
+    }
+
+    public TeamsRecord getSingleTeam(Integer teamID) {
+        return create.selectFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).fetchOne();
+    }
+
+    public void deleteSingleTeam(Integer teamID) {
+        create.deleteFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).execute();
+    }
+
+    public Boolean doesTeamStillHaveMembers(Integer teamID) {
+        // SELECT COUNT(*)
+        // FROM TeamUsers
+        // WHERE TeamUsers.team_id = teamID
+        // LIMIT 1;
+        Integer memberCount = create
+                .selectCount()
+                .from(TEAMUSERS)
+                .where(TEAMUSERS.TEAM_ID.eq(teamID))
+                .fetchSingleInto(Integer.class);
+
+        return (memberCount > 1);
     }
 
     public List<ProjectByTeamDto> getAllProjectsAssociatedWithTeam(Integer userID, Integer teamID) {

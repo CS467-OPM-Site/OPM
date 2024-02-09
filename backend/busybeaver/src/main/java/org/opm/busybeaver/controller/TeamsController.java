@@ -12,6 +12,7 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,19 @@ public class TeamsController {
         NewTeamDto newTeam = teamService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
         return newTeam;
+    }
+
+    @DeleteMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")
+    public SmallJsonResponse deleteTeam(
+            HttpServletRequest request,
+            @PathVariable Integer teamID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        teamService.deleteTeam(userDto, teamID);
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.TEAM_DELETED.getValue()
+        );
     }
 
     @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")

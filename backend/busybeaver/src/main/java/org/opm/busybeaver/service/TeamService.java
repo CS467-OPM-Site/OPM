@@ -5,10 +5,8 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.Teams.TeamAlreadyExistsForUserException;
-import org.opm.busybeaver.exceptions.Teams.UserAlreadyInTeamException;
+import org.opm.busybeaver.exceptions.Teams.*;
 import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
-import org.opm.busybeaver.exceptions.Teams.UserNotInTeamOrTeamDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.opm.busybeaver.repository.TeamRepository;
@@ -45,6 +43,30 @@ public class TeamService {
         newTeamDto.setTeamName(newTeamRecord.getTeamName());
 
         return newTeamDto;
+    }
+
+    public void deleteTeam(UserDto userDto, Integer teamID)
+            throws TeamDoesNotExistException,
+            UserNotTeamCreatorException,
+            TeamStillHasMembersException,
+            UserDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
+
+        TeamsRecord teamToDelete = teamRepository.getSingleTeam(teamID);
+
+        if (teamToDelete == null) {
+            throw new TeamDoesNotExistException(ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue());
+        }
+
+        if (!teamToDelete.getTeamCreator().equals(beaverusersRecord.getUserId())) {
+            throw new UserNotTeamCreatorException(ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue());
+        }
+
+        if (teamRepository.doesTeamStillHaveMembers(teamID)) {
+            throw new TeamStillHasMembersException(ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+        }
+
+        teamRepository.deleteSingleTeam(teamID);
     }
 
     public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {

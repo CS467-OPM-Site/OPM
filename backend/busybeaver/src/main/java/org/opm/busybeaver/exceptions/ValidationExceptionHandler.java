@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
 import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
+import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -25,7 +26,6 @@ public class ValidationExceptionHandler {
 
         Map<String, Object> result = new HashMap<>();
         result.put(ErrorMessageConstants.MESSAGE.getValue(), errorUnique);
-
         result.put(ErrorMessageConstants.CODE.getValue(), HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -39,7 +39,7 @@ public class ValidationExceptionHandler {
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 HttpStatus.BAD_REQUEST
-);
+        );
     }
 
     @ExceptionHandler(UserDoesNotExistException.class)
@@ -49,7 +49,18 @@ public class ValidationExceptionHandler {
                         ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue(),
                         HttpStatus.NOT_FOUND.value()
                 ),
-                HttpStatus.BAD_REQUEST
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(UserNotInTeamOrTeamDoesNotExistException.class)
+    public ResponseEntity<?> userNotInTeam() {
+        return new ResponseEntity<>(
+                generateResponse(
+                        ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue(),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                HttpStatus.NOT_FOUND
         );
     }
 
@@ -60,7 +71,6 @@ public class ValidationExceptionHandler {
 
     private HashMap<String, Object> generateResponse(String message, Integer errorCode) {
         HashMap<String, Object> result = new HashMap<>();
-
         result.put(ErrorMessageConstants.MESSAGE.getValue(), message);
         result.put(ErrorMessageConstants.CODE.getValue(), errorCode);
 

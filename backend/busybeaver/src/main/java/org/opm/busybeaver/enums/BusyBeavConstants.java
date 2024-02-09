@@ -17,4 +17,5 @@ public enum BusyBeavConstants {
     public String getValue() {
         return value;
     }
+
 }

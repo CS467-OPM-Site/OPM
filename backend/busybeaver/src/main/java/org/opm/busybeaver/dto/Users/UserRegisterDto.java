@@ -1,4 +1,4 @@
-package org.opm.busybeaver.dto;
+package org.opm.busybeaver.dto.Users;
 
 import jakarta.validation.constraints.*;
 

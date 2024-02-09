@@ -75,4 +75,15 @@ public class TeamsExceptionHandler {
                 HttpStatus.FORBIDDEN
         );
     }
+
+    @ExceptionHandler(TeamCreatorCannotBeRemovedException.class)
+    public ResponseEntity<?> teamCreatorCannotBeRemoved() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

@@ -216,4 +216,23 @@ public class TeamService {
         return contextPath + BusyBeavPaths.V1.getValue() + BusyBeavPaths.TEAMS.getValue() +
                 "/" + teamID + BusyBeavPaths.MEMBERS.getValue() + "/" + userToAdd.getUserId();
     }
+
+    public void removeMemberFromTeam(UserDto userDto, Integer userIDtoDelete, Integer teamID)
+            throws UserDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(userIDtoDelete, teamID)) {
+            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
+
+        if (teamRepository.isUserCreatorOfTeam(userIDtoDelete, teamID)) {
+            throw new TeamCreatorCannotBeRemovedException(ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
+        }
+
+       teamRepository.deleteSingleTeamMember(userIDtoDelete, teamID);
+    }
 }

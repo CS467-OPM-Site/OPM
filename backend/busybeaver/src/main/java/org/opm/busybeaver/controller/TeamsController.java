@@ -50,7 +50,6 @@ public class TeamsController {
 
     @DeleteMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")
     public SmallJsonResponse deleteTeam(
-            HttpServletRequest request,
             @PathVariable Integer teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
@@ -95,8 +94,21 @@ public class TeamsController {
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
-                BusyBeavConstants.USER_ADDED.getValue()
+                SuccessMessageConstants.USER_ADDED.getValue()
         );
+    }
+
+    @DeleteMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS + "/{userID}")
+    public SmallJsonResponse deleteMemberFromTeam(
+            @PathVariable Integer userID,
+            @PathVariable Integer teamID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+       teamService.removeMemberFromTeam(userDto, userID, teamID);
+       return new SmallJsonResponse(
+               HttpStatus.OK.value(),
+               SuccessMessageConstants.TEAM_MEMBER_REMOVED.getValue()
+       );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

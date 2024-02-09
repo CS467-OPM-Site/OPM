@@ -85,12 +85,27 @@ public class TeamRepository {
                     );
     }
 
+    public Boolean isUserCreatorOfTeam(Integer userID, Integer teamID) {
+        return create.fetchExists(
+                create.selectFrom(TEAMS)
+                        .where(TEAMS.TEAM_ID.eq(teamID))
+                        .and(TEAMS.TEAM_CREATOR.eq(userID))
+            );
+    }
+
     public TeamsRecord getSingleTeam(Integer teamID) {
         return create.selectFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).fetchOne();
     }
 
     public void deleteSingleTeam(Integer teamID) {
         create.deleteFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).execute();
+    }
+
+    public void deleteSingleTeamMember(Integer userID, Integer teamID) {
+        create.deleteFrom(TEAMUSERS)
+                .where(TEAMUSERS.TEAM_ID.eq(teamID))
+                .and(TEAMUSERS.USER_ID.eq(userID))
+                .execute();
     }
 
     public Boolean doesTeamStillHaveMembers(Integer teamID) {

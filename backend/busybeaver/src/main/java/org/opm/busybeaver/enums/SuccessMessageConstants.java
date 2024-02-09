@@ -1,7 +1,10 @@
 package org.opm.busybeaver.enums;
 
 public enum SuccessMessageConstants {
-    TEAM_DELETED("Team deleted");
+    SUCCESS("Success"),
+    USER_ADDED("User added"),
+    TEAM_DELETED("Team deleted"),
+    TEAM_MEMBER_REMOVED("User removed from team");
 
     private final String value;
 

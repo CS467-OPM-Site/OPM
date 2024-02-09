@@ -78,7 +78,7 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put(
-                BusyBeavConstants.ERROR_KEY_VAL.getValue(),
+                ErrorMessageConstants.ERROR_KEY_VAL.getValue(),
                 ErrorMessageConstants.MISSING_INVALID_HEADER_TOKEN.getValue()
         );
 

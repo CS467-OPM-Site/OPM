@@ -183,6 +183,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 >   "projectID": 1,
 >   "teamName": "team1",
 >   "teamID": 1,
+>   "projectLocation": "/api/v1/projects/1"
+>>>>>>> d9220c4 (Changes made to home page endpoints based on project specific get and delete team or teammember)
 > }
 > ```
 

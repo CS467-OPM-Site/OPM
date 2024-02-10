@@ -2,7 +2,9 @@ package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.dto.Users.UserRegisterDto;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
+import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,20 +32,39 @@ public class UserRepository {
                 .fetchOne();
     }
 
-    public boolean registerUser(UserRegisterDto userRegisterDto) {
-        try {
-            create.insertInto(BEAVERUSERS)
-                    .set(BEAVERUSERS.EMAIL, userRegisterDto.getEmail())
-                    .set(BEAVERUSERS.FIREBASE_ID, userRegisterDto.getFirebase_id())
-                    .set(BEAVERUSERS.USERNAME, userRegisterDto.getUsername())
-                    .execute();
-            return true;
-        } catch(DuplicateKeyException e) {
-            // User with those details already exists
-            return false;
-        }
-
+    public BeaverusersRecord getUserByUsername(String username) {
+        return create
+                .selectFrom(BEAVERUSERS)
+                .where(BEAVERUSERS.USERNAME.eq(username))
+                .fetchOne();
     }
 
+    public String registerUser(UserDto userDto) throws UserAlreadyExistsException {
+        try {
+            return create.insertInto(BEAVERUSERS, BEAVERUSERS.EMAIL, BEAVERUSERS.FIREBASE_ID, BEAVERUSERS.USERNAME)
+                    .values(userDto.getEmail(), userDto.getFirebase_id(), userDto.getUsername())
+                    .returningResult(BEAVERUSERS.USERNAME)
+                    .fetchSingle().component1();
 
+        } catch(DuplicateKeyException e) {
+            // User with those details already exists
+            throw new UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
+        }
+    }
+
+    public BeaverusersRecord verifyUserExistsAndReturn(UserDto userDto) {
+        BeaverusersRecord beaverusersRecord = getUserByEmailAndId(userDto);
+        if (beaverusersRecord == null) {
+            throw new UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+        return beaverusersRecord;
+    }
+
+    public BeaverusersRecord verifyUserExistsAndReturn(String username) {
+        BeaverusersRecord beaverusersRecord = getUserByUsername(username);
+        if (beaverusersRecord == null) {
+            throw new UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+        return beaverusersRecord;
+    }
 }

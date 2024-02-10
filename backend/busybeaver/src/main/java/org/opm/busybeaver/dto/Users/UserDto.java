@@ -2,9 +2,14 @@ package org.opm.busybeaver.dto.Users;
 
 public class UserDto {
 
+    private String username;
     private String firebase_id;
-
     private String email;
+
+    public UserDto(String email, String firebase_id) {
+        setEmail(email);
+        setFirebase_id(firebase_id);
+    }
 
     public String getEmail() {
         return email;
@@ -12,6 +17,10 @@ public class UserDto {
 
     public String getFirebase_id() {
         return firebase_id;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setEmail(String email) {
@@ -22,8 +31,7 @@ public class UserDto {
         this.firebase_id = firebase_id;
     }
 
-    public UserDto(String email, String firebase_id) {
-        setEmail(email);
-        setFirebase_id(firebase_id);
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

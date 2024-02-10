@@ -2,11 +2,10 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.dto.Users.UserRegisterDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
-import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
+import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
+import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +34,12 @@ public class UserService {
         );
     }
 
-    public void registerUser(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
-        boolean validNewUser = userRepository.registerUser(userRegisterDto);
-        if (!validNewUser) {
-            throw new UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
-        }
+    public AuthenticatedUser registerUser(UserDto userDto) throws UserAlreadyExistsException {
+        String newUsername = userRepository.registerUser(userDto);
 
+        return new AuthenticatedUser(
+                newUsername,
+                BusyBeavConstants.SUCCESS.getValue()
+        );
     }
 }

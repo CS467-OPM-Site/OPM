@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
+import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.service.FirebaseAuthenticationService;
@@ -59,7 +60,7 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
         FirebaseAuthenticationService authentication = new FirebaseAuthenticationService(authorizationHeader);
         if (authentication.isAuthenticated()) {
             // Store authenticated user details for user in Controllers
-            request.setAttribute(BusyBeavConstants.USER_KEY_VAL.getValue(), authentication);
+            request.setAttribute(BusyBeavConstants.USER_KEY_VAL.getValue(), parseToken(authentication));
             filterChain.doFilter(request, response);
             return;
         }
@@ -85,5 +86,12 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
         PrintWriter responseWriter = response.getWriter();
         responseWriter.print(jsonString);
         responseWriter.flush();
+    }
+
+    private static UserDto parseToken(FirebaseAuthenticationService firebaseAuthenticationService) {
+        return new UserDto(
+                firebaseAuthenticationService.getEmail(),
+                firebaseAuthenticationService.getUid()
+        );
     }
 }

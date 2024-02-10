@@ -2,11 +2,9 @@ package org.opm.busybeaver.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.service.UserAlreadyExistsException;
-import org.opm.busybeaver.exceptions.service.UserDoesNotExistException;
-import org.opm.busybeaver.exceptions.service.UserNotInTeamOrTeamDoesNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.opm.busybeaver.utils.Utils.generateExceptionResponse;
 
 @ControllerAdvice
 public class ValidationExceptionHandler {
@@ -31,37 +31,23 @@ public class ValidationExceptionHandler {
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<?> userAlreadyExists() {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> invalidHttpMessage(HttpMessageNotReadableException err, HttpServletRequest request) {
+
+        if (err.getMessage().contains(ErrorMessageConstants.REQUIRED_REQUEST_BODY_IS_MISSING.getValue())) {
+            return new ResponseEntity<>(
+                    generateExceptionResponse(
+                            ErrorMessageConstants.REQUIRED_REQUEST_BODY_IS_MISSING.getValue(),
+                            HttpStatus.BAD_REQUEST.value()
+                    ), HttpStatus.BAD_REQUEST
+            );
+        }
+
         return new ResponseEntity<>(
-                generateResponse(
-                        ErrorMessageConstants.USER_ALREADY_EXISTS.getValue(),
+                generateExceptionResponse(
+                        ErrorMessageConstants.INVALID_HTTP_REQUEST.getValue(),
                         HttpStatus.BAD_REQUEST.value()
-                ),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler(UserDoesNotExistException.class)
-    public ResponseEntity<?> userDoesNotExist() {
-        return new ResponseEntity<>(
-                generateResponse(
-                        ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue(),
-                        HttpStatus.NOT_FOUND.value()
-                ),
-                HttpStatus.NOT_FOUND
-        );
-    }
-
-    @ExceptionHandler(UserNotInTeamOrTeamDoesNotExistException.class)
-    public ResponseEntity<?> userNotInTeam() {
-        return new ResponseEntity<>(
-                generateResponse(
-                        ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue(),
-                        HttpStatus.NOT_FOUND.value()
-                ),
-                HttpStatus.NOT_FOUND
-        );
+                ), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -69,11 +55,4 @@ public class ValidationExceptionHandler {
         return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    private HashMap<String, Object> generateResponse(String message, Integer errorCode) {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put(ErrorMessageConstants.MESSAGE.getValue(), message);
-        result.put(ErrorMessageConstants.CODE.getValue(), errorCode);
-
-        return result;
-    }
 }

@@ -4,7 +4,14 @@ import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
+import org.opm.busybeaver.enums.DatabaseConstants;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.Teams.TeamAlreadyExistsForUserException;
+import org.opm.busybeaver.exceptions.Teams.UserAlreadyInTeamException;
+import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
+import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +27,31 @@ public class TeamRepository {
     @Autowired
     public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
 
+    public TeamsRecord makeNewTeam(Integer userID, String teamName) throws TeamAlreadyExistsForUserException {
+        // INSERT INTO Teams (Teams.team_name, Teams.team_creator)
+        // VALUES
+        // (teamName, userID);
+        try {
+            TeamsRecord newTeamRecord = create.insertInto(TEAMS, TEAMS.TEAM_NAME, TEAMS.TEAM_CREATOR)
+                    .values(teamName, userID)
+                    .returningResult(TEAMS.TEAM_NAME, TEAMS.TEAM_ID, TEAMS.TEAM_CREATOR)
+                    .fetchSingleInto(TeamsRecord.class);
+
+            if (newTeamRecord == null) throw new TeamAlreadyExistsForUserException(ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+
+            // Trigger option - Add the creator to the TeamUsers table, role of Creator
+            create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID, TEAMUSERS.USER_TEAM_ROLE)
+                    .values(newTeamRecord.getTeamId(), newTeamRecord.getTeamCreator(), DatabaseConstants.TEAMUSERS_CREATOR_ROLE.getValue())
+                    .execute();
+
+            return newTeamRecord;
+
+        } catch (DuplicateKeyException e) {
+            throw new TeamAlreadyExistsForUserException(ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+        }
+    }
+
     public List<TeamSummaryDto> getUserHomePageTeams(Integer userId) {
-        // TO model:
         // SELECT Teams.team_id, Teams.team_name, Teams.team_creator
         // FROM Teams
         // WHERE Teams.team_id IN (
@@ -94,5 +124,20 @@ public class TeamRepository {
                 .on(BEAVERUSERS.USER_ID.eq(TEAMUSERS.USER_ID))
                 .where(TEAMS.TEAM_ID.eq(teamID))
                 .fetchInto(MemberInTeamDto.class);
+    }
+
+    public void addMemberToTeam(BeaverusersRecord userToAdd, Integer teamID) throws UserAlreadyInTeamException {
+        // INSERT INTO TeamUsers (user_id, team_id, user_team_role)
+        // VALUES (
+        //      teamID,
+        //      userToAdd.getUserId()
+        // );
+        try {
+            create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID)
+                    .values(teamID, userToAdd.getUserId())
+                    .execute();
+        } catch (DuplicateKeyException e) {
+            throw new UserAlreadyInTeamException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
     }
 }

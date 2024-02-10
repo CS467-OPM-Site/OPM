@@ -149,10 +149,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 > ```json
 > {
 >   "projectName": "New Project Name",
->   "team": {
->       "teamName": "team1",
->       "teamID": 1, 
->   }
+>   "projectID": 1,
+>   "teamName": "team1",
+>   "teamID": 1,
+>   "projectLocation": "/api/v1/projects/1"
 > }
 > ```
 
@@ -162,7 +162,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the project resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Project name for that team already exists"}` | Project name for team already exists. Teams must have unique project names. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Chosen team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or chosen team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -171,6 +171,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "New Project Name",
 >     "projectID": 1,
+>     "projectLocation": "/api/v1/projects/1"
 > }
 > ```
 
@@ -183,8 +184,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{
 >   "projectName": "New Project Name",
->   "team": {"teamName": "team1", "teamID", 1}
->      }' 
+>   "teamName": "team1",
+>   "teamID": 1 }' 
 > ```
 
 </details>
@@ -201,9 +202,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Returns all of a user's projects. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `200`         | `application/json`                | `See below.` | Returns details regarding a specific project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project, or the project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -212,7 +212,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "project1",
 >     "projectID": 1,
->     "lastUpdated": "2023-10-31T15:45:00Z",
 >     "projectLocation": "/api/v1/projects/1",
 >     "team": {
 >         "teamName": "Team1",
@@ -221,7 +220,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >      },
 >     "columns": [
 >      {
->           "columnName": "Todo",
+>           "columnTitle": "Todo",
 >           "columnID": 1,
 >           "columnIndex": 0,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/1",
@@ -229,41 +228,33 @@ All endpoints should use this format as a prefix in their requests. For example,
 >            {
 >                 "title": "task1",
 >                 "taskID": 1, 
->                 "description": "This is a task!",
->                 "assignedTo": {
->                       "username": "username-of-assignee",
->                       "userID": 1
->                  } or null,       
 >                 "priority": "High",
->                 "sprint": {
->                       "startDate": "2023-10-31",
->                       "endDate": "2023-11-01",
->                       "sprintName": "Sprint Name",
->                       "sprintID": 1,
->                       "sprintLocation": "api/v1/projects/1/sprints/1"
->                  } or null,
->                 "comments": [
->                  {
->                       "commentID": 1,
->                       "commentBody": "This is a comment",
->                       "commenter": "username-here",
->                       "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
->                  },
->                 ],
->                 "customFields": [ ... ],
+                  "dueDate": "2023-11-01", # Or null  
+>                 "comments": 1, # Number of comments on task
+                  "taskIndex": 0, # Used for sorting eventually, default to -1
+                  "assignedTo": {
+                        "username": "username-of-assignee",
+                        "userID": 1
+                   }, # Or null
+                  "sprint": {
+                        "sprintID": 1,
+                        "sprintName": "Sprint Name",
+                        "endDate": "2023-11-01",
+                        "sprintLocation": "/api/v1/projects/1/sprints/1"
+                   }, # Or null
 >                 "taskLocation": "/api/v1/projects/1/tasks/1"
 >            },
 >           ]
 >      },
 >      {
->           "columnName": "In progress",
+>           "columnTitle": "In progress",
 >           "columnID": 2,
 >           "columnIndex": 1,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/2",
 >           "tasks": []
 >      },
 >      {
->           "columnName": "Done",
+>           "columnTitle": "Done",
 >           "columnID": 3,
 >           "columnIndex": 2,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/3",
@@ -576,7 +567,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "columnName": "New Column Here"
+>   "columnTitle": "New Column Here"
 > }
 > ```
 
@@ -594,7 +585,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "New Column Here",
+>     "columnTitle": "New Column Here",
 >     "columnIndex": 1,         # New column always placed at end
 >     "columnID": 1
 > }
@@ -607,7 +598,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/project/1/columns \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Here"}' 
+>  -d '{"columnTitle":"New Column Here"}' 
 > ```
 
 </details>
@@ -626,7 +617,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "columnName": "New Column Name Here"
+>   "columnTitle": "New Column Name Here"
 > }
 > ```
 
@@ -645,7 +636,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "New Column Name Here",
+>     "columnTitle": "New Column Name Here",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
@@ -659,7 +650,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Name Here"}' 
+>  -d '{"columnTitle":"New Column Name Here"}' 
 > ```
 
 </details>
@@ -696,7 +687,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "project1",
+>     "columnTitle": "project1",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
@@ -710,7 +701,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Name Here"}' 
+>  -d '{"columnTitle":"New Column Name Here"}' 
 > ```
 
 </details>
@@ -864,7 +855,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "column": {
 >           "columnID": 1,
->           "columnName": "column to add to"
+>           "columnTitle": "column to add to"
 >      },       # Optional, defaults to first column if not included
 >     "title": "Task 1",
 >     "description": "This is another task!" or null,
@@ -941,7 +932,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "taskID": 1,
 >     "taskColumnIndex": 0,       # Indicates location on board
 >     "column": {
->           "columnName": "Column",
+>           "columnTitle": "Column",
 >           "columnIndex": 0,
 >           "columnID": 1,
 >           "columnLocation": "api/v1/projects/1/columns/1"
@@ -1012,7 +1003,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "taskID": 1,
 >     "taskColumnIndex": 0,       # Indicates location on board
 >     "column": {
->           "columnName": "Column",
+>           "columnTitle": "Column",
 >           "columnIndex": 0,
 >           "columnID": 1,
 >           "columnLocation": "api/v1/projects/1/columns/1"
@@ -1805,8 +1796,9 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Team deleted"}` | Team deleted. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team, or not creator of team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Team still contains other members - remove them before deleting the team"}` | Teams must have no other members. |
+> | `403`         | `application/json`                | `{"code":"403", "message":"User not creator of this team"}` | User not creator - only creator can delete team. |
+> | `404`         | `application/json`                | `{"code":"404", "message":"Team does not exist"}` | Team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL
@@ -1889,10 +1881,10 @@ Leaving the field out of the payload will keep the field's original value.
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Successfully added member to team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"User to add does not exist"}` | User to add does not exist. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `200`         | `application/json`                | `See below.` | **Includes a URI to the team resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"User already exists in this team"}` | User already in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | User to add does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1901,8 +1893,6 @@ Leaving the field out of the payload will keep the field's original value.
 > {
 >     "code": 200,
 >     "message": "User added",
->     "username": "username",
->     "userID": 1,
 > }
 > ```
 

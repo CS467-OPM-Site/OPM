@@ -10,7 +10,7 @@
 All requests to the RestAPI must include valid authentication credentials. Please include a valid JWT token within
 the Bearer scheme included in the Authorization HTTP header.
 
-`Authorization:Bearer <Signed JSON Web Token> `
+`'Authorization': 'Bearer <Signed JSON Web Token>'`
 
 ------------------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### User Authentication
 
 <details>
- <summary><code>POST</code> <code><b>/users/register</b></code> <code>(registers user information if they don't have an account)</code></summary>
+ <summary><code>POST</code> <code><b>/users/register</b></code> <code>(registers user information if they don't have an account)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
@@ -66,7 +66,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/users/auth</b></code> <code>(authenticates user)</code></summary>
+ <summary><code>POST</code> <code><b>/users/auth</b></code> <code>(authenticates user)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -91,7 +91,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Project Management
 
 <details>
- <summary><code>GET</code> <code><b>/projects</b></code> <code>(gets all of a user's projects)</code></summary>
+ <summary><code>GET</code> <code><b>/projects</b></code> <code>(gets all of a user's projects)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -142,7 +142,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects</b></code> <code>(creates a new project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects</b></code> <code>(creates a new project)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
@@ -190,7 +190,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 </details>
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1649,7 +1649,7 @@ Leaving the field out of the payload will keep the field's original value.
 #### Team Management
 
 <details>
- <summary><code>GET</code> <code><b>/teams</b></code> <code>(gets all teams associated with a user)</code></summary>
+ <summary><code>GET</code> <code><b>/teams</b></code> <code>(gets all teams associated with a user)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -1690,7 +1690,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/teams</b></code> <code>(make a new team)</code></summary>
+ <summary><code>POST</code> <code><b>/teams</b></code> <code>(make a new team)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
@@ -1732,7 +1732,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/teams/{teamID}</b></code> <code>(get all projects associated with a team)</code></summary>
+ <summary><code>GET</code> <code><b>/teams/{teamID}</b></code> <code>(get all projects associated with a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1783,7 +1783,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/teams/{teamID}</b></code> <code>(delete a team)</code></summary>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}</b></code> <code>(delete a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1812,7 +1812,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/teams/{teamID}/members</b></code> <code>(get all members associated with a team)</code></summary>
+ <summary><code>GET</code> <code><b>/teams/{teamID}/members</b></code> <code>(get all members associated with a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1861,7 +1861,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/teams/{teamID}/members</b></code> <code>(add team member to a team)</code></summary>
+ <summary><code>POST</code> <code><b>/teams/{teamID}/members</b></code> <code>(add team member to a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1909,7 +1909,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/teams/{teamID}/members/{memberID}</b></code> <code>(remove team member from team)</code></summary>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}/members/{memberID}</b></code> <code>(remove team member from team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 

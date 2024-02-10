@@ -3,6 +3,7 @@
 *.DS_Store
 *.vscode/
 *.code-workspace
+*firebase*.json
 
 # Ignore environment variables in the frontend directory
 frontend/.env

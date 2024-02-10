@@ -6,14 +6,14 @@ import java.beans.ConstructorProperties;
 import java.util.Objects;
 
 public class TeamSummaryDto {
-    private final Integer teamID;
+    private final int teamID;
     private final String teamName;
     private String teamLocation;
     private Boolean isTeamCreator;
-    private final Integer teamCreatorId;
+    private final int teamCreatorId;
 
     @ConstructorProperties({"team_id", "team_name", "team_creator"})
-    public TeamSummaryDto(Integer teamID, String teamName, Integer teamCreatorId) {
+    public TeamSummaryDto(int teamID, String teamName, int teamCreatorId) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.teamCreatorId = teamCreatorId;
@@ -25,11 +25,11 @@ public class TeamSummaryDto {
         this.teamLocation = PATH + BusyBeavPaths.TEAMS.getValue() + "/" + getTeamID();
     }
 
-    public void setIsTeamCreator(Integer userID) {
+    public void setIsTeamCreator(int userID) {
         isTeamCreator = (Objects.equals(userID, getTeamCreatorId()));
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
@@ -45,7 +45,7 @@ public class TeamSummaryDto {
         return isTeamCreator;
     }
 
-    private Integer getTeamCreatorId() {
+    private int getTeamCreatorId() {
         return teamCreatorId;
     }
 }

@@ -8,14 +8,11 @@ public final class NewTeamDto {
     @NotBlank(message = "Missing 'teamName' attribute to generate a new team")
     @Size(min = 3, max = 50, message = "Team name must be 3 to 50 characters")
     private String teamName;
-
-    private Integer teamID;
-
-    private Integer teamCreator;
-
+    private int teamID;
+    private int teamCreator;
     private String teamLocation;
 
-    public void setTeamID(Integer teamID) {
+    public void setTeamID(int teamID) {
         this.teamID = teamID;
     }
 
@@ -23,7 +20,7 @@ public final class NewTeamDto {
         this.teamName = teamName;
     }
 
-    public void setTeamCreator(Integer teamCreator) {
+    public void setTeamCreator(int teamCreator) {
         this.teamCreator = teamCreator;
     }
 
@@ -39,11 +36,11 @@ public final class NewTeamDto {
         return teamName;
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
-    public Integer getTeamCreator() {
+    public int getTeamCreator() {
         return teamCreator;
     }
 

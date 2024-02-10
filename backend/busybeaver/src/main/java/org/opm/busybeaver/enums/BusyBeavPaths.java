@@ -8,6 +8,9 @@ public enum BusyBeavPaths {
     MEMBERS(Constants.MEMBERS),
     USERS(Constants.USERS),
     REGISTER(Constants.REGISTER),
+    TASKS(Constants.TASKS),
+    SPRINTS(Constants.SPRINTS),
+    COLUMNS(Constants.COLUMNS),
     AUTH(Constants.AUTH);
 
     private final String value;
@@ -23,6 +26,9 @@ public enum BusyBeavPaths {
         public static final String USERS = "/users";
         public static final String REGISTER = "/register";
         public static final String AUTH = "/auth";
+        public static final String TASKS = "/tasks";
+        public static final String SPRINTS = "/sprints";
+        public static final String COLUMNS = "/columns";
         public static final String MEMBERS = "/members";
     }
 }

@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ProjectsByTeamDto {
     private final String teamName;
-    private final Integer teamId;
+    private final int teamId;
     private final List<ProjectByTeamDto> projects;
 
     private String teamLocation;
 
     public ProjectsByTeamDto(
-            String teamName, Integer teamId,
+            String teamName, int teamId,
             List<ProjectByTeamDto> projects) {
 
         this.teamName = teamName;
@@ -35,7 +35,7 @@ public class ProjectsByTeamDto {
         return teamName;
     }
 
-    public Integer getTeamId() {
+    public int getTeamId() {
         return teamId;
     }
 

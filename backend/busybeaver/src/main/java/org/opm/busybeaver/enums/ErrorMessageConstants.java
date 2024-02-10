@@ -17,6 +17,7 @@ public enum ErrorMessageConstants {
     USER_ALREADY_IN_TEAM("User already exists in this team"),
     TEAM_CREATOR_CANNOT_BE_REMOVED("Team creator cannot be removed"),
     PROJECT_ALREADY_EXISTS_FOR_TEAM("Project name for that team already exists, please choose another project name"),
+    USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST("User not in project, or project does not exist"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

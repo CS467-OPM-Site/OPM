@@ -1,26 +1,27 @@
 package org.opm.busybeaver.dto.Projects;
 
+import org.opm.busybeaver.dto.Columns.ColumnDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
+import java.util.List;
 
-public final class ProjectSummaryDto {
+public class ProjectDetailsDto {
     private final String projectName;
     private final int projectID;
-    private final LocalDateTime lastUpdated;
-    private String projectLocation;
     private final TeamSummaryInProjectSummaryDto team;
+    private String projectLocation;
 
-    @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
-    public ProjectSummaryDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
+    private List<ColumnDto> columns;
+
+    @ConstructorProperties({"project_name", "project_id", "team_id", "team_name"})
+    public ProjectDetailsDto(String projectName, int projectID, int teamID, String teamName) {
         this.projectName = projectName;
         this.projectID = projectID;
-        this.lastUpdated = lastUpdated;
         this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
     }
 
-    public void setProjectAndTeamLocation(String contextPath) {
+    public void setProjectTeamColumnTaskLocation(String contextPath) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.projectLocation = PATH +
@@ -28,10 +29,13 @@ public final class ProjectSummaryDto {
                 "/" + getProjectID();
 
         this.team.setTeamLocation(PATH);
-    }
 
-    public TeamSummaryInProjectSummaryDto getTeam() {
-        return team;
+        if (!columns.isEmpty()) {
+            columns.forEach(column -> column.setColumnLocation(contextPath, projectID));
+        }
+    }
+    public void setColumns(List<ColumnDto> columns) {
+        this.columns = columns;
     }
 
     public String getProjectName() {
@@ -46,7 +50,11 @@ public final class ProjectSummaryDto {
         return projectLocation;
     }
 
-    public LocalDateTime getLastUpdated() {
-        return lastUpdated;
+    public TeamSummaryInProjectSummaryDto getTeam() {
+        return team;
+    }
+
+    public List<ColumnDto> getColumns() {
+        return columns;
     }
 }

@@ -4,14 +4,13 @@ import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.util.List;
 
-public class MembersInTeamDto {
+public final class MembersInTeamDto {
     private final String teamName;
-    private final Integer teamId;
+    private final int teamId;
     private final List<MemberInTeamDto> members;
-
     private String teamLocation;
 
-    public MembersInTeamDto(String teamName, Integer teamId, List<MemberInTeamDto> members) {
+    public MembersInTeamDto(String teamName, int teamId, List<MemberInTeamDto> members) {
         this.teamName = teamName;
         this.teamId = teamId;
         this.members = members;
@@ -23,13 +22,12 @@ public class MembersInTeamDto {
     }
 
 
-    public Integer getTeamId() {
+    public int getTeamId() {
         return teamId;
     }
     public String getTeamName() {
         return teamName;
     }
-
 
     public List<MemberInTeamDto> getMembers() {
         return members;

@@ -1,11 +1,13 @@
 package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Projects.NewProjectDto;
+import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
 import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectAlreadyExistsForTeamException;
+import org.opm.busybeaver.exceptions.Projects.UserNotInProjectOrProjectDoesNotExistException;
 import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
 import org.opm.busybeaver.exceptions.Teams.UserNotInTeamOrTeamDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -55,14 +57,28 @@ public class ProjectService {
         return newProjectDto;
     }
 
-    public ProjectsSummariesDto getUserHomePageProjects(UserDto userDto, String contextPath) throws UserDoesNotExistException {
+    public ProjectsSummariesDto getUserProjectsSummary(UserDto userDto, String contextPath) throws UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         List<ProjectSummaryDto> projects =
-                projectRepository.getUserHomePageProjects(beaverusersRecord.getUserId());
+                projectRepository.getUserProjectsSummary(beaverusersRecord.getUserId());
 
         projects.forEach( project -> project.setProjectAndTeamLocation(contextPath));
 
         return new ProjectsSummariesDto(projects);
+    }
+
+    public ProjectDetailsDto getSpecificProjectDetails(UserDto userDto, int projectID, String contextPath)
+        throws UserNotInProjectOrProjectDoesNotExistException, UserDoesNotExistException {
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
+
+        if (!projectRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
+            throw new UserNotInProjectOrProjectDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
+        }
+
+        ProjectDetailsDto projectDetails = projectRepository.getSpecificProjectDetails(projectID);
+        projectDetails.setProjectTeamColumnTaskLocation(contextPath);
+
+        return projectDetails;
     }
 }

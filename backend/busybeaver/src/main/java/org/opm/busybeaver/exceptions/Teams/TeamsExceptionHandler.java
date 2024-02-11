@@ -86,4 +86,15 @@ public class TeamsExceptionHandler {
                 HttpStatus.FORBIDDEN
         );
     }
+
+    @ExceptionHandler(TeamStillHasProjectsException.class)
+    public ResponseEntity<?> teamStillHasProjects() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

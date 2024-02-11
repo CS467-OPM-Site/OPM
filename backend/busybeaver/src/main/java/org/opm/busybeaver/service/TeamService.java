@@ -9,6 +9,7 @@ import org.opm.busybeaver.exceptions.Teams.*;
 import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
+import org.opm.busybeaver.repository.ProjectRepository;
 import org.opm.busybeaver.repository.TeamRepository;
 import org.opm.busybeaver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,17 @@ import java.util.List;
 public class TeamService {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
     public TeamService(
             TeamRepository teamRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            ProjectRepository projectRepository
     ) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
     }
 
     public NewTeamDto makeNewTeam(UserDto userDto, NewTeamDto newTeamDto, String contextPath)
@@ -49,6 +53,7 @@ public class TeamService {
             throws TeamDoesNotExistException,
             UserNotTeamCreatorException,
             TeamStillHasMembersException,
+            TeamStillHasProjectsException,
             UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
@@ -64,6 +69,10 @@ public class TeamService {
 
         if (teamRepository.doesTeamStillHaveMembers(teamID)) {
             throw new TeamStillHasMembersException(ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+        }
+
+        if (projectRepository.doesTeamHaveProjectsAssociatedWithIt(teamID)) {
+            throw new TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
         }
 
         teamRepository.deleteSingleTeam(teamID);

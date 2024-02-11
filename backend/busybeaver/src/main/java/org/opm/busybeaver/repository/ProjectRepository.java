@@ -42,6 +42,20 @@ public class ProjectRepository {
         this.columnRepository = columnRepository;
     }
 
+    public Boolean doesTeamHaveProjectsAssociatedWithIt(int teamID) {
+        // SELECT COUNT(*)
+        // FROM Projects
+        // WHERE Projects.team_id = teamID
+        // LIMIT 1;
+        int projectCount = create
+                .selectCount()
+                .from(PROJECTS)
+                .where(PROJECTS.TEAM_ID.eq(teamID))
+                .fetchSingleInto(int.class);
+
+        return (projectCount >= 1);
+    }
+
     @Transactional
     public ProjectsRecord makeNewProject(String projectName, int teamID, int userID) {
         try {

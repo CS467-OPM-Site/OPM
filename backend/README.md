@@ -152,7 +152,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 >   "projectID": 1,
 >   "teamName": "team1",
 >   "teamID": 1,
->   "projectLocation": "/api/v1/projects/1"
 > }
 > ```
 
@@ -287,7 +286,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "projectName": "new-name",
+>   "projectName": "new-name",      # Cannot be deleted, only modified
 > }
 > ```
 
@@ -617,7 +616,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "columnTitle": "New Column Name Here"
+>   "columnTitle": "New Column Name Here"       # Cannot be deleted, only modified
 > }
 > ```
 
@@ -847,25 +846,19 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | name   |  type      | data type      | description                                          |
 > |--------|------------|----------------|------------------------------------------------------|
 > | `projectID` |  required  | int ($int64) | The unique ID of the project |
-> | `columnID` |  required  | int ($int64) | The unique ID of the column |
 
 ##### Request Payload
 
 > ```json
 > {
->     "column": {
->           "columnID": 1,
->           "columnTitle": "column to add to"
->      },       # Optional, defaults to first column if not included
 >     "title": "Task 1",
->     "description": "This is another task!" or null,
->     "assignedTo": {
->           "username": "username-of-assignee",
->           "userID": 1
->      } or null,       
->     "priority": "High" or null,
->     "sprintID": 1 or null,
->     "customFields": [ ... ],
+>     "description": "This is another task!", # Optional - a description of only spaces is considered null
+>     "columnID": 1,                          # Optional, defaults to first in-order column if not included
+>     "assignedTo": 1,                        # Optional, ID of the user who it is being assigned to, or null
+>     "dueDate": "2024-11-03",                # Optional
+>     "priority": "High",                     # Optional, defaults to 'None' 
+>     "sprintID": 1,                          # Optional
+>     "customFields": [ ... ]                 # Optional
 > }
 > ```
 
@@ -1056,20 +1049,16 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 ##### Request Payload
 
-Any parameter may be null, in which case that field is deleted. 
 To keep the attribute the same, do not include the task attribute in the request payload.
 
 > ```json
 > {
->     "title": "New Title",
->     "description": "This is another task!",
->     "assignedTo": {
->           "username": "username-of-assignee",
->           "userID": 1
->      } or null,       
->     "priority": "High",
->     "sprintID": 1 or null,
->     "customFields": [ ... ],
+>     "title": "New Title",                     # Optional - note that a title is mandatory for a task, so no possibility of deleting a title
+>     "description": "This is another task!",   # Optional, set as empty string to delete
+>     "assignedTo": 1,                          # Optional, ID of the user who it is being assigned to, or -1 to delete
+>     "priority": "High",                       # Optional, must be one of 'High', 'Medium', 'Low', 'None'
+>     "sprintID": 1,                            # Optional, ID of sprint to change to, or -1 to delete
+>     "customFields": [ ... ],                  # Optional, for future implementation
 > }
 > ```
 
@@ -1565,6 +1554,7 @@ To keep the attribute the same, do not include the task attribute in the request
 
 If a field is included, it is assumed that user is trying to edit that field.
 Leaving the field out of the payload will keep the field's original value.
+No fields can be deleted, or have just empty spaces.
 
 > ```json
 > {

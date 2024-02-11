@@ -1796,6 +1796,7 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Team deleted"}` | Team deleted. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Team still has associated projects - remove them before deleting the team"}` | Teams must have no associated projects. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Team still contains other members - remove them before deleting the team"}` | Teams must have no other members. |
 > | `403`         | `application/json`                | `{"code":"403", "message":"User not creator of this team"}` | User not creator - only creator can delete team. |
 > | `404`         | `application/json`                | `{"code":"404", "message":"Team does not exist"}` | Team does not exist. |

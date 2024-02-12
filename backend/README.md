@@ -14,6 +14,29 @@ the Bearer scheme included in the Authorization HTTP header.
 
 ------------------------------------------------------------------------------------------
 
+### Optional Values
+
+Optional values must still include the given key, but should be set to null if not looking
+to include them in the payload.
+
+For example, for the following optional username JSON body:
+
+```json
+{
+    "username": "username-here"
+}
+```
+
+Setting username to null, as follows, would indicate desire to not include it in the payload body.
+
+```json
+{
+    "username": null
+}
+```
+
+------------------------------------------------------------------------------------------
+
 ### Versioning
 
 #### Current Version: 1

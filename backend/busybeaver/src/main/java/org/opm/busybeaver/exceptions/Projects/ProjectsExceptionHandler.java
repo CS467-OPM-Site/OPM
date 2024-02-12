@@ -10,7 +10,7 @@ import static org.opm.busybeaver.utils.Utils.generateExceptionResponse;
 
 @ControllerAdvice
 public class ProjectsExceptionHandler {
-    @ExceptionHandler(ProjectAlreadyExistsForTeamException.class)
+    @ExceptionHandler(ProjectsExceptions.ProjectAlreadyExistsForTeamException.class)
     public ResponseEntity<?> projectAlreadyExistsForTeam() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -21,7 +21,7 @@ public class ProjectsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserNotInProjectOrProjectDoesNotExistException.class)
+    @ExceptionHandler(ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException.class)
     public ResponseEntity<?> userNotInProjectOrProjectDoesNotExist() {
         return new ResponseEntity<>(
                 generateExceptionResponse(

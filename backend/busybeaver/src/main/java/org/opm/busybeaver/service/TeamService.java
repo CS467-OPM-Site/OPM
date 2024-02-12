@@ -6,7 +6,7 @@ import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Teams.*;
-import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
+import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
 import org.opm.busybeaver.repository.ProjectRepository;
@@ -36,7 +36,7 @@ public class TeamService {
     }
 
     public NewTeamDto makeNewTeam(UserDto userDto, NewTeamDto newTeamDto, String contextPath)
-            throws TeamAlreadyExistsForUserException, UserDoesNotExistException {
+            throws UsersExceptions.UserDoesNotExistException, TeamsExceptions.TeamAlreadyExistsForUserException  {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         TeamsRecord newTeamRecord = teamRepository.makeNewTeam(beaverusersRecord.getUserId(), newTeamDto.getTeamName());
@@ -50,35 +50,36 @@ public class TeamService {
     }
 
     public void deleteTeam(UserDto userDto, Integer teamID)
-            throws TeamDoesNotExistException,
-            UserNotTeamCreatorException,
-            TeamStillHasMembersException,
-            TeamStillHasProjectsException,
-            UserDoesNotExistException {
+            throws UsersExceptions.UserDoesNotExistException,
+            TeamsExceptions.TeamDoesNotExistException,
+            TeamsExceptions.UserNotTeamCreatorException,
+            TeamsExceptions.TeamStillHasMembersException,
+            TeamsExceptions.TeamStillHasProjectsException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         TeamsRecord teamToDelete = teamRepository.getSingleTeam(teamID);
 
         if (teamToDelete == null) {
-            throw new TeamDoesNotExistException(ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue());
+            throw new TeamsExceptions.TeamDoesNotExistException(ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue());
         }
 
         if (!teamToDelete.getTeamCreator().equals(beaverusersRecord.getUserId())) {
-            throw new UserNotTeamCreatorException(ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue());
+            throw new TeamsExceptions.UserNotTeamCreatorException(ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue());
         }
 
         if (teamRepository.doesTeamStillHaveMembers(teamID)) {
-            throw new TeamStillHasMembersException(ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+            throw new TeamsExceptions.TeamStillHasMembersException(ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
         }
 
         if (projectRepository.doesTeamHaveProjectsAssociatedWithIt(teamID)) {
-            throw new TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
+            throw new TeamsExceptions.TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
         }
 
         teamRepository.deleteSingleTeam(teamID);
     }
 
-    public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath) throws UserDoesNotExistException {
+    public TeamsSummariesDto getUserHomePageTeams(UserDto userDto, String contextPath)
+            throws UsersExceptions.UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         List<TeamSummaryDto> teams =
@@ -96,11 +97,12 @@ public class TeamService {
     public ProjectsByTeamDto getProjectsAssociatedWithTeam(
             UserDto userDto,
             Integer teamID,
-            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+            String contextPath) throws UsersExceptions.UserDoesNotExistException,
+            TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
-            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         List<ProjectByTeamDto> homePageFilterProjectByTeamDtos =
@@ -120,11 +122,12 @@ public class TeamService {
     public MembersInTeamDto getMembersInTeam(
             UserDto userDto,
             Integer teamID,
-            String contextPath) throws UserNotInTeamOrTeamDoesNotExistException {
+            String contextPath) throws UsersExceptions.UserDoesNotExistException,
+            TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
-            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         List<MemberInTeamDto> memberInTeamDtos = teamRepository.getAllMembersInTeam(teamID);
@@ -141,11 +144,13 @@ public class TeamService {
     }
 
     public String addMemberToTeam(UserDto userDto, Integer teamID, UsernameDto usernameToAdd, String contextPath)
-            throws UserNotInTeamOrTeamDoesNotExistException, UserDoesNotExistException, UserAlreadyInTeamException {
+            throws UsersExceptions.UserDoesNotExistException,
+            TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException,
+            TeamsExceptions.UserAlreadyInTeamException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
-            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         BeaverusersRecord userToAdd = userRepository.verifyUserExistsAndReturn(usernameToAdd.username());
@@ -157,20 +162,20 @@ public class TeamService {
     }
 
     public void removeMemberFromTeam(UserDto userDto, Integer userIDtoDelete, Integer teamID)
-            throws UserDoesNotExistException {
+            throws UsersExceptions.UserDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID)) {
-            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         // Check if user to delete is in team, but short circuit if user to delete is also the requesting user
         if (!beaverusersRecord.getUserId().equals(userIDtoDelete) && !teamRepository.isUserInTeamAndDoesTeamExist(userIDtoDelete, teamID)) {
-            throw new UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         if (teamRepository.isUserCreatorOfTeam(userIDtoDelete, teamID)) {
-            throw new TeamCreatorCannotBeRemovedException(ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
+            throw new TeamsExceptions.TeamCreatorCannotBeRemovedException(ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
         }
 
        teamRepository.deleteSingleTeamMember(userIDtoDelete, teamID);

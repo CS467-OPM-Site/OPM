@@ -10,7 +10,7 @@ import static org.opm.busybeaver.utils.Utils.generateExceptionResponse;
 
 @ControllerAdvice
 public class UserExceptionHandler {
-    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ExceptionHandler(UsersExceptions.UserAlreadyExistsException.class)
     public ResponseEntity<?> userAlreadyExists() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -21,7 +21,7 @@ public class UserExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserDoesNotExistException.class)
+    @ExceptionHandler(UsersExceptions.UserDoesNotExistException.class)
     public ResponseEntity<?> userDoesNotExist() {
         return new ResponseEntity<>(
                 generateExceptionResponse(

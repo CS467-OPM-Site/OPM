@@ -44,14 +44,14 @@ public class ProjectService {
             ProjectsExceptions.ProjectAlreadyExistsForTeamException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
-        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), newProjectDto.getTeamIDInt())) {
+        if (!teamRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), newProjectDto.getTeamID())) {
             throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(
                     ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
         }
 
         ProjectsRecord newProject = projectRepository.makeNewProject(
                 newProjectDto.getProjectName(),
-                newProjectDto.getTeamIDInt()
+                newProjectDto.getTeamID()
         );
 
         newProjectDto.setProjectID(newProject.getProjectId());

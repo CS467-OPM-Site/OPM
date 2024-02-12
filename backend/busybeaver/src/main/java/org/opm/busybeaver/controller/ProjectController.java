@@ -37,19 +37,7 @@ public class ProjectController {
             @Valid @RequestBody NewProjectDto newProjectDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
-    ) throws HttpMessageNotReadableException {
-        // Double-check an integer is passed as TeamID, or pass it back to the User
-        try {
-            String teamIDtoValidate = newProjectDto.getTeamID();
-            Integer.parseInt(teamIDtoValidate);
-        } catch (NumberFormatException e) {
-            throw new HttpMessageNotReadableException(
-                    ErrorMessageConstants.INVALID_HTTP_REQUEST.getValue(),
-                    Objects.requireNonNull(WebUtils.getNativeRequest(request, HttpInputMessage.class)));
-        }
-
-        newProjectDto.setTeamIDInt(Integer.parseInt(newProjectDto.getTeamID()));
-
+    ) {
         NewProjectDto projectDto = projectService.makeNewProject(userDto, newProjectDto, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), projectDto.getProjectLocation());
         response.setStatus(HttpStatus.CREATED.value());

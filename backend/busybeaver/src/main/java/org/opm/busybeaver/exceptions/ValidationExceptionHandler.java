@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,7 +33,7 @@ public class ValidationExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> invalidHttpMessage(HttpMessageNotReadableException err, HttpServletRequest request) {
+    public ResponseEntity<?> unableToReadHTTPMessage(HttpMessageNotReadableException err, HttpServletRequest request) {
 
         if (err.getMessage().contains(ErrorMessageConstants.REQUIRED_REQUEST_BODY_IS_MISSING.getValue())) {
             return new ResponseEntity<>(

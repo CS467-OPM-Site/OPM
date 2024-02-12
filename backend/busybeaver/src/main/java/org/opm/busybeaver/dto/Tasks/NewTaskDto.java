@@ -1,7 +1,6 @@
 package org.opm.busybeaver.dto.Tasks;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import org.opm.busybeaver.annotations.PriorityValidation;
 
@@ -9,7 +8,7 @@ import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public final class TaskDto {
+public final class NewTaskDto {
 
     @NotBlank(message = "Missing 'username' attribute to make a new user")
     @Size(min = 3, max = 100, message = "Task title must be 3 to 100 characters")
@@ -19,7 +18,7 @@ public final class TaskDto {
     private final String description;
 
     @Min(value = 1, message = "columnID must be a positive non-zero integer ID of the associated column")
-    private final Integer columnID;
+    private Integer columnID;
 
     @Min(value = 1, message = "assignedTo must be a positive non-zero integer ID of the associated user")
     private final Integer assignedTo;
@@ -36,12 +35,13 @@ public final class TaskDto {
 
     private final ArrayList<String> customFields;
 
-    public TaskDto(
+
+    public NewTaskDto(
             String title,
-            @Nullable String description,
             @Nullable Integer columnID,
-            @Nullable Integer assignedTo,
+            @Nullable String description,
             @Nullable LocalDate dueDate,
+            @Nullable Integer assignedTo,
             @Nullable String priority,
             @Nullable Integer sprintID,
             @Nullable ArrayList<String> customFields) {
@@ -56,11 +56,11 @@ public final class TaskDto {
         this.customFields = customFields;
     }
 
-    @JsonProperty("priority")
+    public void setColumnID(int columnID) {
+        this.columnID = columnID;
+    }
+
     public void setPriority(String priority) {
-        if ("foo".equals(priority)) {
-            System.out.println("Found FOO!");
-        }
         this.priority = priority;
     }
 

@@ -20,6 +20,8 @@ public enum ErrorMessageConstants {
     PROJECT_ALREADY_EXISTS_FOR_TEAM("Project name for that team already exists, please choose another project name"),
     USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST("User not in project, or project does not exist"),
     TEAM_STILL_HAS_PROJECTS("Team still has associated projects - remove them before deleting the team"),
+    COLUMN_NOT_IN_PROJECT("Given column does not exist in this project"),
+    SPRINT_NOT_IN_PROJECT("Given sprint does not exist in this project"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

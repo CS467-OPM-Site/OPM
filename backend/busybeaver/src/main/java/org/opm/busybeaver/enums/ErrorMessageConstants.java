@@ -12,6 +12,7 @@ public enum ErrorMessageConstants {
     TEAM_DOES_NOT_EXIST("That team does not exist"),
     TEAM_STILL_HAS_MEMBERS("Team still contains other members - remove them before deleting the team"),
     REQUIRED_REQUEST_BODY_IS_MISSING("Required request body is missing"),
+    INVALID_INTEGER_VALUE("Integer values, such as IDs, must contain positive non-zero integers, with no decimals"),
     INVALID_HTTP_REQUEST("Invalid HTTP request made, please check all input and request body arguments"),
     TEAM_ALREADY_EXISTS_FOR_USER("You have already made a team with this name"),
     USER_ALREADY_IN_TEAM("User already exists in this team"),

@@ -37,6 +37,14 @@ Setting username to null, as follows, would indicate desire to not include it in
 
 ------------------------------------------------------------------------------------------
 
+### ID Values
+
+Values that must include an ID cannot contain decimal or negative values.
+
+They must contain a positive, non-zero integer value associated with the given entity.
+
+------------------------------------------------------------------------------------------
+
 ### Versioning
 
 #### Current Version: 1
@@ -878,8 +886,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "description": "This is another task!", # Optional - a description of only spaces is considered null
 >     "columnID": 1,                          # Optional, defaults to first in-order column if not included
 >     "assignedTo": 1,                        # Optional, ID of the user who it is being assigned to, or null
->     "dueDate": "2024-11-03",                # Optional
->     "priority": "High",                     # Optional, defaults to 'None' 
+>     "dueDate": "2024-11-03",                # Optional, in format "yyyy-MM-dd"
+>     "priority": "High",                     # Optional, must be one of: 'High', 'Medium', 'Low', 'None', defaults to 'None' 
 >     "sprintID": 1,                          # Optional
 >     "customFields": [ ... ]                 # Optional
 > }
@@ -892,7 +900,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. Project must have at least one column. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Invalid task attribute"}` | Invalid task attribute in request. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Sprint not found"}` | Sprint not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Assignee not found"}` | Assignee not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
@@ -904,7 +911,13 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "title": "Task 1",
 >     "taskID": 1,
->     "taskColumnIndex": 0,       # Indicates location on board, default first column
+>     "columnID": 1,                          # ID of column to be placed under
+>     "priority": "None",                     # Other possible values: 'High', 'Medium', 'Low'
+>     "description": "None",                  # Nullable
+>     "dueDate": "None",                      # Nullable
+>     "sprintID": "None",                     # Nullable
+>     "assignedTo": "None",                   # Nullable
+>     "taskLocation": "/api/v1/projects/1/tasks/1",
 > }
 > ```
 

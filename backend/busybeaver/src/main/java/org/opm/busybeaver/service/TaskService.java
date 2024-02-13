@@ -24,6 +24,7 @@ public class TaskService implements ValidateUserAndProjectInterface {
     private final TaskRepository taskRepository;
     private final ColumnRepository columnRepository;
     private final SprintRepository sprintRepository;
+    private final ProjectUsersRepository projectUsersRepository;
 
     @Autowired
     public TaskService(
@@ -31,13 +32,15 @@ public class TaskService implements ValidateUserAndProjectInterface {
             UserRepository userRepository,
             TaskRepository taskRepository,
             ColumnRepository columnRepository,
-            SprintRepository sprintRepository
+            SprintRepository sprintRepository,
+            ProjectUsersRepository projectUsersRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.columnRepository = columnRepository;
         this.sprintRepository = sprintRepository;
+        this.projectUsersRepository = projectUsersRepository;
     }
 
     public TaskCreatedDto addTask(NewTaskDto newTaskDto, UserDto userDto, int projectID, String contextPath)
@@ -58,7 +61,7 @@ public class TaskService implements ValidateUserAndProjectInterface {
 
         // If assignedTo, validate user exists in Project
         if (newTaskDto.getAssignedTo() != null &&
-            !projectRepository.isUserInProjectAndDoesProjectExist(newTaskDto.getAssignedTo(), projectID)) {
+            !projectUsersRepository.isUserInProjectAndDoesProjectExist(newTaskDto.getAssignedTo(), projectID)) {
             throw new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
                     ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
         }
@@ -140,7 +143,7 @@ public class TaskService implements ValidateUserAndProjectInterface {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         // Validate user in project and project exists
-        if (!projectRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
+        if (!projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
             throw new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
                     ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
         }

@@ -134,18 +134,6 @@ public class ProjectRepository {
                 .fetchInto(ProjectSummaryDto.class);
     }
 
-    public Boolean isUserInProjectAndDoesProjectExist(int userID, int projectID) {
-        // SELECT EXISTS(
-        //      SELECT ProjectUsers.project_id,ProjectUsers.user_id
-        //      FROM ProjectUsers
-        //      WHERE ProjectUsers.project_id = projectID
-        //      AND ProjectUsers.user_id = userID
-        return create.fetchExists(
-                create.selectFrom(PROJECTUSERS)
-                        .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
-                        .and(PROJECTUSERS.USER_ID.eq(userID))
-        );
-    }
 
     public ProjectDetailsDto getSpecificProjectDetails(int projectID) {
         // First get all tasks

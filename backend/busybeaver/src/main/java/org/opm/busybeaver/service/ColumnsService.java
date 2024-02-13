@@ -7,10 +7,7 @@ import org.opm.busybeaver.exceptions.Columns.ColumnsExceptions;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
-import org.opm.busybeaver.repository.ColumnRepository;
-import org.opm.busybeaver.repository.ProjectRepository;
-import org.opm.busybeaver.repository.TaskRepository;
-import org.opm.busybeaver.repository.UserRepository;
+import org.opm.busybeaver.repository.*;
 import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,18 +18,21 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
     private final UserRepository userRepository;
     private final ColumnRepository columnRepository;
     private final TaskRepository taskRepository;
+    private final ProjectUsersRepository projectUsersRepository;
 
     @Autowired
     public ColumnsService(
             ProjectRepository projectRepository,
             UserRepository userRepository,
             ColumnRepository columnRepository,
-            TaskRepository taskRepository
+            TaskRepository taskRepository,
+            ProjectUsersRepository projectUsersRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.columnRepository = columnRepository;
         this.taskRepository = taskRepository;
+        this.projectUsersRepository = projectUsersRepository;
     }
 
     public NewColumnDto addNewColumn(UserDto userDto, NewColumnDto newColumnDto, int projectID, String contextPath)
@@ -85,7 +85,7 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         // Validate user in project and project exists
-        if (!projectRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
+        if (!projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
             throw new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
                     ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
         }

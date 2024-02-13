@@ -12,6 +12,7 @@ import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
 import org.opm.busybeaver.repository.ProjectRepository;
+import org.opm.busybeaver.repository.ProjectUsersRepository;
 import org.opm.busybeaver.repository.TeamRepository;
 import org.opm.busybeaver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,19 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final ProjectUsersRepository projectUsersRepository;
 
     @Autowired
     public ProjectService(
             ProjectRepository projectRepository,
             UserRepository userRepository,
-            TeamRepository teamRepository
+            TeamRepository teamRepository,
+            ProjectUsersRepository projectUsersRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
+        this.projectUsersRepository = projectUsersRepository;
     }
 
     public NewProjectDto makeNewProject(UserDto userDto, NewProjectDto newProjectDto, String contextPath)
@@ -75,7 +79,7 @@ public class ProjectService {
         throws UsersExceptions.UserDoesNotExistException, ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
-        if (!projectRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
+        if (!projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
             throw new ProjectsExceptions
                     .UserNotInProjectOrProjectDoesNotExistException(
                             ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue()

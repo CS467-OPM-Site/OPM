@@ -3,6 +3,7 @@ package org.opm.busybeaver.repository;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Tasks.NewTaskDto;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.jooq.tables.Tasks;
 import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -65,6 +66,10 @@ public class TaskRepository {
                         .where(TASKS.TASK_ID.eq(taskID))
                         .and(TASKS.PROJECT_ID.eq(projectID))
                         .fetchOne();
+    }
+
+    public void deleteTask(int taskID) {
+        create.deleteFrom(TASKS).where(TASKS.TASK_ID.eq(taskID)).execute();
     }
 
     public void moveTaskToAnotherColumn(int taskID, int projectID, int columnID) {

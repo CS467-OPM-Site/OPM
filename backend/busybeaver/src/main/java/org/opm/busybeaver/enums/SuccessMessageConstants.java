@@ -5,7 +5,8 @@ public enum SuccessMessageConstants {
     USER_ADDED("User added"),
     TEAM_DELETED("Team deleted"),
     TEAM_MEMBER_REMOVED("User removed from team"),
-    TASK_MOVED("Task moved");
+    TASK_MOVED("Task moved"),
+    TASK_DELETED("Task deleted");
 
     private final String value;
 

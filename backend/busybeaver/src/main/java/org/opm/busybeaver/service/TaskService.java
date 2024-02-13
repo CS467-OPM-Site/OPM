@@ -86,7 +86,8 @@ public class TaskService {
             throws UsersExceptions.UserDoesNotExistException,
             ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException,
             ColumnsExceptions.ColumnDoesNotExistInProject,
-            TasksExceptions.TaskDoesNotExistInProject {
+            TasksExceptions.TaskDoesNotExistInProject,
+            TasksExceptions.TaskAlreadyInColumn {
 
         // Validate user exists, is in project and project exists
         validateUserInValidProjectAndReturn(userDto, projectID);
@@ -107,6 +108,27 @@ public class TaskService {
 
         // Move task over to the other column
         taskRepository.moveTaskToAnotherColumn(taskID, projectID, columnID);
+
+        // Update project last updated time
+        projectRepository.updateLastUpdatedForProject(projectID);
+    }
+
+    public void deleteTask(UserDto userDto, int projectID, int taskID)
+            throws UsersExceptions.UserDoesNotExistException,
+            ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException,
+            TasksExceptions.TaskDoesNotExistInProject {
+
+        // Validate user exists, is in project and project exists
+        validateUserInValidProjectAndReturn(userDto, projectID);
+
+        // Validate task, task in project
+        TasksRecord taskToDelete = taskRepository.doesTaskExistInProject(taskID, projectID);
+        if (taskToDelete == null) {
+            throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+        }
+
+        // Delete task from project
+        taskRepository.deleteTask(taskID);
 
         // Update project last updated time
         projectRepository.updateLastUpdatedForProject(projectID);

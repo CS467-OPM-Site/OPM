@@ -54,6 +54,17 @@ public class TasksController {
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_MOVED.getValue());
     }
 
+    @DeleteMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH + "/{taskID}")
+    public SmallJsonResponse deleteTask(
+            @PathVariable int projectID,
+            @PathVariable int taskID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        taskService.deleteTask(userDto, projectID, taskID);
+
+        return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_DELETED.getValue());
+    }
+
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     public UserDto user(HttpServletRequest request) {

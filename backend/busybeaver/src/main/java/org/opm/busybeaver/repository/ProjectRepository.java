@@ -1,5 +1,6 @@
 package org.opm.busybeaver.repository;
 
+import com.google.api.services.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.*;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,16 @@ public class ProjectRepository {
                 .fetchSingleInto(int.class);
 
         return (projectCount >= 1);
+    }
+
+    public void updateLastUpdatedForProject(int projectID) {
+        // UPDATE Projects
+        // SET last_updated = CURRENT_TIMESTAMP
+        // WHERE project_id = projectID
+        create.update(PROJECTS)
+                .set(PROJECTS.LAST_UPDATED, LocalDateTime.now())
+                .where(PROJECTS.PROJECT_ID.eq(projectID))
+                .execute();
     }
 
     @Transactional

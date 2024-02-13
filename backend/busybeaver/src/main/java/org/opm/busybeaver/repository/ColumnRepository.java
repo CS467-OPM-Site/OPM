@@ -54,11 +54,6 @@ public class ColumnRepository {
                 .fetchSingle().component1();
     }
 
-
-
-
-
-
     @NotNull
     private static ArrayList<ColumnsRecord> createDefaultColumnRecords(DefaultColumnNames[] defaultColumnNames, int projectID) {
         ArrayList<ColumnsRecord> newColumnRecords = new ArrayList<>(defaultColumnNames.length);

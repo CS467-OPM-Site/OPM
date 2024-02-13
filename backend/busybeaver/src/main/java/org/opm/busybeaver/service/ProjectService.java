@@ -11,10 +11,8 @@ import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
-import org.opm.busybeaver.repository.ProjectRepository;
-import org.opm.busybeaver.repository.ProjectUsersRepository;
-import org.opm.busybeaver.repository.TeamRepository;
-import org.opm.busybeaver.repository.UserRepository;
+import org.opm.busybeaver.repository.*;
+import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,24 +20,27 @@ import java.util.List;
 
 
 @Service
-public class ProjectService {
+public final class ProjectService implements ValidateUserAndProjectInterface {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final ProjectUsersRepository projectUsersRepository;
+    private final TaskRepository taskRepository;
 
     @Autowired
     public ProjectService(
             ProjectRepository projectRepository,
             UserRepository userRepository,
             TeamRepository teamRepository,
-            ProjectUsersRepository projectUsersRepository
+            ProjectUsersRepository projectUsersRepository,
+            TaskRepository taskRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.projectUsersRepository = projectUsersRepository;
+        this.taskRepository = taskRepository;
     }
 
     public NewProjectDto makeNewProject(UserDto userDto, NewProjectDto newProjectDto, String contextPath)
@@ -61,6 +62,22 @@ public class ProjectService {
         newProjectDto.setProjectID(newProject.getProjectId());
         newProjectDto.setProjectLocation(contextPath);
         return newProjectDto;
+    }
+
+    public void deleteProject(UserDto userDto, int projectID) {
+        // Validate user exists and in a valid project
+        validateUserValidAndInsideValidProject(userDto, projectID);
+
+        // Validate if tasks still exist in project
+        boolean projectHasZeroTasksLeft = taskRepository.doesProjectHaveZeroTasks(projectID);
+
+        if (!projectHasZeroTasksLeft) {
+            throw new ProjectsExceptions.ProjectMustHaveZeroTasksBeforeDeletion(
+                    ErrorMessageConstants.PROJECT_STILL_HAS_TASKS.getValue());
+        }
+
+        // Delete the project
+        projectRepository.deleteProject(projectID);
     }
 
     public ProjectsSummariesDto getUserProjectsSummary(UserDto userDto, String contextPath)
@@ -90,5 +107,16 @@ public class ProjectService {
         projectDetails.setProjectTeamColumnTaskLocation(contextPath);
 
         return projectDetails;
+    }
+
+    @Override
+    public void validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
+        BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
+
+        // Validate user in project and project exists
+        if (!projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID)) {
+            throw new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
+                    ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
+        }
     }
 }

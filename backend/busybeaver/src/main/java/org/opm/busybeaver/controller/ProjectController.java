@@ -7,9 +7,11 @@ import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerToken
 import org.opm.busybeaver.dto.Projects.NewProjectDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
+import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,20 @@ public final class ProjectController implements GetUserFromBearerTokenInterface 
         response.setStatus(HttpStatus.CREATED.value());
 
         return projectDto;
+    }
+
+    @DeleteMapping(PROJECTS_PATH + "/{projectID}")
+    public SmallJsonResponse deleteProject(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        projectService.deleteProject(userDto, projectID);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.PROJECT_DELETED.getValue()
+        );
     }
 
     @GetMapping(PROJECTS_PATH)

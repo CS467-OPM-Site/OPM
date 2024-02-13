@@ -29,7 +29,8 @@ public enum ErrorMessageConstants {
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token."),
     USER_ALREADY_IN_PROJECT("User already in this project"),
     USER_NOT_IN_PROJECT("User not in this project"),
-    PROJECT_CANNOT_HAVE_ZERO_USERS("The last member of a project cannot remove themselves");
+    PROJECT_CANNOT_HAVE_ZERO_USERS("The last member of a project cannot remove themselves"),
+    PROJECT_STILL_HAS_TASKS("Projects must have no tasks left before they can be deleted");
 
     private final String value;
 

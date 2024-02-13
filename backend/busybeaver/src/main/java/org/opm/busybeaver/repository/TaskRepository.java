@@ -1,9 +1,10 @@
 package org.opm.busybeaver.repository;
 
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
 import org.opm.busybeaver.dto.Tasks.NewTaskDto;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
-import org.opm.busybeaver.jooq.tables.Tasks;
 import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
-import static org.opm.busybeaver.jooq.Tables.COLUMNS;
+import static org.jooq.impl.DSL.count;
 import static org.opm.busybeaver.jooq.tables.Tasks.TASKS;
 
 @Repository
@@ -65,6 +66,24 @@ public class TaskRepository {
                         .where(TASKS.TASK_ID.eq(taskID))
                         .and(TASKS.PROJECT_ID.eq(projectID))
                         .fetchOne();
+    }
+
+    public Boolean doesProjectHaveZeroTasks(int projectID) {
+        // SELECT Tasks.project_id, COUNT(*)
+        // FROM Tasks
+        // WHERE Tasks.project_id = projectID
+        // GROUP BY Tasks.project_Id
+        @Nullable Record2<Integer, Integer> countOfTasksInProject = create.select(TASKS.PROJECT_ID, count())
+                .from(TASKS)
+                .where(TASKS.PROJECT_ID.eq(projectID))
+                .groupBy(TASKS.PROJECT_ID)
+                .fetchOne();
+
+        if (countOfTasksInProject == null) {
+            return true;
+        }
+
+        return (countOfTasksInProject.value2() == 0);
     }
 
     public Boolean doesTaskExistInColumnInProject(int projectID, int columnID) {

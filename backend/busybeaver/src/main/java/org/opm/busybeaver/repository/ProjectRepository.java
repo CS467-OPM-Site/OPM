@@ -94,6 +94,10 @@ public class ProjectRepository {
         }
     }
 
+    public void deleteProject(int projectID) {
+        create.deleteFrom(PROJECTS).where(PROJECTS.PROJECT_ID.eq(projectID)).execute();
+    }
+
     @NotNull
     private static ArrayList<ProjectusersRecord> createProjectusersRecords(List<TeamusersRecord> teamusersRecordList, ProjectsRecord newProject) {
         ArrayList<ProjectusersRecord> newProjectUsers = new ArrayList<>(teamusersRecordList.size());

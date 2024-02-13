@@ -10,7 +10,7 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
-import org.opm.busybeaver.service.ColumnsService;
+import org.opm.busybeaver.service.ColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 public final class ColumnsController implements GetUserFromBearerTokenInterface {
-    private final ColumnsService columnsService;
+    private final ColumnService columnService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String COLUMNS_PATH = BusyBeavPaths.Constants.COLUMNS;
 
     @Autowired
-    public ColumnsController(ColumnsService columnsService) { this.columnsService = columnsService; }
+    public ColumnsController(ColumnService columnService) { this.columnService = columnService; }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + COLUMNS_PATH)
     public NewColumnDto addColumnToProject(
@@ -34,7 +34,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        NewColumnDto newColumn = columnsService.addNewColumn(userDto, newColumnDto, projectID, request.getContextPath());
+        NewColumnDto newColumn = columnService.addNewColumn(userDto, newColumnDto, projectID, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newColumn.getColumnLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -47,7 +47,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
             @PathVariable int columnID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        columnsService.deleteColumn(userDto, projectID, columnID);
+        columnService.deleteColumn(userDto, projectID, columnID);
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),

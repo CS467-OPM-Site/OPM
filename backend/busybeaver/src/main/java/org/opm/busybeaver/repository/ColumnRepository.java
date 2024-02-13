@@ -4,8 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
 import org.opm.busybeaver.enums.DefaultColumnNames;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.Columns.ColumnsExceptions;
 import org.opm.busybeaver.jooq.tables.records.ColumnsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,11 +91,16 @@ public class ColumnRepository {
         // Second, insert new column with next column, making it last in-order column
         // INSERT INTO Columns (column_title, project_id, column_index)
         // VALUES (...)
-        return create
-                .insertInto(COLUMNS, COLUMNS.COLUMN_TITLE, COLUMNS.PROJECT_ID, COLUMNS.COLUMN_INDEX)
-                .values(newColumnDto.getColumnTitle(), projectID, (short) (maxColumnIndex + 1))
-                .returningResult(COLUMNS.COLUMN_TITLE,COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
-                .fetchSingleInto(NewColumnDto.class);
+        try {
+            return create
+                    .insertInto(COLUMNS, COLUMNS.COLUMN_TITLE, COLUMNS.PROJECT_ID, COLUMNS.COLUMN_INDEX)
+                    .values(newColumnDto.getColumnTitle(), projectID, (short) (maxColumnIndex + 1))
+                    .returningResult(COLUMNS.COLUMN_TITLE,COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
+                    .fetchSingleInto(NewColumnDto.class);
+        } catch (DuplicateKeyException e) {
+            // Column title already exists in project, constraint does not allow this
+            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+        }
     }
 
     public int getFirstInOrderColumnFromProject(int projectID) {

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ColumnsService implements ValidateUserAndProjectInterface {
+public class ColumnService implements ValidateUserAndProjectInterface {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ColumnRepository columnRepository;
@@ -21,7 +21,7 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
     private final ProjectUsersRepository projectUsersRepository;
 
     @Autowired
-    public ColumnsService(
+    public ColumnService(
             ProjectRepository projectRepository,
             UserRepository userRepository,
             ColumnRepository columnRepository,
@@ -43,13 +43,7 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         // Validate user, is user in project
         validateUserValidAndInsideValidProject(userDto, projectID);
 
-        // Validate column name not already in project
-        if (columnRepository.doesColumnExistInProject(newColumnDto.getColumnTitle(), projectID)) {
-            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(
-                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
-        }
-
-        // Create column, add to project, move to end
+        // Create column, add to project after validating for duplicate, move to end
         NewColumnDto newColumn = columnRepository.addNewColumnToProject(newColumnDto, projectID);
         newColumn.setColumnLocation(contextPath, projectID);
 

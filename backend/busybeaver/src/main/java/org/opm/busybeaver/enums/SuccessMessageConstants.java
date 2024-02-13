@@ -8,7 +8,8 @@ public enum SuccessMessageConstants {
     TASK_MOVED("Task moved"),
     TASK_DELETED("Task deleted"),
     COLUMN_DELETED("Column removed from project"),
-    USER_WAS_ADDED_TO_PROJECT(" was added to the project"); // Place username in front
+    USER_WAS_ADDED_TO_PROJECT(" was added to the project"), // Place username in front
+    USER_WAS_REMOVED_FROM_PROJECT(" was removed from the project"); // Place username in front
 
     private final String value;
 

@@ -7,4 +7,16 @@ public final class ProjectUsersExceptions {
             super(errorMessage);
         }
     }
+
+    public static class UserNotInProject extends RuntimeException {
+        public UserNotInProject(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static class ProjectCannotHaveZeroUsers extends RuntimeException {
+        public ProjectCannotHaveZeroUsers(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

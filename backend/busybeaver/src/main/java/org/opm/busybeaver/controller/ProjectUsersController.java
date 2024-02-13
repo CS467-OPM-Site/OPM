@@ -42,6 +42,20 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
         );
     }
 
+    @DeleteMapping(PROJECT_PATH + "/{projectID}" + USERS_PATH)
+    public SmallJsonResponse removeUserFromProject(
+            @PathVariable int projectID,
+            @Valid @RequestBody UsernameDto usernameDto,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        projectUsersService.removeUserFromProject(userDto, projectID, usernameDto);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                usernameDto.username() + SuccessMessageConstants.USER_WAS_REMOVED_FROM_PROJECT.getValue()
+        );
+    }
+
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override
     public UserDto getUserFromToken(HttpServletRequest request) {

@@ -7,4 +7,10 @@ public final class ColumnsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ColumnTitleAlreadyInProject extends RuntimeException {
+        public ColumnTitleAlreadyInProject(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

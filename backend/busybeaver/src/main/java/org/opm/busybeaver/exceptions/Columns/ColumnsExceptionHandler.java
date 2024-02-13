@@ -20,4 +20,15 @@ public class ColumnsExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
+
+    @ExceptionHandler(ColumnsExceptions.ColumnTitleAlreadyInProject.class)
+    public ResponseEntity<?> columnTitleAlreadyExistsInProject() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue(),
+                        HttpStatus.CONFLICT.value()
+                ),
+                HttpStatus.CONFLICT
+        );
+    }
 }

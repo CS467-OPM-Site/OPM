@@ -13,11 +13,12 @@ import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.opm.busybeaver.repository.*;
+import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TaskService {
+public class TaskService implements ValidateUserAndProjectInterface {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
@@ -45,7 +46,7 @@ public class TaskService {
             ColumnsExceptions.ColumnDoesNotExistInProject
     {
         // Validate user exists, is in project and project exists
-        validateUserInValidProjectAndReturn(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID);
 
         // If column, validate column in project
         if (newTaskDto.getColumnID() != null) {
@@ -90,7 +91,7 @@ public class TaskService {
             TasksExceptions.TaskAlreadyInColumn {
 
         // Validate user exists, is in project and project exists
-        validateUserInValidProjectAndReturn(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID);
 
         // Validate new column exists in project
         doesColumnExistInProject(columnID, projectID);
@@ -119,7 +120,7 @@ public class TaskService {
             TasksExceptions.TaskDoesNotExistInProject {
 
         // Validate user exists, is in project and project exists
-        validateUserInValidProjectAndReturn(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID);
 
         // Validate task, task in project
         TasksRecord taskToDelete = taskRepository.doesTaskExistInProject(taskID, projectID);
@@ -134,8 +135,8 @@ public class TaskService {
         projectRepository.updateLastUpdatedForProject(projectID);
     }
 
-    private void validateUserInValidProjectAndReturn(UserDto userDto, int projectID)
-            throws ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException{
+    @Override
+    public void validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
         BeaverusersRecord beaverusersRecord = userRepository.verifyUserExistsAndReturn(userDto);
 
         // Validate user in project and project exists

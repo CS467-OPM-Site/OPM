@@ -3,6 +3,7 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Teams.MembersInTeamDto;
 import org.opm.busybeaver.dto.Teams.NewTeamDto;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public class TeamsController {
+public final class TeamsController implements GetUserFromBearerTokenInterface {
     private final TeamService teamService;
     private static final String TEAMS_PATH = BusyBeavPaths.Constants.TEAMS;
     private static final String MEMBERS_PATH = BusyBeavPaths.Constants.MEMBERS;
@@ -116,7 +117,8 @@ public class TeamsController {
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
-    public UserDto user(HttpServletRequest request) {
+    @Override
+    public UserDto getUserFromToken(HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 }

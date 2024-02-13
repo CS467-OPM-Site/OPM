@@ -3,6 +3,7 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Tasks.NewTaskDto;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public class TasksController {
+public final class TasksController implements GetUserFromBearerTokenInterface {
     private final TaskService taskService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String TASKS_PATH  = BusyBeavPaths.Constants.TASKS;
@@ -67,7 +68,8 @@ public class TasksController {
 
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
-    public UserDto user(HttpServletRequest request) {
+    @Override
+    public UserDto getUserFromToken(HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 

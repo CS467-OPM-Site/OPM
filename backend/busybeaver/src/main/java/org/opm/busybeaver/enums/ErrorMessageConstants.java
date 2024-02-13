@@ -21,6 +21,7 @@ public enum ErrorMessageConstants {
     USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST("User not in project, or project does not exist"),
     TEAM_STILL_HAS_PROJECTS("Team still has associated projects - remove them before deleting the team"),
     COLUMN_NOT_IN_PROJECT("Given column does not exist in this project"),
+    COLUMN_TITLE_ALREADY_IN_PROJECT("Given column title already exists in this project"),
     SPRINT_NOT_IN_PROJECT("Given sprint does not exist in this project"),
     TASK_NOT_IN_PROJECT("Given task does not exist in this project"),
     TASK_ALREADY_IN_COLUMN("Task already in given column"),

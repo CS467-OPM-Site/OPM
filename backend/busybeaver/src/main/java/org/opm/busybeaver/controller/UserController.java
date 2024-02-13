@@ -3,6 +3,7 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public class UserController {
+public final class UserController implements GetUserFromBearerTokenInterface {
 
     private final UserService userService;
     private static final String USERS_PATH = BusyBeavPaths.Constants.USERS;
@@ -53,7 +54,8 @@ public class UserController {
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
-    public UserDto user(HttpServletRequest request) {
+    @Override
+    public UserDto getUserFromToken(HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 

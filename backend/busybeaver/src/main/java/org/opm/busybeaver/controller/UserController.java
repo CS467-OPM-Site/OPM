@@ -21,13 +21,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private static final String USERS_PATH = BusyBeavPaths.Constants.USERS;
+    private static final String REGISTER_PATH  = BusyBeavPaths.Constants.REGISTER;
+    private static final String AUTH_PATH  = BusyBeavPaths.Constants.AUTH;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
+    @PostMapping(USERS_PATH + REGISTER_PATH)
     public AuthenticatedUser registerUser(
             @Valid @RequestBody UsernameDto usernameRegisterDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
@@ -41,7 +44,7 @@ public class UserController {
         return newUser;
     }
 
-    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)
+    @PostMapping(USERS_PATH + AUTH_PATH)
     public AuthenticatedUser authenticateUser(
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
     throws UsersExceptions.UserDoesNotExistException {

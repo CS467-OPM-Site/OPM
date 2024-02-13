@@ -27,11 +27,12 @@ import java.util.Objects;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
 
     @Autowired
     public ProjectController(ProjectService projectService) { this.projectService = projectService; }
 
-    @PostMapping(BusyBeavPaths.Constants.PROJECTS)
+    @PostMapping(PROJECTS_PATH)
     public NewProjectDto makeNewProject(
             HttpServletRequest request,
             @Valid @RequestBody NewProjectDto newProjectDto,
@@ -45,7 +46,7 @@ public class ProjectController {
         return projectDto;
     }
 
-    @GetMapping(BusyBeavPaths.Constants.PROJECTS)
+    @GetMapping(PROJECTS_PATH)
     public ProjectsSummariesDto getUserProjectsSummary(
             HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
@@ -53,7 +54,7 @@ public class ProjectController {
         return projectService.getUserProjectsSummary(userDto, request.getContextPath());
     }
 
-    @GetMapping(BusyBeavPaths.Constants.PROJECTS + "/{projectID}")
+    @GetMapping(PROJECTS_PATH + "/{projectID}")
     public ProjectDetailsDto getSpecificProjectDetails(
             HttpServletRequest request,
             @PathVariable int projectID,

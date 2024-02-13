@@ -57,15 +57,27 @@ public class TaskRepository {
     }
 
     public TasksRecord doesTaskExistInProject(int taskID, int projectID) {
-        // SELECT EXISTS(
-        //      SELECT *
-        //      FROM Tasks
-        //      WHERE Tasks.task_id = taskID
-        //      AND Tasks.project_id = projectID)
+        // SELECT *
+        // FROM Tasks
+        // WHERE Tasks.task_id = taskID
+        // AND Tasks.project_id = projectID)
         return create.selectFrom(TASKS)
                         .where(TASKS.TASK_ID.eq(taskID))
                         .and(TASKS.PROJECT_ID.eq(projectID))
                         .fetchOne();
+    }
+
+    public Boolean doesTaskExistInColumnInProject(int projectID, int columnID) {
+        // SELECT EXISTS(
+        //      SELECT *
+        //      FROM Tasks
+        //      WHERE Tasks.project_id = projectID
+        //      AND Tasks.column_id = columnID)
+        return create.fetchExists(
+                create.selectFrom(TASKS)
+                        .where(TASKS.PROJECT_ID.eq(projectID))
+                        .and(TASKS.COLUMN_ID.eq(columnID))
+        );
     }
 
     public void deleteTask(int taskID) {

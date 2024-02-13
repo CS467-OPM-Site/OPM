@@ -13,4 +13,10 @@ public final class ColumnsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ColumnStillContainsTasks extends RuntimeException {
+        public ColumnStillContainsTasks(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

@@ -25,6 +25,7 @@ public enum ErrorMessageConstants {
     SPRINT_NOT_IN_PROJECT("Given sprint does not exist in this project"),
     TASK_NOT_IN_PROJECT("Given task does not exist in this project"),
     TASK_ALREADY_IN_COLUMN("Task already in given column"),
+    COLUMN_CONTAINS_TASKS("Column still contains tasks, cannot be deleted"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

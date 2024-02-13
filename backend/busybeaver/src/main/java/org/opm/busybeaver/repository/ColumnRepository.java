@@ -58,6 +58,22 @@ public class ColumnRepository {
         );
     }
 
+    public void removeColumnAndShiftOtherColumns(int projectID, int columnID) {
+        // Delete the column, and return its index
+        int indexOfDeletedColumn = create
+                .deleteFrom(COLUMNS)
+                .where(COLUMNS.COLUMN_ID.eq(columnID))
+                .returningResult(COLUMNS.COLUMN_INDEX)
+                .fetchSingle().component1();
+
+        // Then, find all columns above that column's index, and decrement their index
+        create.update(COLUMNS)
+                .set(COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_INDEX.minus(1))
+                .where(COLUMNS.PROJECT_ID.eq(projectID))
+                .and(COLUMNS.COLUMN_INDEX.greaterThan((short) indexOfDeletedColumn))
+                .execute();
+    }
+
     @Transactional
     public NewColumnDto addNewColumnToProject(NewColumnDto newColumnDto, int projectID) {
         // First, find the highest index of columns associated in project

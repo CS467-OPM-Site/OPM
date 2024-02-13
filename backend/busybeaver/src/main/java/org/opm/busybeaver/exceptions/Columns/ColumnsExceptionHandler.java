@@ -31,4 +31,15 @@ public class ColumnsExceptionHandler {
                 HttpStatus.CONFLICT
         );
     }
+
+    @ExceptionHandler(ColumnsExceptions.ColumnStillContainsTasks.class)
+    public ResponseEntity<?> columnStillContainsTasks() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.COLUMN_CONTAINS_TASKS.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

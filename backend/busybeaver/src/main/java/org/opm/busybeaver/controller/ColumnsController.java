@@ -5,9 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
+import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.service.ColumnsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
     public ColumnsController(ColumnsService columnsService) { this.columnsService = columnsService; }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + COLUMNS_PATH)
-    public NewColumnDto makeNewProject(
+    public NewColumnDto addColumnToProject(
             HttpServletRequest request,
             @Valid @RequestBody NewColumnDto newColumnDto,
             @PathVariable int projectID,
@@ -37,6 +39,20 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
         response.setStatus(HttpStatus.CREATED.value());
 
         return newColumn;
+    }
+
+    @DeleteMapping(PROJECTS_PATH + "/{projectID}" + COLUMNS_PATH + "/{columnID}")
+    public SmallJsonResponse deleteColumnFromProject(
+            @PathVariable int projectID,
+            @PathVariable int columnID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        columnsService.deleteColumn(userDto, projectID, columnID);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.COLUMN_DELETED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

@@ -27,7 +27,7 @@ public class TeamRepository {
     @Autowired
     public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
 
-    public TeamsRecord makeNewTeam(Integer userID, String teamName) throws TeamAlreadyExistsForUserException {
+    public TeamsRecord makeNewTeam(int userID, String teamName) throws TeamAlreadyExistsForUserException {
         // INSERT INTO Teams (Teams.team_name, Teams.team_creator)
         // VALUES
         // (teamName, userID);
@@ -51,13 +51,13 @@ public class TeamRepository {
         }
     }
 
-    public List<TeamSummaryDto> getUserHomePageTeams(Integer userId) {
+    public List<TeamSummaryDto> getUserHomePageTeams(int userId) {
         // SELECT Teams.team_id, Teams.team_name, Teams.team_creator
         // FROM Teams
         // WHERE Teams.team_id IN (
         //      SELECT TeamUsers.team_id
         //      FROM TeamUsers
-        //      WHERE TeamUsers.user_id = 1
+        //      WHERE TeamUsers.user_id = userId
         //      );
         return create
                 .select(TEAMS.TEAM_ID, TEAMS.TEAM_NAME, TEAMS.TEAM_CREATOR)
@@ -71,12 +71,12 @@ public class TeamRepository {
                 .fetchInto(TeamSummaryDto.class);
     }
 
-    public Boolean isUserInTeamAndDoesTeamExist(Integer userID, Integer teamID) {
+    public Boolean isUserInTeamAndDoesTeamExist(int userID, int teamID) {
         // SELECT EXISTS(
         //      SELECT TeamUsers.team_id,TeamUsers.user_id
         //      FROM TeamUsers
         //      WHERE TeamUsers.team_id = teamID
-        //      AND TeamUsers.user_id = userID
+        //      AND TeamUsers.user_id = userID)
         return create.fetchExists(
                     create.selectFrom(TEAMUSERS)
                         .where(TEAMUSERS.TEAM_ID.eq(teamID))
@@ -84,7 +84,52 @@ public class TeamRepository {
                     );
     }
 
-    public List<ProjectByTeamDto> getAllProjectsAssociatedWithTeam(Integer userID, Integer teamID) {
+    public Boolean isUserCreatorOfTeam(int userID, int teamID) {
+        // SELECT EXISTS(
+        //      SELECT *
+        //      FROM Teams
+        //      WHERE Teams.team_id = teamID
+        //      AND Teams.team_creator = userID)
+        return create.fetchExists(
+                create.selectFrom(TEAMS)
+                        .where(TEAMS.TEAM_ID.eq(teamID))
+                        .and(TEAMS.TEAM_CREATOR.eq(userID))
+            );
+    }
+
+    public TeamsRecord getSingleTeam(int teamID) {
+        return create.selectFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).fetchOne();
+    }
+
+    public void deleteSingleTeam(int teamID) {
+        create.deleteFrom(TEAMS).where(TEAMS.TEAM_ID.eq(teamID)).execute();
+    }
+
+    public void deleteSingleTeamMember(int userID, int teamID) {
+        // DELETE FROM TeamUsers
+        // WHERE TeamUsers.team_id = teamID
+        // AND TeamUsers.user_id = userID;
+        create.deleteFrom(TEAMUSERS)
+                .where(TEAMUSERS.TEAM_ID.eq(teamID))
+                .and(TEAMUSERS.USER_ID.eq(userID))
+                .execute();
+    }
+
+    public Boolean doesTeamStillHaveMembers(int teamID) {
+        // SELECT COUNT(*)
+        // FROM TeamUsers
+        // WHERE TeamUsers.team_id = teamID
+        // LIMIT 1;
+        int memberCount = create
+                .selectCount()
+                .from(TEAMUSERS)
+                .where(TEAMUSERS.TEAM_ID.eq(teamID))
+                .fetchSingleInto(int.class);
+
+        return (memberCount > 1);
+    }
+
+    public List<ProjectByTeamDto> getAllProjectsAssociatedWithTeam(int userID, int teamID) {
         // SELECT Teams.team_name, Teams.team_id, Projects.project_name, Projects.project_id, Projects.last_updated
         // FROM Teams
         // LEFT JOIN Projects
@@ -107,7 +152,7 @@ public class TeamRepository {
                 .fetchInto(ProjectByTeamDto.class);
     }
 
-    public List<MemberInTeamDto> getAllMembersInTeam(Integer teamID) {
+    public List<MemberInTeamDto> getAllMembersInTeam(int teamID) {
         // SELECT Teams.team_name, Teams.team_id, Teams.team_creator, BeaverUsers.username, BeaverUsers.user_id
         // FROM Teams
         // JOIN TeamUsers
@@ -126,7 +171,7 @@ public class TeamRepository {
                 .fetchInto(MemberInTeamDto.class);
     }
 
-    public void addMemberToTeam(BeaverusersRecord userToAdd, Integer teamID) throws UserAlreadyInTeamException {
+    public void addMemberToTeam(BeaverusersRecord userToAdd, int teamID) throws UserAlreadyInTeamException {
         // INSERT INTO TeamUsers (user_id, team_id, user_team_role)
         // VALUES (
         //      teamID,

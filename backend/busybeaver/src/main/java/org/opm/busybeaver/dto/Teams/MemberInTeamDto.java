@@ -5,17 +5,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.beans.ConstructorProperties;
 import java.util.Objects;
 
-public class MemberInTeamDto {
+public final class MemberInTeamDto {
     @JsonIgnore
     private final String teamName;
     @JsonIgnore
-    private final Integer teamID;
+    private final int teamID;
     private final String username;
-    private final Integer userID;
+    private final int userID;
     private Boolean isTeamCreator = false;
 
     @ConstructorProperties({"team_name", "team_id", "team_creator", "username", "user_id"})
-    public MemberInTeamDto(String teamName, Integer teamID, Integer teamCreatorID, String username, Integer userID) {
+    public MemberInTeamDto(String teamName, int teamID, int teamCreatorID, String username, int userID) {
         this.teamName = teamName;
         this.teamID = teamID;
         this.isTeamCreator = (Objects.equals(teamCreatorID, userID));
@@ -27,7 +27,7 @@ public class MemberInTeamDto {
         return teamName;
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
@@ -35,7 +35,7 @@ public class MemberInTeamDto {
         return username;
     }
 
-    public Integer getUserID() {
+    public int getUserID() {
         return userID;
     }
 

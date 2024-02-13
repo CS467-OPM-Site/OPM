@@ -2,8 +2,8 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
 import org.opm.busybeaver.exceptions.Users.UserDoesNotExistException;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -30,7 +30,7 @@ public class UserService {
 
         return new AuthenticatedUser(
                 beaverusersRecord.getUsername(),
-                BusyBeavConstants.SUCCESS.getValue()
+                SuccessMessageConstants.SUCCESS.getValue()
         );
     }
 
@@ -39,7 +39,7 @@ public class UserService {
 
         return new AuthenticatedUser(
                 newUsername,
-                BusyBeavConstants.SUCCESS.getValue()
+                SuccessMessageConstants.SUCCESS.getValue()
         );
     }
 }

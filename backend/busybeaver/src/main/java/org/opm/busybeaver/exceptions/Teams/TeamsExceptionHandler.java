@@ -42,4 +42,59 @@ public class TeamsExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
+
+    @ExceptionHandler(TeamDoesNotExistException.class)
+    public ResponseEntity<?> userNotCreatorOrTeamNotExist() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue(),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(UserNotTeamCreatorException.class)
+    public ResponseEntity<?> userNotCreatorOfTeam() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(TeamStillHasMembersException.class)
+    public ResponseEntity<?> teamStillHasMembers() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(TeamCreatorCannotBeRemovedException.class)
+    public ResponseEntity<?> teamCreatorCannotBeRemoved() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(TeamStillHasProjectsException.class)
+    public ResponseEntity<?> teamStillHasProjects() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

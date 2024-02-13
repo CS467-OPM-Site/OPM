@@ -20,4 +20,15 @@ public class ProjectsExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(UserNotInProjectOrProjectDoesNotExistException.class)
+    public ResponseEntity<?> userNotInProjectOrProjectDoesNotExist() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue(),
+                        HttpStatus.FORBIDDEN.value()
+                ),
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

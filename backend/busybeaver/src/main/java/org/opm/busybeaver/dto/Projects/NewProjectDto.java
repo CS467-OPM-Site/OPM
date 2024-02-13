@@ -21,8 +21,8 @@ public final class NewProjectDto {
         private String teamID;
 
         @JsonProperty("teamID")
-        private Integer teamIDInt;
-        private Integer projectID;
+        private int teamIDInt;
+        private int projectID;
         private String projectLocation;
 
         public String getTeamName() {
@@ -49,25 +49,25 @@ public final class NewProjectDto {
                 return projectName;
         }
 
-        public Integer getProjectID() {
+        public int getProjectID() {
                 return projectID;
         }
 
-        public void setProjectID(Integer projectID) {
+        public void setProjectID(int projectID) {
                 this.projectID = projectID;
         }
 
-        public Integer getTeamIDInt() {
+        public int getTeamIDInt() {
                 return teamIDInt;
         }
 
-        public void setTeamIDInt(Integer teamIDInt) {
+        public void setTeamIDInt(int teamIDInt) {
                 this.teamIDInt = teamIDInt;
                 resetTeamId();
         }
 
         private void resetTeamId() {
-                this.teamID = teamIDInt.toString();
+                this.teamID = String.valueOf(teamIDInt);
         }
 
         public String getTeamID() {

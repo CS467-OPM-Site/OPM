@@ -1,6 +1,7 @@
 package org.opm.busybeaver.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
@@ -10,6 +11,7 @@ import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
 import org.opm.busybeaver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -28,11 +30,15 @@ public class UserController {
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
     public AuthenticatedUser registerUser(
             @Valid @RequestBody UsernameDto usernameRegisterDto,
-            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
+            HttpServletResponse response
     ) throws UserAlreadyExistsException {
 
         userDto.setUsername(usernameRegisterDto.username());
-        return userService.registerUser(userDto);
+        AuthenticatedUser newUser = userService.registerUser(userDto);
+        response.setStatus(HttpStatus.CREATED.value());
+
+        return newUser;
     }
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)

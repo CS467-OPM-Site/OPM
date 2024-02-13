@@ -12,6 +12,7 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,13 +45,27 @@ public class TeamsController {
     ) {
         NewTeamDto newTeam = teamService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
+        response.setStatus(HttpStatus.CREATED.value());
+
         return newTeam;
+    }
+
+    @DeleteMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")
+    public SmallJsonResponse deleteTeam(
+            @PathVariable int teamID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        teamService.deleteTeam(userDto, teamID);
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.TEAM_DELETED.getValue()
+        );
     }
 
     @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}")
     public ProjectsByTeamDto getProjectsAssociatedWithTeam(
             HttpServletRequest request,
-            @PathVariable Integer teamID,
+            @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return teamService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
@@ -59,7 +74,7 @@ public class TeamsController {
     @GetMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS)
     public MembersInTeamDto getMembersInTeam(
             HttpServletRequest request,
-            @PathVariable Integer teamID,
+            @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return teamService.getMembersInTeam(userDto, teamID, request.getContextPath());
@@ -68,7 +83,7 @@ public class TeamsController {
     @PostMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS)
     public SmallJsonResponse addMemberToTeam(
             HttpServletRequest request,
-            @PathVariable Integer teamID,
+            @PathVariable int teamID,
             @Valid @RequestBody UsernameDto usernameToAdd,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
@@ -81,8 +96,21 @@ public class TeamsController {
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
-                BusyBeavConstants.USER_ADDED.getValue()
+                SuccessMessageConstants.USER_ADDED.getValue()
         );
+    }
+
+    @DeleteMapping(BusyBeavPaths.Constants.TEAMS + "/{teamID}" + BusyBeavPaths.Constants.MEMBERS + "/{userID}")
+    public SmallJsonResponse deleteMemberFromTeam(
+            @PathVariable int userID,
+            @PathVariable int teamID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+       teamService.removeMemberFromTeam(userDto, userID, teamID);
+       return new SmallJsonResponse(
+               HttpStatus.OK.value(),
+               SuccessMessageConstants.TEAM_MEMBER_REMOVED.getValue()
+       );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

@@ -7,6 +7,7 @@ import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerToken
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Tasks.NewTaskDto;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -27,6 +28,16 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
 
     @Autowired
     public TasksController (TaskService taskService) { this.taskService = taskService; }
+
+    @GetMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH + "/{taskID}")
+    public TaskDetailsDto getTaskDetails(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @PathVariable int taskID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return taskService.getTaskDetails(userDto, projectID, taskID, request.getContextPath());
+    }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH)
     public TaskCreatedDto addTask(

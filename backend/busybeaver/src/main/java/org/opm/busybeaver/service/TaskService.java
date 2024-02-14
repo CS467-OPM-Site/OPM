@@ -2,6 +2,7 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Tasks.NewTaskDto;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
@@ -86,6 +87,20 @@ public class TaskService implements ValidateUserAndProjectInterface {
         projectRepository.updateLastUpdatedForProject(projectID);
         return taskCreatedDto;
     }
+
+    public TaskDetailsDto getTaskDetails(UserDto userDto, int projectID, int taskID, String contextPath)
+            throws UsersExceptions.UserDoesNotExistException,
+                ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException
+    {
+        // Validate user, and user in valid project
+        validateUserValidAndInsideValidProject(userDto, projectID);
+
+        TaskDetailsDto taskDetailsDto = taskRepository.getTaskDetails(taskID);
+        taskDetailsDto.setTaskLocation(contextPath, projectID);
+
+        return taskDetailsDto;
+    }
+
     public void moveTask(UserDto userDto, int projectID, int taskID, int columnID)
             throws UsersExceptions.UserDoesNotExistException,
             ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException,

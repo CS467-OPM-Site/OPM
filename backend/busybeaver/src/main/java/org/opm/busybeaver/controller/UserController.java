@@ -8,7 +8,7 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.opm.busybeaver.exceptions.Users.UserAlreadyExistsException;
+import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class UserController {
             @Valid @RequestBody UsernameDto usernameRegisterDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
-    ) throws UserAlreadyExistsException {
+    ) throws UsersExceptions.UserAlreadyExistsException {
 
         userDto.setUsername(usernameRegisterDto.username());
         AuthenticatedUser newUser = userService.registerUser(userDto);
@@ -43,7 +43,8 @@ public class UserController {
 
     @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)
     public AuthenticatedUser authenticateUser(
-            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto) {
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
+    throws UsersExceptions.UserDoesNotExistException {
 
         return userService.getUserByEmailAndId(userDto);
     }

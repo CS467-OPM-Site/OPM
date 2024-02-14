@@ -1,18 +1,17 @@
 package org.opm.busybeaver.repository;
 
+import com.google.api.services.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.*;
 import org.opm.busybeaver.dto.Columns.ColumnDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
-import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
 import org.opm.busybeaver.dto.Tasks.TaskSummaryDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
-import org.opm.busybeaver.exceptions.Projects.ProjectAlreadyExistsForTeamException;
+import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectusersRecord;
-import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,13 +19,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.table;
 import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
@@ -56,8 +53,19 @@ public class ProjectRepository {
         return (projectCount >= 1);
     }
 
+    public void updateLastUpdatedForProject(int projectID) {
+        // UPDATE Projects
+        // SET last_updated = CURRENT_TIMESTAMP
+        // WHERE project_id = projectID
+        create.update(PROJECTS)
+                .set(PROJECTS.LAST_UPDATED, LocalDateTime.now())
+                .where(PROJECTS.PROJECT_ID.eq(projectID))
+                .execute();
+    }
+
     @Transactional
-    public ProjectsRecord makeNewProject(String projectName, int teamID, int userID) {
+    public ProjectsRecord makeNewProject(String projectName, int teamID)
+        throws ProjectsExceptions.ProjectAlreadyExistsForTeamException {
         try {
             ProjectsRecord newProject = create.insertInto(PROJECTS, PROJECTS.PROJECT_NAME, PROJECTS.TEAM_ID)
                     .values(projectName, teamID)
@@ -81,7 +89,7 @@ public class ProjectRepository {
             return newProject;
 
         } catch (DuplicateKeyException e) {
-            throw new ProjectAlreadyExistsForTeamException(
+            throw new ProjectsExceptions.ProjectAlreadyExistsForTeamException(
                     ErrorMessageConstants.PROJECT_ALREADY_EXISTS_FOR_TEAM.getValue());
         }
     }

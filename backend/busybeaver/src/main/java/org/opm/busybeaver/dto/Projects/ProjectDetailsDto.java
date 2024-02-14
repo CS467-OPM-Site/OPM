@@ -11,7 +11,6 @@ public class ProjectDetailsDto {
     private final int projectID;
     private final TeamSummaryInProjectSummaryDto team;
     private String projectLocation;
-
     private List<ColumnDto> columns;
 
     @ConstructorProperties({"project_name", "project_id", "team_id", "team_name"})

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 
 import static org.opm.busybeaver.jooq.Tables.COLUMNS;
+import static org.opm.busybeaver.jooq.Tables.TEAMS;
 
 @Repository
 @Component
@@ -27,6 +28,32 @@ public class ColumnRepository {
         // Add all default columns for new project
         create.insertInto(COLUMNS).set(defaultColumnRecords).execute();
     }
+
+    public Boolean doesColumnExistInProject(int columnID, int projectID) {
+        // SELECT EXISTS(
+        //      SELECT *
+        //      FROM Columns
+        //      WHERE Columns.column_id = columnID
+        //      AND Columns.project_id = projectID)
+        return create.fetchExists(
+                create.selectFrom(COLUMNS)
+                        .where(COLUMNS.COLUMN_ID.eq(columnID))
+                        .and(COLUMNS.PROJECT_ID.eq(projectID))
+        );
+    }
+
+    public int getFirstInOrderColumnFromProject(int projectID) {
+        // SELECT Columns.column_id
+        // FROM Columns
+        // WHERE Columns.project_id = projectID
+        // AND Columns.column_index = 0;
+        return create.select(COLUMNS.COLUMN_ID)
+                .from(COLUMNS)
+                .where(COLUMNS.PROJECT_ID.eq(projectID))
+                .and(COLUMNS.COLUMN_INDEX.eq((short) 0))
+                .fetchSingle().component1();
+    }
+
     @NotNull
     private static ArrayList<ColumnsRecord> createDefaultColumnRecords(DefaultColumnNames[] defaultColumnNames, int projectID) {
         ArrayList<ColumnsRecord> newColumnRecords = new ArrayList<>(defaultColumnNames.length);

@@ -10,7 +10,7 @@ import static org.opm.busybeaver.utils.Utils.generateExceptionResponse;
 
 @ControllerAdvice
 public class TeamsExceptionHandler {
-    @ExceptionHandler(TeamAlreadyExistsForUserException.class)
+    @ExceptionHandler(TeamsExceptions.TeamAlreadyExistsForUserException.class)
     public ResponseEntity<?> teamAlreadyExistsForUser() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -21,7 +21,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserAlreadyInTeamException.class)
+    @ExceptionHandler(TeamsExceptions.UserAlreadyInTeamException.class)
     public ResponseEntity<?> userAlreadyInTeam() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -32,7 +32,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserNotInTeamOrTeamDoesNotExistException.class)
+    @ExceptionHandler(TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException.class)
     public ResponseEntity<?> userNotInTeam() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -43,7 +43,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(TeamDoesNotExistException.class)
+    @ExceptionHandler(TeamsExceptions.TeamDoesNotExistException.class)
     public ResponseEntity<?> userNotCreatorOrTeamNotExist() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -54,7 +54,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserNotTeamCreatorException.class)
+    @ExceptionHandler(TeamsExceptions.UserNotTeamCreatorException.class)
     public ResponseEntity<?> userNotCreatorOfTeam() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -65,7 +65,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(TeamStillHasMembersException.class)
+    @ExceptionHandler(TeamsExceptions.TeamStillHasMembersException.class)
     public ResponseEntity<?> teamStillHasMembers() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -76,7 +76,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(TeamCreatorCannotBeRemovedException.class)
+    @ExceptionHandler(TeamsExceptions.TeamCreatorCannotBeRemovedException.class)
     public ResponseEntity<?> teamCreatorCannotBeRemoved() {
         return new ResponseEntity<>(
                 generateExceptionResponse(
@@ -87,7 +87,7 @@ public class TeamsExceptionHandler {
         );
     }
 
-    @ExceptionHandler(TeamStillHasProjectsException.class)
+    @ExceptionHandler(TeamsExceptions.TeamStillHasProjectsException.class)
     public ResponseEntity<?> teamStillHasProjects() {
         return new ResponseEntity<>(
                 generateExceptionResponse(

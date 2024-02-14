@@ -12,13 +12,18 @@ public enum ErrorMessageConstants {
     TEAM_DOES_NOT_EXIST("That team does not exist"),
     TEAM_STILL_HAS_MEMBERS("Team still contains other members - remove them before deleting the team"),
     REQUIRED_REQUEST_BODY_IS_MISSING("Required request body is missing"),
-    INVALID_HTTP_REQUEST("Invalid HTTP request made"),
+    INVALID_INTEGER_VALUE("Integer values, such as IDs, must contain positive non-zero integers, with no decimals"),
+    INVALID_HTTP_REQUEST("Invalid HTTP request made, please check all input and request body arguments"),
     TEAM_ALREADY_EXISTS_FOR_USER("You have already made a team with this name"),
     USER_ALREADY_IN_TEAM("User already exists in this team"),
     TEAM_CREATOR_CANNOT_BE_REMOVED("Team creator cannot be removed"),
     PROJECT_ALREADY_EXISTS_FOR_TEAM("Project name for that team already exists, please choose another project name"),
     USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST("User not in project, or project does not exist"),
     TEAM_STILL_HAS_PROJECTS("Team still has associated projects - remove them before deleting the team"),
+    COLUMN_NOT_IN_PROJECT("Given column does not exist in this project"),
+    SPRINT_NOT_IN_PROJECT("Given sprint does not exist in this project"),
+    TASK_NOT_IN_PROJECT("Given task does not exist in this project"),
+    TASK_ALREADY_IN_COLUMN("Task already in given column"),
     MISSING_INVALID_HEADER_TOKEN("Missing or invalid authentication header and token.");
 
     private final String value;

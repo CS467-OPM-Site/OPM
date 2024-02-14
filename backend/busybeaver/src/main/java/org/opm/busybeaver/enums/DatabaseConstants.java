@@ -9,7 +9,11 @@ public enum DatabaseConstants {
     PROJECTUSERS_PROJECTMANAGER_ROLE("Project Manager"),
     PROJECTUSERS_MANAGER_ROLE("Manager"),
     PROJECTUSERS_EXTERNAL_ROLE("External"),
-    PROJECTUSERS_LEAD_ROLE("Lead");
+    PROJECTUSERS_LEAD_ROLE("Lead"),
+    PRIORITY_LOW(Constants.PRIORITY_LOW),
+    PRIORITY_MEDIUM(Constants.PRIORITY_MEDIUM),
+    PRIORITY_HIGH(Constants.PRIORITY_HIGH),
+    PRIORITY_NONE(Constants.PRIORITY_NONE);
 
     private final String value;
 
@@ -19,6 +23,13 @@ public enum DatabaseConstants {
 
     public String getValue() {
         return value;
+    }
+
+    public static class Constants {
+        public static final String PRIORITY_NONE = "None";
+        public static final String PRIORITY_LOW = "Low";
+        public static final String PRIORITY_MEDIUM = "Medium";
+        public static final String PRIORITY_HIGH = "High";
     }
 
 }

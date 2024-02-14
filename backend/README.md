@@ -10,7 +10,38 @@
 All requests to the RestAPI must include valid authentication credentials. Please include a valid JWT token within
 the Bearer scheme included in the Authorization HTTP header.
 
-`Authorization:Bearer <Signed JSON Web Token> `
+`'Authorization': 'Bearer <Signed JSON Web Token>'`
+
+------------------------------------------------------------------------------------------
+
+### Optional Values
+
+Optional values must still include the given key, but should be set to null if not looking
+to include them in the payload.
+
+For example, for the following optional username JSON body:
+
+```json
+{
+    "username": "username-here"
+}
+```
+
+Setting username to null, as follows, would indicate desire to not include it in the payload body.
+
+```json
+{
+    "username": null
+}
+```
+
+------------------------------------------------------------------------------------------
+
+### ID Values
+
+Values that must include an ID cannot contain decimal or negative values.
+
+They must contain a positive, non-zero integer value associated with the given entity.
 
 ------------------------------------------------------------------------------------------
 
@@ -33,7 +64,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### User Authentication
 
 <details>
- <summary><code>POST</code> <code><b>/users/register</b></code> <code>(registers user information if they don't have an account)</code></summary>
+ <summary><code>POST</code> <code><b>/users/register</b></code> <code>(registers user information if they don't have an account)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
@@ -47,9 +78,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | **Includes a URI to the user resource in the Location Header** |
-> | `400`         | `application/json`                | `{"code":"400","message":"User already registered"}` | User already registered. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Username exists"}` | User chose a username that already exists. |
+> | `201`         | `application/json`                | `{"username":"username-here","message":"Success"}` | Successfully registered user. |
+> | `400`         | `application/json`                | `{"code":400,"message":"User already exists with those details"}` | User details already exist in database. |
+> | `400`         | `application/json`                | `{"code":400,"message":"Username is required"}` | Username field required. |
+> | `400`         | `application/json`                | `{"code":400,"message":"Username must be 3 to 100 characters"}` | Username length requirement. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL
@@ -65,7 +97,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/users/auth</b></code> <code>(authenticates user)</code></summary>
+ <summary><code>POST</code> <code><b>/users/auth</b></code> <code>(authenticates user)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -90,7 +122,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Project Management
 
 <details>
- <summary><code>GET</code> <code><b>/projects</b></code> <code>(gets all of a user's projects)</code></summary>
+ <summary><code>GET</code> <code><b>/projects</b></code> <code>(gets all of a user's projects)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -141,17 +173,16 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects</b></code> <code>(creates a new project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects</b></code> <code>(creates a new project)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
 > ```json
 > {
 >   "projectName": "New Project Name",
->   "team": {
->       "teamName": "team1",
->       "teamID": 1, 
->   }
+>   "projectID": 1,
+>   "teamName": "team1",
+>   "teamID": 1,
 > }
 > ```
 
@@ -161,7 +192,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the project resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Project name for that team already exists"}` | Project name for team already exists. Teams must have unique project names. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Chosen team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or chosen team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -170,6 +201,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "New Project Name",
 >     "projectID": 1,
+>     "projectLocation": "/api/v1/projects/1"
 > }
 > ```
 
@@ -182,13 +214,13 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
 >  -d '{
 >   "projectName": "New Project Name",
->   "team": {"teamName": "team1", "teamID", 1}
->      }' 
+>   "teamName": "team1",
+>   "teamID": 1 }' 
 > ```
 
 </details>
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}</b></code> <code>(gets details for a specific project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -200,9 +232,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Returns all of a user's projects. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `200`         | `application/json`                | `See below.` | Returns details regarding a specific project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project, or the project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -211,7 +242,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "project1",
 >     "projectID": 1,
->     "lastUpdated": "2023-10-31T15:45:00Z",
 >     "projectLocation": "/api/v1/projects/1",
 >     "team": {
 >         "teamName": "Team1",
@@ -220,7 +250,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >      },
 >     "columns": [
 >      {
->           "columnName": "Todo",
+>           "columnTitle": "Todo",
 >           "columnID": 1,
 >           "columnIndex": 0,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/1",
@@ -228,41 +258,33 @@ All endpoints should use this format as a prefix in their requests. For example,
 >            {
 >                 "title": "task1",
 >                 "taskID": 1, 
->                 "description": "This is a task!",
->                 "assignedTo": {
->                       "username": "username-of-assignee",
->                       "userID": 1
->                  } or null,       
 >                 "priority": "High",
->                 "sprint": {
->                       "startDate": "2023-10-31",
->                       "endDate": "2023-11-01",
->                       "sprintName": "Sprint Name",
->                       "sprintID": 1,
->                       "sprintLocation": "api/v1/projects/1/sprints/1"
->                  } or null,
->                 "comments": [
->                  {
->                       "commentID": 1,
->                       "commentBody": "This is a comment",
->                       "commenter": "username-here",
->                       "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
->                  },
->                 ],
->                 "customFields": [ ... ],
+                  "dueDate": "2023-11-01", # Or null  
+>                 "comments": 1, # Number of comments on task
+                  "taskIndex": 0, # Used for sorting eventually, default to -1
+                  "assignedTo": {
+                        "username": "username-of-assignee",
+                        "userID": 1
+                   }, # Or null
+                  "sprint": {
+                        "sprintID": 1,
+                        "sprintName": "Sprint Name",
+                        "endDate": "2023-11-01",
+                        "sprintLocation": "/api/v1/projects/1/sprints/1"
+                   }, # Or null
 >                 "taskLocation": "/api/v1/projects/1/tasks/1"
 >            },
 >           ]
 >      },
 >      {
->           "columnName": "In progress",
+>           "columnTitle": "In progress",
 >           "columnID": 2,
 >           "columnIndex": 1,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/2",
 >           "tasks": []
 >      },
 >      {
->           "columnName": "Done",
+>           "columnTitle": "Done",
 >           "columnID": 3,
 >           "columnIndex": 2,       # Indicates location on board
 >           "columnLocation": "/api/v1/projects/1/columns/3",
@@ -295,7 +317,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "projectName": "new-name",
+>   "projectName": "new-name",      # Cannot be deleted, only modified
 > }
 > ```
 
@@ -575,7 +597,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "columnName": "New Column Here"
+>   "columnTitle": "New Column Here"
 > }
 > ```
 
@@ -593,7 +615,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "New Column Here",
+>     "columnTitle": "New Column Here",
 >     "columnIndex": 1,         # New column always placed at end
 >     "columnID": 1
 > }
@@ -606,7 +628,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/project/1/columns \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Here"}' 
+>  -d '{"columnTitle":"New Column Here"}' 
 > ```
 
 </details>
@@ -625,7 +647,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->   "columnName": "New Column Name Here"
+>   "columnTitle": "New Column Name Here"       # Cannot be deleted, only modified
 > }
 > ```
 
@@ -644,7 +666,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "New Column Name Here",
+>     "columnTitle": "New Column Name Here",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
@@ -658,7 +680,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Name Here"}' 
+>  -d '{"columnTitle":"New Column Name Here"}' 
 > ```
 
 </details>
@@ -695,7 +717,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > ```json
 > {
->     "columnName": "project1",
+>     "columnTitle": "project1",
 >     "columnIndex": 0,      # Keeps previous column index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
@@ -709,7 +731,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >  https://opm-api.propersi.me/api/v1/projects/1/columns/1/name \
 >  -H 'Content-Type: application/json' \
 >  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
->  -d '{"columnName":"New Column Name Here"}' 
+>  -d '{"columnTitle":"New Column Name Here"}' 
 > ```
 
 </details>
@@ -855,25 +877,19 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | name   |  type      | data type      | description                                          |
 > |--------|------------|----------------|------------------------------------------------------|
 > | `projectID` |  required  | int ($int64) | The unique ID of the project |
-> | `columnID` |  required  | int ($int64) | The unique ID of the column |
 
 ##### Request Payload
 
 > ```json
 > {
->     "column": {
->           "columnID": 1,
->           "columnName": "column to add to"
->      },       # Optional, defaults to first column if not included
 >     "title": "Task 1",
->     "description": "This is another task!" or null,
->     "assignedTo": {
->           "username": "username-of-assignee",
->           "userID": 1
->      } or null,       
->     "priority": "High" or null,
->     "sprintID": 1 or null,
->     "customFields": [ ... ],
+>     "description": "This is another task!", # Optional - a description of only spaces is considered null
+>     "columnID": 1,                          # Optional, defaults to first in-order column if not included
+>     "assignedTo": 1,                        # Optional, ID of the user who it is being assigned to, or null
+>     "dueDate": "2024-11-03",                # Optional, in format "yyyy-MM-dd"
+>     "priority": "High",                     # Optional, must be one of: 'High', 'Medium', 'Low', 'None', defaults to 'None' 
+>     "sprintID": 1,                          # Optional
+>     "customFields": [ ... ]                 # Optional
 > }
 > ```
 
@@ -884,7 +900,6 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. Project must have at least one column. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Invalid task attribute"}` | Invalid task attribute in request. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Sprint not found"}` | Sprint not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Assignee not found"}` | Assignee not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
@@ -896,7 +911,13 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "title": "Task 1",
 >     "taskID": 1,
->     "taskColumnIndex": 0,       # Indicates location on board, default first column
+>     "columnID": 1,                          # ID of column to be placed under
+>     "priority": "None",                     # Other possible values: 'High', 'Medium', 'Low'
+>     "description": "None",                  # Nullable
+>     "dueDate": "None",                      # Nullable
+>     "sprintID": "None",                     # Nullable
+>     "assignedTo": "None",                   # Nullable
+>     "taskLocation": "/api/v1/projects/1/tasks/1",
 > }
 > ```
 
@@ -940,7 +961,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "taskID": 1,
 >     "taskColumnIndex": 0,       # Indicates location on board
 >     "column": {
->           "columnName": "Column",
+>           "columnTitle": "Column",
 >           "columnIndex": 0,
 >           "columnID": 1,
 >           "columnLocation": "api/v1/projects/1/columns/1"
@@ -1011,7 +1032,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "taskID": 1,
 >     "taskColumnIndex": 0,       # Indicates location on board
 >     "column": {
->           "columnName": "Column",
+>           "columnTitle": "Column",
 >           "columnIndex": 0,
 >           "columnID": 1,
 >           "columnLocation": "api/v1/projects/1/columns/1"
@@ -1064,20 +1085,16 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 ##### Request Payload
 
-Any parameter may be null, in which case that field is deleted. 
 To keep the attribute the same, do not include the task attribute in the request payload.
 
 > ```json
 > {
->     "title": "New Title",
->     "description": "This is another task!",
->     "assignedTo": {
->           "username": "username-of-assignee",
->           "userID": 1
->      } or null,       
->     "priority": "High",
->     "sprintID": 1 or null,
->     "customFields": [ ... ],
+>     "title": "New Title",                     # Optional - note that a title is mandatory for a task, so no possibility of deleting a title
+>     "description": "This is another task!",   # Optional, set as empty string to delete
+>     "assignedTo": 1,                          # Optional, ID of the user who it is being assigned to, or -1 to delete
+>     "priority": "High",                       # Optional, must be one of 'High', 'Medium', 'Low', 'None'
+>     "sprintID": 1,                            # Optional, ID of sprint to change to, or -1 to delete
+>     "customFields": [ ... ],                  # Optional, for future implementation
 > }
 > ```
 
@@ -1573,6 +1590,7 @@ To keep the attribute the same, do not include the task attribute in the request
 
 If a field is included, it is assumed that user is trying to edit that field.
 Leaving the field out of the payload will keep the field's original value.
+No fields can be deleted, or have just empty spaces.
 
 > ```json
 > {
@@ -1657,7 +1675,7 @@ Leaving the field out of the payload will keep the field's original value.
 #### Team Management
 
 <details>
- <summary><code>GET</code> <code><b>/teams</b></code> <code>(gets all teams associated with a user)</code></summary>
+ <summary><code>GET</code> <code><b>/teams</b></code> <code>(gets all teams associated with a user)</code>:white_check_mark:</summary>
 
 ##### Responses
 
@@ -1675,11 +1693,13 @@ Leaving the field out of the payload will keep the field's original value.
 >           "teamID": 1,
 >           "teamName": "Team Name 1",
 >           "teamLocation": "/api/v1/teams/1",
+            "isTeamCreator": false
 >      },
 >      {
 >           "teamID": 2,
 >           "teamName": "Team Name 2",
 >           "teamLocation": "/api/v1/teams/2",
+            "isTeamCreator": true
 >      },
 >     ]
 > }
@@ -1696,7 +1716,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/teams</b></code> <code>(make a new team)</code></summary>
+ <summary><code>POST</code> <code><b>/teams</b></code> <code>(make a new team)</code>:white_check_mark:</summary>
 
 ##### Request Payload
 
@@ -1711,15 +1731,17 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the team resource in the Location Header** |
-> | `400`         | `application/json`                | `{"code":"400","message":"Already in a team with that name"}` | Users must be in unique teams. |
+> | `400`         | `application/json`                | `{"code":"400","message":"You have already made a team with this name"}` | Users must make unique teams. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
 
 > ```json
 > {
->     "teamID": 1,
 >     "teamName": "Team Name 1",
+>     "teamID": 1,
+>     "teamCreator": 1,
+>     "teamLocation": "/api/v1/teams/1",
 > }
 > ```
 
@@ -1736,7 +1758,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/teams/{teamID}</b></code> <code>(get all projects associated with a team)</code></summary>
+ <summary><code>GET</code> <code><b>/teams/{teamID}</b></code> <code>(get all projects associated with a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1749,8 +1771,7 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Gets all projects associated with a team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1759,6 +1780,7 @@ Leaving the field out of the payload will keep the field's original value.
 > {
 >     "teamID": 1,
 >     "teamName": "Team Name 1",
+      "teamLocation": "/api/v1/teams/1
 >     "projects": [
 >       {
 >           "projectName": "project1",
@@ -1787,7 +1809,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/teams/{teamID}</b></code> <code>(delete a team)</code></summary>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}</b></code> <code>(delete a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1800,8 +1822,10 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Team deleted"}` | Team deleted. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team, or not creator of team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Team still has associated projects - remove them before deleting the team"}` | Teams must have no associated projects. |
+> | `403`         | `application/json`                | `{"code":"403","message":"Team still contains other members - remove them before deleting the team"}` | Teams must have no other members. |
+> | `403`         | `application/json`                | `{"code":"403", "message":"User not creator of this team"}` | User not creator - only creator can delete team. |
+> | `404`         | `application/json`                | `{"code":"404", "message":"Team does not exist"}` | Team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL
@@ -1815,7 +1839,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/teams/{teamID}/members</b></code> <code>(get all members associated with a team)</code></summary>
+ <summary><code>GET</code> <code><b>/teams/{teamID}/members</b></code> <code>(get all members associated with a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1828,8 +1852,7 @@ Leaving the field out of the payload will keep the field's original value.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Gets all members associated with a team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1842,12 +1865,15 @@ Leaving the field out of the payload will keep the field's original value.
 >       {
 >           "username": "user1",
 >           "userID": 1,
+            "isTeamCreator": true
 >       },
 >       {
 >           "username": "user2",
 >           "userID": 2,
+            "isTeamCreator": false 
 >       } 
->     ]
+>     ],
+      "teamLocation": "/api/v1/teams/1"
 > }
 > ```
 
@@ -1862,7 +1888,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/teams/{teamID}/members</b></code> <code>(add team member to a team)</code></summary>
+ <summary><code>POST</code> <code><b>/teams/{teamID}/members</b></code> <code>(add team member to a team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1882,10 +1908,10 @@ Leaving the field out of the payload will keep the field's original value.
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Successfully added member to team. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in team. |
-> | `404`         | `application/json`                | `{"code":"404","message":"User to add does not exist"}` | User to add does not exist. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Team does not exist"}` | Team does not exist. |
+> | `200`         | `application/json`                | `See below.` | **Includes a URI to the team resource in the Location Header** |
+> | `400`         | `application/json`                | `{"code":"400","message":"User already exists in this team"}` | User already in team. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User does not exist"}` | User to add does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"User not in team, or team does not exist"}` | User not in team, or team does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1894,8 +1920,6 @@ Leaving the field out of the payload will keep the field's original value.
 > {
 >     "code": 200,
 >     "message": "User added",
->     "username": "username",
->     "userID": 1,
 > }
 > ```
 
@@ -1912,7 +1936,7 @@ Leaving the field out of the payload will keep the field's original value.
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/teams/{teamID}/members/{memberID}</b></code> <code>(remove team member from team)</code></summary>
+ <summary><code>DELETE</code> <code><b>/teams/{teamID}/members/{memberID}</b></code> <code>(remove team member from team)</code>:white_check_mark:</summary>
 
 ##### Parameters
 

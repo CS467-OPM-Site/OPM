@@ -31,4 +31,15 @@ public class ProjectsExceptionHandler {
                 HttpStatus.FORBIDDEN
         );
     }
+
+    @ExceptionHandler(ProjectsExceptions.ProjectMustHaveZeroTasksBeforeDeletion.class)
+    public ResponseEntity<?> projectMustHaveZeroTasksBeforeDeletion() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.PROJECT_STILL_HAS_TASKS.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

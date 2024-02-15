@@ -11,6 +11,7 @@ public enum BusyBeavPaths {
     TASKS(Constants.TASKS),
     SPRINTS(Constants.SPRINTS),
     COLUMNS(Constants.COLUMNS),
+    COMMENTS(Constants.COMMENTS),
     AUTH(Constants.AUTH);
 
     private final String value;
@@ -30,5 +31,6 @@ public enum BusyBeavPaths {
         public static final String SPRINTS = "/sprints";
         public static final String COLUMNS = "/columns";
         public static final String MEMBERS = "/members";
+        public static final String COMMENTS = "/comments";
     }
 }

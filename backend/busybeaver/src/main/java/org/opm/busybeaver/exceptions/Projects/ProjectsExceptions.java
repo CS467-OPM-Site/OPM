@@ -12,4 +12,10 @@ public final class ProjectsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ProjectMustHaveZeroTasksBeforeDeletion extends RuntimeException {
+        public ProjectMustHaveZeroTasksBeforeDeletion(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

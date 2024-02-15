@@ -3,35 +3,31 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Projects.NewProjectDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.WebUtils;
-
-import java.util.Objects;
 
 
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public class ProjectController {
+public final class ProjectController implements GetUserFromBearerTokenInterface {
 
     private final ProjectService projectService;
+    private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
 
     @Autowired
     public ProjectController(ProjectService projectService) { this.projectService = projectService; }
 
-    @PostMapping(BusyBeavPaths.Constants.PROJECTS)
+    @PostMapping(PROJECTS_PATH)
     public NewProjectDto makeNewProject(
             HttpServletRequest request,
             @Valid @RequestBody NewProjectDto newProjectDto,
@@ -45,7 +41,7 @@ public class ProjectController {
         return projectDto;
     }
 
-    @GetMapping(BusyBeavPaths.Constants.PROJECTS)
+    @GetMapping(PROJECTS_PATH)
     public ProjectsSummariesDto getUserProjectsSummary(
             HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
@@ -53,7 +49,7 @@ public class ProjectController {
         return projectService.getUserProjectsSummary(userDto, request.getContextPath());
     }
 
-    @GetMapping(BusyBeavPaths.Constants.PROJECTS + "/{projectID}")
+    @GetMapping(PROJECTS_PATH + "/{projectID}")
     public ProjectDetailsDto getSpecificProjectDetails(
             HttpServletRequest request,
             @PathVariable int projectID,
@@ -63,7 +59,8 @@ public class ProjectController {
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
-    public UserDto user(HttpServletRequest request) {
+    @Override
+    public UserDto getUserFromToken(HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 }

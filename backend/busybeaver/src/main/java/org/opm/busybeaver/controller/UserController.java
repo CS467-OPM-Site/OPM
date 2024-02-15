@@ -3,6 +3,7 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
@@ -18,16 +19,19 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public class UserController {
+public final class UserController implements GetUserFromBearerTokenInterface {
 
     private final UserService userService;
+    private static final String USERS_PATH = BusyBeavPaths.Constants.USERS;
+    private static final String REGISTER_PATH  = BusyBeavPaths.Constants.REGISTER;
+    private static final String AUTH_PATH  = BusyBeavPaths.Constants.AUTH;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.REGISTER)
+    @PostMapping(USERS_PATH + REGISTER_PATH)
     public AuthenticatedUser registerUser(
             @Valid @RequestBody UsernameDto usernameRegisterDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
@@ -41,7 +45,7 @@ public class UserController {
         return newUser;
     }
 
-    @PostMapping(BusyBeavPaths.Constants.USERS + BusyBeavPaths.Constants.AUTH)
+    @PostMapping(USERS_PATH + AUTH_PATH)
     public AuthenticatedUser authenticateUser(
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
     throws UsersExceptions.UserDoesNotExistException {
@@ -50,7 +54,8 @@ public class UserController {
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
-    public UserDto user(HttpServletRequest request) {
+    @Override
+    public UserDto getUserFromToken(HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 

@@ -1,73 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/UsernameSetup.css'; 
+import { getAuth } from "firebase/auth";
+import '../styles/UsernameSetup.css';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
 const UsernameSetup = () => {
-    const [username, setUsername] = useState('');
-    const navigate = useNavigate();
-  
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (username.length < 3 || username.length > 100) {
-          alert('Username must be between 3 and 100 characters.');
-          return;
-        }
-      
-        try {
-          const response = await fetch('http://localhost:5000/api/v1/users/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username }),
-          });
-      
-          const data = await response.json(); // Parse JSON response
-      
-          if (response.ok) {
-            navigate('/home');
-          } else if (response.status === 400) {
-            // Handle specific error based on the backend response
-            if (data.message === "User already registered" || data.message === "Username exists") {
-              alert(data.message); // Show alert with the specific error message from the backend
-              // Optional: Redirect to login or home if user already registered
-            } else {
-              throw new Error(data.message); // Handle other 400 errors
-            }
-          } else {
-            // Handle other HTTP errors
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-        } catch (error) {
-          console.error('There was a problem with the fetch operation:', error);
-        }
-      };
-      
-      
-  
-    return (
-        <div className="username-setup-container">
-          <h1>Welcome to BusyBeaver</h1>
-          <img src={BusyBeaverNoBG} alt="Busy Beaver" />
-          <form className="username-setup-form" onSubmit={handleSubmit}>
-            {/* If you have an error state, display error messages here */}
-            <input
-              type="text"
-              className="username-input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              minLength="3"
-              maxLength="100"
-              required
-            />
-            <button type="submit" className="username-submit">
-              Register
-            </button>
-          </form>
-        </div>
-      );
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect users who are not logged in
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      navigate('/'); // Adjust this to your login route
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await registerUser();
   };
-  
-  export default UsernameSetup;
+
+  const registerUser = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const idToken = await user.getIdToken();
+        const response = await fetch('https://opm-api.propersi.me/api/v1/users/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({ username: username })
+        });
+
+        const responseData = await response.json();
+        if (response.ok) {
+          navigate('/home');
+        } else {
+          // Set error message from the response
+          setError(responseData.message || 'Failed to register. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+        setError('An unexpected error occurred. Please try again.');
+      }
+    }
+  };
+
+  return (
+    <div className="username-setup-container">
+      <h1>Welcome to BusyBeaver</h1>
+      <img src={BusyBeaverNoBG} alt="Busy Beaver" />
+      {error && <p className="error-message">{error}</p>}
+      <form className="username-setup-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          className="username-input"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+          minLength="3"
+          maxLength="100"
+          required
+        />
+        <button type="submit" className="username-submit">Register</button>
+      </form>
+    </div>
+  );
+};
+
+export default UsernameSetup;

@@ -24,7 +24,6 @@ public class FirebaseAuthenticationService  {
         return uid;
     }
 
-
     private void authenticate() {
         try {
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();

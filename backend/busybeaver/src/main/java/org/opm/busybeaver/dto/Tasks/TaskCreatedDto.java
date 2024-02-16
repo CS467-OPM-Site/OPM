@@ -1,12 +1,13 @@
 package org.opm.busybeaver.dto.Tasks;
 
+import org.opm.busybeaver.dto.Interfaces.TaskExtendedInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 
-public final class TaskCreatedDto {
+public final class TaskCreatedDto implements TaskExtendedInterface {
     private final String title;
     private final int taskID;
     private final int columnID;
@@ -42,6 +43,7 @@ public final class TaskCreatedDto {
                 "/" + projectID + BusyBeavPaths.TASKS.getValue() + "/" + getTaskID();
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -50,26 +52,32 @@ public final class TaskCreatedDto {
         return taskID;
     }
 
-    public int getColumnID() {
+    @Override
+    public Integer getColumnID() {
         return columnID;
     }
 
+    @Override
     public String getPriority() {
         return priority;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public LocalDate getDueDate() {
         return dueDate;
     }
 
+    @Override
     public Integer getSprintID() {
         return sprintID;
     }
 
+    @Override
     public Integer getAssignedTo() {
         return assignedTo;
     }

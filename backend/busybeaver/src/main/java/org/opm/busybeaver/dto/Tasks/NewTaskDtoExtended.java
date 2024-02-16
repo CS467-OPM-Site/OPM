@@ -3,12 +3,13 @@ package org.opm.busybeaver.dto.Tasks;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import org.opm.busybeaver.annotations.PriorityValidation;
+import org.opm.busybeaver.dto.Interfaces.TaskExtendedInterface;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public final class NewTaskDto {
+public final class NewTaskDtoExtended implements TaskExtendedInterface {
 
     @NotBlank(message = "Missing 'username' attribute to make a new user")
     @Size(min = 3, max = 100, message = "Task title must be 3 to 100 characters")
@@ -36,7 +37,7 @@ public final class NewTaskDto {
     private final ArrayList<String> customFields;
 
 
-    public NewTaskDto(
+    public NewTaskDtoExtended(
             String title,
             @Nullable Integer columnID,
             @Nullable String description,
@@ -64,30 +65,37 @@ public final class NewTaskDto {
         this.priority = priority;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Integer getColumnID() {
         return columnID;
     }
 
+    @Override
     public Integer getAssignedTo() {
         return assignedTo;
     }
 
+    @Override
     public LocalDate getDueDate() {
         return dueDate;
     }
 
+    @Override
     public String getPriority() {
         return priority;
     }
 
+    @Override
     public Integer getSprintID() {
         return sprintID;
     }

@@ -1,11 +1,12 @@
 package org.opm.busybeaver.dto.Teams;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.opm.busybeaver.dto.Interfaces.TeamInterface;
 
 import java.beans.ConstructorProperties;
 import java.util.Objects;
 
-public final class MemberInTeamDto {
+public final class MemberInTeamDto implements TeamInterface {
     @JsonIgnore
     private final String teamName;
     @JsonIgnore
@@ -23,10 +24,15 @@ public final class MemberInTeamDto {
         this.userID = userID;
     }
 
+    @Override
+    public void setLocations(String contextPath) {}
+
+    @Override
     public String getTeamName() {
         return teamName;
     }
 
+    @Override
     public int getTeamID() {
         return teamID;
     }

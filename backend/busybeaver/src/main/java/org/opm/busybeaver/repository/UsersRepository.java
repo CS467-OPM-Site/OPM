@@ -14,28 +14,40 @@ import static org.opm.busybeaver.jooq.tables.Beaverusers.BEAVERUSERS;
 
 @Repository
 @Component
-public class UserRepository {
+public class UsersRepository {
 
     private final DSLContext create;
 
     @Autowired
-    public UserRepository(DSLContext dslContext) {
+    public UsersRepository(DSLContext dslContext) {
         this.create = dslContext;
     }
 
-    public BeaverusersRecord getUserByEmailAndId(UserDto userDto) {
-        return create
+    public BeaverusersRecord getUserByEmailAndId(UserDto userDto) throws UsersExceptions.UserDoesNotExistException {
+        BeaverusersRecord beaverUser = create
                 .selectFrom(BEAVERUSERS)
                 .where(BEAVERUSERS.EMAIL.eq(userDto.getEmail()))
                 .and(BEAVERUSERS.FIREBASE_ID.eq(userDto.getFirebase_id()))
                 .fetchOne();
+
+        if (beaverUser == null) {
+            throw new UsersExceptions.UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+
+        return beaverUser;
     }
 
-    public BeaverusersRecord getUserByUsername(String username) {
-        return create
+    public BeaverusersRecord getUserByUsername(String username) throws UsersExceptions.UserDoesNotExistException {
+        BeaverusersRecord beaverUser = create
                 .selectFrom(BEAVERUSERS)
                 .where(BEAVERUSERS.USERNAME.eq(username))
                 .fetchOne();
+
+        if (beaverUser == null) {
+            throw new UsersExceptions.UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+        }
+
+        return beaverUser;
     }
 
     public String registerUser(UserDto userDto) throws UsersExceptions.UserAlreadyExistsException {
@@ -49,21 +61,5 @@ public class UserRepository {
             // User with those details already exists
             throw new UsersExceptions.UserAlreadyExistsException(ErrorMessageConstants.USER_ALREADY_EXISTS.getValue());
         }
-    }
-
-    public BeaverusersRecord verifyUserExistsAndReturn(UserDto userDto) throws UsersExceptions.UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = getUserByEmailAndId(userDto);
-        if (beaverusersRecord == null) {
-            throw new UsersExceptions.UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
-        }
-        return beaverusersRecord;
-    }
-
-    public BeaverusersRecord verifyUserExistsAndReturn(String username) throws UsersExceptions.UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = getUserByUsername(username);
-        if (beaverusersRecord == null) {
-            throw new UsersExceptions.UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
-        }
-        return beaverusersRecord;
     }
 }

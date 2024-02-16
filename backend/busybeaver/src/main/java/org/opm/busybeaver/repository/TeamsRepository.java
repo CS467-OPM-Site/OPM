@@ -20,11 +20,11 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
-public class TeamRepository {
+public class TeamsRepository {
     private final DSLContext create;
 
     @Autowired
-    public TeamRepository(DSLContext dslContext) { this.create = dslContext; }
+    public TeamsRepository(DSLContext dslContext) { this.create = dslContext; }
 
     public TeamsRecord makeNewTeam(int userID, String teamName) throws TeamsExceptions.TeamAlreadyExistsForUserException {
         // INSERT INTO Teams (Teams.team_name, Teams.team_creator)
@@ -78,17 +78,23 @@ public class TeamRepository {
                 .fetchInto(TeamSummaryDto.class);
     }
 
-    public Boolean isUserInTeamAndDoesTeamExist(int userID, int teamID) {
+    public void isUserInTeamAndDoesTeamExist(int userID, int teamID)
+            throws TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException {
         // SELECT EXISTS(
         //      SELECT TeamUsers.team_id,TeamUsers.user_id
         //      FROM TeamUsers
         //      WHERE TeamUsers.team_id = teamID
         //      AND TeamUsers.user_id = userID)
-        return create.fetchExists(
+        boolean isUserInTeamAndDoesTeamExist = create.fetchExists(
                     create.selectFrom(TEAMUSERS)
                         .where(TEAMUSERS.TEAM_ID.eq(teamID))
                         .and(TEAMUSERS.USER_ID.eq(userID))
                     );
+
+        if (!isUserInTeamAndDoesTeamExist) {
+            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(
+                    ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+        }
     }
 
     public Boolean isUserCreatorOfTeam(int userID, int teamID) {
@@ -122,7 +128,7 @@ public class TeamRepository {
                 .execute();
     }
 
-    public Boolean doesTeamStillHaveMembers(int teamID) {
+    public void doesTeamStillHaveMembers(int teamID) throws TeamsExceptions.TeamStillHasMembersException {
         // SELECT COUNT(*)
         // FROM TeamUsers
         // WHERE TeamUsers.team_id = teamID
@@ -133,7 +139,10 @@ public class TeamRepository {
                 .where(TEAMUSERS.TEAM_ID.eq(teamID))
                 .fetchSingleInto(int.class);
 
-        return (memberCount > 1);
+        if (memberCount > 1) {
+            throw new TeamsExceptions.TeamStillHasMembersException(
+                    ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+        }
     }
 
     public List<ProjectByTeamDto> getAllProjectsAssociatedWithTeam(int userID, int teamID) {

@@ -1,13 +1,14 @@
 package org.opm.busybeaver.dto.Teams;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.opm.busybeaver.dto.Interfaces.TeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
-public class ProjectByTeamDto {
+public class ProjectByTeamDto implements TeamInterface {
 
     @JsonIgnore
     private final String teamName;
@@ -28,7 +29,8 @@ public class ProjectByTeamDto {
         this.lastUpdated = lastUpdated;
     }
 
-    public void setProjectLocation(String contextPath) {
+    @Override
+    public void setLocations(String contextPath) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.projectLocation = PATH +
@@ -36,10 +38,12 @@ public class ProjectByTeamDto {
                 "/" + getProjectID();
     }
 
+    @Override
     public String getTeamName() {
         return teamName;
     }
 
+    @Override
     public int getTeamID() {
         return teamID;
     }

@@ -1,11 +1,12 @@
 package org.opm.busybeaver.dto.Teams;
 
+import org.opm.busybeaver.dto.Interfaces.TeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
 import java.util.Objects;
 
-public class TeamSummaryDto {
+public final class TeamSummaryDto implements TeamInterface {
     private final int teamID;
     private final String teamName;
     private String teamLocation;
@@ -19,7 +20,8 @@ public class TeamSummaryDto {
         this.teamCreatorId = teamCreatorId;
     }
 
-    public void setTeamLocation(String contextPath) {
+    @Override
+    public void setLocations(String contextPath) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.teamLocation = PATH + BusyBeavPaths.TEAMS.getValue() + "/" + getTeamID();
@@ -29,10 +31,12 @@ public class TeamSummaryDto {
         isTeamCreator = (Objects.equals(userID, getTeamCreatorId()));
     }
 
+    @Override
     public int getTeamID() {
         return teamID;
     }
 
+    @Override
     public String getTeamName() {
         return teamName;
     }

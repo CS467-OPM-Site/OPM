@@ -1,8 +1,10 @@
 package org.opm.busybeaver.dto.Columns;
 
+import org.jooq.util.xml.jaxb.Column;
+import org.opm.busybeaver.dto.Interfaces.ColumnInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
-public final class ColumnInTaskDto {
+public final class ColumnInTaskDto implements ColumnInterface {
     private final String columnTitle;
     private final int columnID;
     private final int columnIndex;
@@ -14,6 +16,7 @@ public final class ColumnInTaskDto {
         this.columnIndex = columnIndex;
     }
 
+    @Override
     public void setColumnLocation(String contextPath, int projectID) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
@@ -22,14 +25,17 @@ public final class ColumnInTaskDto {
                 "/" + projectID + BusyBeavPaths.COLUMNS.getValue() + "/" + getColumnID();
     }
 
+    @Override
     public String getColumnTitle() {
         return columnTitle;
     }
 
+    @Override
     public int getColumnID() {
         return columnID;
     }
 
+    @Override
     public int getColumnIndex() {
         return columnIndex;
     }

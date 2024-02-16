@@ -1,6 +1,7 @@
 package org.opm.busybeaver.dto.Tasks;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.opm.busybeaver.dto.Interfaces.TaskBasicInterface;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -9,7 +10,7 @@ import javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 
-public final class TaskSummaryDto {
+public final class TaskBasicDto implements TaskBasicInterface {
     private final String title;
     private final int taskID;
     private final String priority;
@@ -28,7 +29,7 @@ public final class TaskSummaryDto {
     @ConstructorProperties({
             "title", "task_id", "priority", "due_date", "task_index","comments",
             "sprint_name", "end_date", "sprint_id", "assigned_to", "username", "column_index"})
-    public TaskSummaryDto(
+    public TaskBasicDto(
             String title, int taskID, String priority, @Nullable LocalDate dueDate, int taskIndex, int comments,
             @Nullable String sprintName, @Nullable LocalDate endDate, @Nullable Integer sprintID,
             @Nullable Integer assignedToId, @Nullable String username, int columnIndex) {
@@ -64,6 +65,7 @@ public final class TaskSummaryDto {
         }
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -72,11 +74,13 @@ public final class TaskSummaryDto {
         return taskID;
     }
 
+    @Override
     public String getPriority() {
         return priority;
     }
 
     @Nullable
+    @Override
     public LocalDate getDueDate() {
         return dueDate;
     }
@@ -106,4 +110,5 @@ public final class TaskSummaryDto {
     public int getColumnIndex() {
         return columnIndex;
     }
+
 }

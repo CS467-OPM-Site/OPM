@@ -1,11 +1,12 @@
 package org.opm.busybeaver.dto.Projects;
 
+import org.opm.busybeaver.dto.Interfaces.ProjectAndTeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
-public final class ProjectSummaryDto {
+public final class ProjectSummaryDto implements ProjectAndTeamInterface {
     private final String projectName;
     private final int projectID;
     private final LocalDateTime lastUpdated;
@@ -20,7 +21,8 @@ public final class ProjectSummaryDto {
         this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
     }
 
-    public void setProjectAndTeamLocation(String contextPath) {
+    @Override
+    public void setLocations(String contextPath) {
         final String PATH = contextPath + BusyBeavPaths.V1.getValue();
 
         this.projectLocation = PATH +
@@ -30,22 +32,27 @@ public final class ProjectSummaryDto {
         this.team.setTeamLocation(PATH);
     }
 
+    @Override
     public TeamSummaryInProjectSummaryDto getTeam() {
         return team;
     }
 
+    @Override
     public String getProjectName() {
         return projectName;
     }
 
+    @Override
     public int getProjectID() {
         return projectID;
     }
 
+    @Override
     public String getProjectLocation() {
         return projectLocation;
     }
 
+    @Override
     public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }

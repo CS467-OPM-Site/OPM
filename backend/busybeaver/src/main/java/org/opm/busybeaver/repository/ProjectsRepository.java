@@ -1,15 +1,16 @@
 package org.opm.busybeaver.repository;
 
-import com.google.api.services.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.*;
 import org.opm.busybeaver.dto.Columns.ColumnDto;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
-import org.opm.busybeaver.dto.Tasks.TaskSummaryDto;
+import org.opm.busybeaver.dto.Tasks.TaskBasicDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
+import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamusersRecord;
@@ -28,18 +29,18 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
-public class ProjectRepository {
+public class ProjectsRepository {
 
     private final DSLContext create;
+    private final ColumnsRepository columnsRepository;
 
-    private final ColumnRepository columnRepository;
     @Autowired
-    public ProjectRepository(DSLContext dslContext, ColumnRepository columnRepository) {
+    public ProjectsRepository(DSLContext dslContext, ColumnsRepository columnsRepository) {
         this.create = dslContext;
-        this.columnRepository = columnRepository;
+        this.columnsRepository = columnsRepository;
     }
 
-    public Boolean doesTeamHaveProjectsAssociatedWithIt(int teamID) {
+    public void doesTeamHaveProjectsAssociatedWithIt(int teamID) throws TeamsExceptions.TeamStillHasProjectsException {
         // SELECT COUNT(*)
         // FROM Projects
         // WHERE Projects.team_id = teamID
@@ -50,7 +51,9 @@ public class ProjectRepository {
                 .where(PROJECTS.TEAM_ID.eq(teamID))
                 .fetchSingleInto(int.class);
 
-        return (projectCount >= 1);
+        if (projectCount >= 1) {
+            throw new TeamsExceptions.TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
+        }
     }
 
     public void updateLastUpdatedForProject(int projectID) {
@@ -84,7 +87,7 @@ public class ProjectRepository {
             create.insertInto(PROJECTUSERS).set(newProjectUsers).execute();
 
             // Second, make default columns for a new project
-            columnRepository.createDefaultColumns(newProject.getProjectId());
+            columnsRepository.createDefaultColumns(newProject.getProjectId());
 
             return newProject;
 
@@ -109,6 +112,20 @@ public class ProjectRepository {
             newProjectUsers.add(newProjectUser);
         }
         return newProjectUsers;
+    }
+
+    public ProjectUserSummaryDto getProjectAndTeamSummary(int projectID) {
+        // SELECT Projects.project_name, Projects.project_id, Projects.last_updated, Projects.team_id, Teams.team_name
+        // FROM Projects
+        // JOIN Teams
+        // ON Teams.team_id = Projects.team_id
+        // WHERE Projects.project_id = projectID;
+        return create.select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, PROJECTS.LAST_UPDATED, PROJECTS.TEAM_ID, TEAMS.TEAM_NAME)
+                .from(PROJECTS)
+                .join(TEAMS)
+                .on(TEAMS.TEAM_ID.eq(PROJECTS.PROJECT_ID))
+                .where(PROJECTS.PROJECT_ID.eq(projectID))
+                .fetchSingleInto(ProjectUserSummaryDto.class);
     }
 
     public List<ProjectSummaryDto> getUserProjectsSummary(int userId) {
@@ -155,7 +172,7 @@ public class ProjectRepository {
         // ON Tasks.column_id = Columns.column_id
         // WHERE Tasks.project_id = projectID
         // GROUP BY Tasks.task_id, Sprints.sprint_name, Sprints.end_date, Columns.column_index;
-        @Nullable List<TaskSummaryDto> tasksInProject =
+        @Nullable List<TaskBasicDto> tasksInProject =
                 create.select(TASKS.TITLE, TASKS.TASK_ID, TASKS.PRIORITY, TASKS.DUE_DATE, TASKS.TASK_INDEX,
                                 count(COMMENTS.TASK_ID).as(COMMENTS.getName()),
                         SPRINTS.SPRINT_NAME, SPRINTS.END_DATE, TASKS.SPRINT_ID, TASKS.ASSIGNED_TO,
@@ -172,7 +189,7 @@ public class ProjectRepository {
                     .on(TASKS.COLUMN_ID.eq(COLUMNS.COLUMN_ID))
                     .where(TASKS.PROJECT_ID.eq(projectID))
                     .groupBy(TASKS.TASK_ID, SPRINTS.SPRINT_NAME, SPRINTS.END_DATE, COLUMNS.COLUMN_INDEX)
-                    .fetchInto(TaskSummaryDto.class);
+                    .fetchInto(TaskBasicDto.class);
 
         // Second get all columns
         // SELECT Columns.column_title, Columns.column_id, Columns.column_index
@@ -190,13 +207,13 @@ public class ProjectRepository {
         setColumnTasks(columnsInProject, tasksInProject);
 
         // Third get project + team
-        // SELECT Projects.project_name, Projects.project_id, Teams.team_name, Projects.team_id
+        // SELECT Projects.project_name, Projects.project_id, Teams.team_name, Projects.team_id, Projects.last_updated
         // FROM Projects
         // JOIN Teams
         // ON Projects.team_id = Teams.team_id
         // WHERE Projects.project_id = projectID;
         ProjectDetailsDto projectAndTeam = create
-                .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, TEAMS.TEAM_NAME, PROJECTS.TEAM_ID)
+                .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, TEAMS.TEAM_NAME, PROJECTS.TEAM_ID, PROJECTS.LAST_UPDATED)
                 .from(PROJECTS)
                 .join(TEAMS)
                 .on(PROJECTS.TEAM_ID.eq(TEAMS.TEAM_ID))
@@ -209,7 +226,7 @@ public class ProjectRepository {
         return projectAndTeam;
     }
 
-    private void setColumnTasks(List<ColumnDto> columns, @Nullable List<TaskSummaryDto> tasks) {
+    private void setColumnTasks(List<ColumnDto> columns, @Nullable List<TaskBasicDto> tasks) {
         if (tasks == null) return;
 
         final int MAX_NUM_COLUMNS = columns.size();

@@ -17,15 +17,14 @@ import java.util.ArrayList;
 
 import static org.jooq.impl.DSL.max;
 import static org.opm.busybeaver.jooq.Tables.COLUMNS;
-import static org.opm.busybeaver.jooq.Tables.TEAMS;
 
 @Repository
 @Component
-public class ColumnRepository {
+public class ColumnsRepository {
     private final DSLContext create;
 
     @Autowired
-    public ColumnRepository(DSLContext dslContext) { this.create = dslContext; }
+    public ColumnsRepository(DSLContext dslContext) { this.create = dslContext; }
 
     public void createDefaultColumns(int projectID) {
         ArrayList<ColumnsRecord> defaultColumnRecords =
@@ -35,17 +34,23 @@ public class ColumnRepository {
         create.insertInto(COLUMNS).set(defaultColumnRecords).execute();
     }
 
-    public Boolean doesColumnExistInProject(int columnID, int projectID) {
+    public void doesColumnExistInProject(int columnID, int projectID)
+            throws ColumnsExceptions.ColumnDoesNotExistInProject {
         // SELECT EXISTS(
         //      SELECT *
         //      FROM Columns
         //      WHERE Columns.column_id = columnID
         //      AND Columns.project_id = projectID)
-        return create.fetchExists(
+        boolean isColumnInProject = create.fetchExists(
                 create.selectFrom(COLUMNS)
                         .where(COLUMNS.COLUMN_ID.eq(columnID))
                         .and(COLUMNS.PROJECT_ID.eq(projectID))
         );
+
+        if (!isColumnInProject) {
+            throw new ColumnsExceptions.ColumnDoesNotExistInProject(
+                    ErrorMessageConstants.COLUMN_NOT_IN_PROJECT.getValue());
+        }
     }
 
     public Boolean doesColumnExistInProject(String columnTitle, int projectID) {

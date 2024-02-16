@@ -5,14 +5,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
-import org.opm.busybeaver.dto.Tasks.NewTaskDto;
+import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
-import org.opm.busybeaver.service.TaskService;
+import org.opm.busybeaver.service.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 public final class TasksController implements GetUserFromBearerTokenInterface {
-    private final TaskService taskService;
+    private final TasksService tasksService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String TASKS_PATH  = BusyBeavPaths.Constants.TASKS;
     private static final String COLUMNS_PATH  = BusyBeavPaths.Constants.COLUMNS;
 
     @Autowired
-    public TasksController (TaskService taskService) { this.taskService = taskService; }
+    public TasksController (TasksService tasksService) { this.tasksService = tasksService; }
 
     @GetMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH + "/{taskID}")
     public TaskDetailsDto getTaskDetails(
@@ -36,18 +36,18 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @PathVariable int taskID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return taskService.getTaskDetails(userDto, projectID, taskID, request.getContextPath());
+        return tasksService.getTaskDetails(userDto, projectID, taskID, request.getContextPath());
     }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH)
     public TaskCreatedDto addTask(
             HttpServletRequest request,
             @PathVariable int projectID,
-            @Valid @RequestBody NewTaskDto newTaskDto,
+            @Valid @RequestBody NewTaskDtoExtended newTaskDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        TaskCreatedDto taskCreatedDto = taskService.addTask(newTaskDto, userDto, projectID, request.getContextPath());
+        TaskCreatedDto taskCreatedDto = tasksService.addTask(newTaskDto, userDto, projectID, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), taskCreatedDto.getTaskLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -61,7 +61,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @PathVariable int columnID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        taskService.moveTask(userDto, projectID, taskID, columnID);
+        tasksService.moveTask(userDto, projectID, taskID, columnID);
 
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_MOVED.getValue());
     }
@@ -72,7 +72,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @PathVariable int taskID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        taskService.deleteTask(userDto, projectID, taskID);
+        tasksService.deleteTask(userDto, projectID, taskID);
 
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_DELETED.getValue());
     }

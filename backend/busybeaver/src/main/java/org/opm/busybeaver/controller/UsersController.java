@@ -10,7 +10,7 @@ import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
-import org.opm.busybeaver.service.UserService;
+import org.opm.busybeaver.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
-public final class UserController implements GetUserFromBearerTokenInterface {
+public final class UsersController implements GetUserFromBearerTokenInterface {
 
-    private final UserService userService;
+    private final UsersService usersService;
     private static final String USERS_PATH = BusyBeavPaths.Constants.USERS;
     private static final String REGISTER_PATH  = BusyBeavPaths.Constants.REGISTER;
     private static final String AUTH_PATH  = BusyBeavPaths.Constants.AUTH;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UsersController(UsersService usersService) {
+        this.usersService = usersService;
     }
 
     @PostMapping(USERS_PATH + REGISTER_PATH)
@@ -39,7 +39,7 @@ public final class UserController implements GetUserFromBearerTokenInterface {
     ) throws UsersExceptions.UserAlreadyExistsException {
 
         userDto.setUsername(usernameRegisterDto.username());
-        AuthenticatedUser newUser = userService.registerUser(userDto);
+        AuthenticatedUser newUser = usersService.registerUser(userDto);
         response.setStatus(HttpStatus.CREATED.value());
 
         return newUser;
@@ -50,7 +50,7 @@ public final class UserController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
     throws UsersExceptions.UserDoesNotExistException {
 
-        return userService.getUserByEmailAndId(userDto);
+        return usersService.getUserByEmailAndId(userDto);
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

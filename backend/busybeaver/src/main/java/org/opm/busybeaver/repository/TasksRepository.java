@@ -4,11 +4,10 @@ import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
-import org.opm.busybeaver.dto.Tasks.TaskExtendedCreatedDto;
+import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Tasks.TasksExceptions;
-import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -21,17 +20,17 @@ import static org.opm.busybeaver.jooq.tables.Tasks.TASKS;
 
 @Repository
 @Component
-public class TaskRepository {
+public class TasksRepository {
     private final DSLContext create;
-    private final CommentRepository commentRepository;
+    private final CommentsRepository commentsRepository;
 
     @Autowired
-    public TaskRepository(DSLContext dslContext, CommentRepository commentRepository) {
+    public TasksRepository(DSLContext dslContext, CommentsRepository commentsRepository) {
         this.create = dslContext;
-        this.commentRepository = commentRepository;
+        this.commentsRepository = commentsRepository;
     }
 
-    public TaskExtendedCreatedDto addTask(NewTaskDtoExtended newTaskDto, int projectID) {
+    public TaskCreatedDto addTask(NewTaskDtoExtended newTaskDto, int projectID) {
         // INSERT INTO Tasks (title, description, project_id, column_id, assigned_to, sprint_id, priority, due_date)
         // VALUES....
         return create.insertInto(
@@ -62,7 +61,7 @@ public class TaskRepository {
                         TASKS.DUE_DATE,
                         TASKS.SPRINT_ID,
                         TASKS.ASSIGNED_TO)
-                .fetchSingleInto(TaskExtendedCreatedDto.class);
+                .fetchSingleInto(TaskCreatedDto.class);
     }
 
     public TaskDetailsDto getTaskDetails(int taskID) throws TasksExceptions.TaskDoesNotExistInProject {
@@ -111,20 +110,26 @@ public class TaskRepository {
             throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
         }
 
-        task.setComments(commentRepository.getCommentsOnTask(taskID));
+        task.setComments(commentsRepository.getCommentsOnTask(taskID));
 
         return task;
     }
 
-    public TasksRecord doesTaskExistInProject(int taskID, int projectID) {
-        // SELECT *
-        // FROM Tasks
-        // WHERE Tasks.task_id = taskID
-        // AND Tasks.project_id = projectID)
-        return create.selectFrom(TASKS)
+    public void doesTaskExistInProject(int taskID, int projectID) throws TasksExceptions.TaskDoesNotExistInProject {
+        // SELECT EXISTS (
+        //      SELECT Tasks.task_id
+        //      FROM Tasks
+        //      WHERE Tasks.task_id = taskID
+        //      AND Tasks.project_id = projectID);
+        boolean taskInProject = create.fetchExists(
+                create.select(TASKS.TASK_ID)
+                        .from(TASKS)
                         .where(TASKS.TASK_ID.eq(taskID))
-                        .and(TASKS.PROJECT_ID.eq(projectID))
-                        .fetchOne();
+                        .and(TASKS.PROJECT_ID.eq(projectID)));
+
+        if (!taskInProject) {
+            throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+        }
     }
 
     public Boolean doesProjectHaveZeroTasks(int projectID) {
@@ -145,7 +150,25 @@ public class TaskRepository {
         return (countOfTasksInProject.value2() == 0);
     }
 
-    public Boolean doesTaskExistInColumnInProject(int projectID, int columnID) {
+    public void isTaskAlreadyInColumn(int taskID, int columnID) throws TasksExceptions.TaskAlreadyInColumn {
+        // SELECT EXISTS (
+        //      SELECT Tasks.task_id
+        //      FROM Tasks
+        //      WHERE Tasks.task_id = taskID
+        //      AND Tasks.column_id = columnID);
+        boolean isTaskInColumn =  create.fetchExists(
+                create.select(TASKS.TASK_ID)
+                        .from(TASKS)
+                        .where(TASKS.TASK_ID.eq(taskID))
+                        .and(TASKS.COLUMN_ID.eq(columnID))
+        );
+
+        if (isTaskInColumn) {
+            throw new TasksExceptions.TaskAlreadyInColumn(ErrorMessageConstants.TASK_ALREADY_IN_COLUMN.getValue());
+        }
+    }
+
+    public Boolean doesColumnContainTasks(int projectID, int columnID) {
         // SELECT EXISTS(
         //      SELECT *
         //      FROM Tasks

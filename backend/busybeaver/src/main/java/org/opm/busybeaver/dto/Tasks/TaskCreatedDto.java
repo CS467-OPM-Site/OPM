@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 
-public final class TaskExtendedCreatedDto implements TaskExtendedInterface {
+public final class TaskCreatedDto implements TaskExtendedInterface {
     private final String title;
     private final int taskID;
     private final int columnID;
@@ -22,9 +22,9 @@ public final class TaskExtendedCreatedDto implements TaskExtendedInterface {
             "title", "task_id", "column_id", "priority",
             "description", "due_date",
             "sprint_id", "assigned_to" })
-    public TaskExtendedCreatedDto(String title, int taskID, int columnID, String priority,
-                                  @Nullable String description, @Nullable LocalDate dueDate,
-                                  @Nullable Integer sprintID, @Nullable Integer assignedTo) {
+    public TaskCreatedDto(String title, int taskID, int columnID, String priority,
+                          @Nullable String description, @Nullable LocalDate dueDate,
+                          @Nullable Integer sprintID, @Nullable Integer assignedTo) {
         this.title = title;
         this.taskID = taskID;
         this.columnID = columnID;

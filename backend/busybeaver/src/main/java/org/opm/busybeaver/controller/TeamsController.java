@@ -14,7 +14,7 @@ import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
-import org.opm.busybeaver.service.TeamService;
+import org.opm.busybeaver.service.TeamsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,19 +24,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 public final class TeamsController implements GetUserFromBearerTokenInterface {
-    private final TeamService teamService;
+    private final TeamsService teamsService;
     private static final String TEAMS_PATH = BusyBeavPaths.Constants.TEAMS;
     private static final String MEMBERS_PATH = BusyBeavPaths.Constants.MEMBERS;
 
     @Autowired
-    public TeamsController(TeamService teamService) { this.teamService = teamService; }
+    public TeamsController(TeamsService teamsService) { this.teamsService = teamsService; }
 
     @GetMapping(TEAMS_PATH)
     public TeamsSummariesDto getUserHomePageTeams(
             HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamService.getUserHomePageTeams(userDto, request.getContextPath());
+        return teamsService.getUserHomePageTeams(userDto, request.getContextPath());
     }
 
     @PostMapping(TEAMS_PATH)
@@ -46,7 +46,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        NewTeamDto newTeam = teamService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
+        NewTeamDto newTeam = teamsService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -58,7 +58,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        teamService.deleteTeam(userDto, teamID);
+        teamsService.deleteTeam(userDto, teamID);
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.TEAM_DELETED.getValue()
@@ -71,7 +71,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
+        return teamsService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
     }
 
     @GetMapping(TEAMS_PATH + "/{teamID}" + MEMBERS_PATH)
@@ -80,7 +80,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamService.getMembersInTeam(userDto, teamID, request.getContextPath());
+        return teamsService.getMembersInTeam(userDto, teamID, request.getContextPath());
     }
 
     @PostMapping(TEAMS_PATH + "/{teamID}" + MEMBERS_PATH)
@@ -91,7 +91,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        String newUserInTeamLocation = teamService.addMemberToTeam(userDto, teamID, usernameToAdd, request.getContextPath());
+        String newUserInTeamLocation = teamsService.addMemberToTeam(userDto, teamID, usernameToAdd, request.getContextPath());
         response.setHeader(
                 BusyBeavConstants.LOCATION.getValue(),
                 newUserInTeamLocation
@@ -109,7 +109,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-       teamService.removeMemberFromTeam(userDto, userID, teamID);
+       teamsService.removeMemberFromTeam(userDto, userID, teamID);
        return new SmallJsonResponse(
                HttpStatus.OK.value(),
                SuccessMessageConstants.TEAM_MEMBER_REMOVED.getValue()

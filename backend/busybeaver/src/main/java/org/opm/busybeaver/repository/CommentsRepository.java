@@ -12,12 +12,12 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
-public class CommentRepository {
+public class CommentsRepository {
 
     private final DSLContext create;
 
     @Autowired
-    public CommentRepository(DSLContext dslContext) {
+    public CommentsRepository(DSLContext dslContext) {
         this.create = dslContext;
     }
 

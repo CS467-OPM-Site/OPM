@@ -10,7 +10,6 @@ public class CommentInTaskDto {
     private final String commentBody;
     private final String commenterUsername;
     private final int commenterID;
-
     private final LocalDateTime commentedAt;
     private String commentLocation;
 

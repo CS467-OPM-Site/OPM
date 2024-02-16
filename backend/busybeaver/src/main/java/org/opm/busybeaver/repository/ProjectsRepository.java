@@ -10,6 +10,7 @@ import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
 import org.opm.busybeaver.dto.Tasks.TaskBasicDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
+import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamusersRecord;
@@ -28,18 +29,18 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
-public class ProjectRepository {
+public class ProjectsRepository {
 
     private final DSLContext create;
-    private final ColumnRepository columnRepository;
+    private final ColumnsRepository columnsRepository;
 
     @Autowired
-    public ProjectRepository(DSLContext dslContext, ColumnRepository columnRepository) {
+    public ProjectsRepository(DSLContext dslContext, ColumnsRepository columnsRepository) {
         this.create = dslContext;
-        this.columnRepository = columnRepository;
+        this.columnsRepository = columnsRepository;
     }
 
-    public Boolean doesTeamHaveProjectsAssociatedWithIt(int teamID) {
+    public void doesTeamHaveProjectsAssociatedWithIt(int teamID) throws TeamsExceptions.TeamStillHasProjectsException {
         // SELECT COUNT(*)
         // FROM Projects
         // WHERE Projects.team_id = teamID
@@ -50,7 +51,9 @@ public class ProjectRepository {
                 .where(PROJECTS.TEAM_ID.eq(teamID))
                 .fetchSingleInto(int.class);
 
-        return (projectCount >= 1);
+        if (projectCount >= 1) {
+            throw new TeamsExceptions.TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
+        }
     }
 
     public void updateLastUpdatedForProject(int projectID) {
@@ -84,7 +87,7 @@ public class ProjectRepository {
             create.insertInto(PROJECTUSERS).set(newProjectUsers).execute();
 
             // Second, make default columns for a new project
-            columnRepository.createDefaultColumns(newProject.getProjectId());
+            columnsRepository.createDefaultColumns(newProject.getProjectId());
 
             return newProject;
 

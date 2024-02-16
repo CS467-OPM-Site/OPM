@@ -6,26 +6,22 @@ import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
-import org.opm.busybeaver.repository.UserRepository;
+import org.opm.busybeaver.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UsersService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UsersService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
-    public AuthenticatedUser getUserByEmailAndId(UserDto userDto) throws UsersExceptions.UserDoesNotExistException {
-        BeaverusersRecord beaverusersRecord = userRepository.getUserByEmailAndId(userDto);
-
-        if (beaverusersRecord == null) {
-            throw new UsersExceptions.UserDoesNotExistException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
-        }
+    public AuthenticatedUser getUserByEmailAndId(UserDto userDto) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         return new AuthenticatedUser(
                 beaverusersRecord.getUsername(),
@@ -33,8 +29,8 @@ public class UserService {
         );
     }
 
-    public AuthenticatedUser registerUser(UserDto userDto) throws UsersExceptions.UserAlreadyExistsException {
-        String newUsername = userRepository.registerUser(userDto);
+    public AuthenticatedUser registerUser(UserDto userDto) {
+        String newUsername = usersRepository.registerUser(userDto);
 
         return new AuthenticatedUser(
                 newUsername,

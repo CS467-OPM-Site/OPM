@@ -71,6 +71,19 @@ public class CommentsService implements ValidateUserAndProjectInterface {
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
+    public void removeCommentFromTask(UserDto userDto, int projectID, int taskID, int commentID) {
+        BeaverusersRecord commenter = validateUserValidAndInsideValidProject(userDto, projectID);
+
+        tasksRepository.doesTaskExistInProject(taskID, projectID);
+
+        // Ensure this user commented, and that this comment exists on the specified task
+        commentsRepository.doesCommentExistOnTask(taskID, commentID, commenter.getUserId());
+
+        commentsRepository.deleteComment(taskID, commentID, commenter.getUserId());
+
+        projectsRepository.updateLastUpdatedForProject(projectID);
+    }
+
     @Override
     public BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);

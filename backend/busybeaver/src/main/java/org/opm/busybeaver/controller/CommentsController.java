@@ -66,6 +66,20 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
                 SuccessMessageConstants.COMMENT_MODIFIED.getValue()
         );
     }
+    @DeleteMapping(PROJECTS_PATH +"/{projectID}" + TASK_PATH + "/{taskID}" + COMMENT_PATH + "/{commentID}")
+    public SmallJsonResponse removeCommentFromTask(
+            @PathVariable int projectID,
+            @PathVariable int taskID,
+            @PathVariable int commentID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        commentsService.removeCommentFromTask(userDto, projectID, taskID, commentID);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.COMMENT_DELETED.getValue()
+        );
+    }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override

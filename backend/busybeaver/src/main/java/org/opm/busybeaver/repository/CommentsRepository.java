@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.opm.busybeaver.jooq.Tables.*;
+import static org.opm.busybeaver.jooq.tables.Tasks.TASKS;
 
 @Repository
 @Component
@@ -68,6 +69,18 @@ public class CommentsRepository {
                     ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
         }
         return commentOnTask;
+    }
+
+    public void deleteComment(int taskID, int commentID, int userID) {
+        // DELETE FROM Comments
+        // WHERE Comments.task_id = taskID
+        // AND Comments.comment_id = commentID
+        // AND Comments.user_id = userID;
+        create.deleteFrom(COMMENTS)
+                .where(COMMENTS.TASK_ID.eq(taskID))
+                .and(COMMENTS.COMMENT_ID.eq(commentID))
+                .and(COMMENTS.USER_ID.eq(userID))
+                .execute();
     }
 
     public void modifyCommentOnTask(int taskID, int commentID, NewCommentBodyDto newCommentBodyDto) {

@@ -11,7 +11,8 @@ public enum SuccessMessageConstants {
     USER_WAS_ADDED_TO_PROJECT(" was added to the project"), // Place username in front
     USER_WAS_REMOVED_FROM_PROJECT(" was removed from the project"),
     PROJECT_DELETED("Project deleted"),
-    COMMENT_MODIFIED("Comment modified"); // Place username in front
+    COMMENT_MODIFIED("Comment modified"),
+    COMMENT_DELETED("Comment deleted"); // Place username in front
 
     private final String value;
 

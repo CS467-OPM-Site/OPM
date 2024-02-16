@@ -3,8 +3,8 @@ package org.opm.busybeaver.repository;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
-import org.opm.busybeaver.dto.Tasks.NewTaskDto;
-import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
+import org.opm.busybeaver.dto.Tasks.TaskExtendedCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Tasks.TasksExceptions;
@@ -31,7 +31,7 @@ public class TaskRepository {
         this.commentRepository = commentRepository;
     }
 
-    public TaskCreatedDto addTask(NewTaskDto newTaskDto, int projectID) {
+    public TaskExtendedCreatedDto addTask(NewTaskDtoExtended newTaskDto, int projectID) {
         // INSERT INTO Tasks (title, description, project_id, column_id, assigned_to, sprint_id, priority, due_date)
         // VALUES....
         return create.insertInto(
@@ -62,12 +62,12 @@ public class TaskRepository {
                         TASKS.DUE_DATE,
                         TASKS.SPRINT_ID,
                         TASKS.ASSIGNED_TO)
-                .fetchSingleInto(TaskCreatedDto.class);
+                .fetchSingleInto(TaskExtendedCreatedDto.class);
     }
 
     public TaskDetailsDto getTaskDetails(int taskID) throws TasksExceptions.TaskDoesNotExistInProject {
         // SELECT Tasks.task_id, Tasks.title, Tasks.description,
-        //      Tasks.priority, Columns.columns_id, Columns.column_title,
+        //      Tasks.priority, Tasks.due_date, Columns.columns_id, Columns.column_title,
         //      Columns.column_index, ProjectUsers.user_id, BeaverUsers.username,
         //      Sprints.sprint_id, Sprints.begin_date, Sprints.end_date, Sprints.sprint_name
         // FROM Tasks
@@ -85,6 +85,7 @@ public class TaskRepository {
                 TASKS.TITLE,
                 TASKS.DESCRIPTION,
                 TASKS.PRIORITY,
+                TASKS.DUE_DATE,
                 COLUMNS.COLUMN_ID,
                 COLUMNS.COLUMN_TITLE,
                 COLUMNS.COLUMN_INDEX,

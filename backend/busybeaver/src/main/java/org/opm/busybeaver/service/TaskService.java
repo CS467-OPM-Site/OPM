@@ -1,7 +1,7 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.Tasks.NewTaskDto;
-import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
+import org.opm.busybeaver.dto.Tasks.TaskExtendedCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.DatabaseConstants;
@@ -44,7 +44,7 @@ public class TaskService implements ValidateUserAndProjectInterface {
         this.projectUsersRepository = projectUsersRepository;
     }
 
-    public TaskCreatedDto addTask(NewTaskDto newTaskDto, UserDto userDto, int projectID, String contextPath)
+    public TaskExtendedCreatedDto addTask(NewTaskDtoExtended newTaskDto, UserDto userDto, int projectID, String contextPath)
             throws UsersExceptions.UserDoesNotExistException,
             ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException,
             ColumnsExceptions.ColumnDoesNotExistInProject
@@ -80,7 +80,7 @@ public class TaskService implements ValidateUserAndProjectInterface {
         }
 
         // Add task
-        TaskCreatedDto taskCreatedDto = taskRepository.addTask(newTaskDto, projectID);
+        TaskExtendedCreatedDto taskCreatedDto = taskRepository.addTask(newTaskDto, projectID);
         taskCreatedDto.setTaskLocation(contextPath, projectID);
 
         // Update project last updated time

@@ -1,28 +1,33 @@
-package org.opm.busybeaver.dto.Projects;
+package org.opm.busybeaver.dto.ProjectUsers;
 
-import org.opm.busybeaver.dto.Columns.ColumnDto;
 import org.opm.busybeaver.dto.Interfaces.ProjectAndTeamInterface;
+import org.opm.busybeaver.dto.Projects.TeamSummaryInProjectSummaryDto;
+import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.springframework.cglib.core.Local;
 
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public final class ProjectDetailsDto implements ProjectAndTeamInterface {
+public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
+
     private final String projectName;
     private final int projectID;
-    private final TeamSummaryInProjectSummaryDto team;
+    private final LocalDateTime lastUpdated;
     private String projectLocation;
-    private List<ColumnDto> columns;
-    public final LocalDateTime lastUpdated;
+    private final TeamSummaryInProjectSummaryDto team;
+    private List<UserSummaryDto> users;
 
-    @ConstructorProperties({"project_name", "project_id", "team_id", "team_name", "last_updated"})
-    public ProjectDetailsDto(String projectName, int projectID, int teamID, String teamName, LocalDateTime lastUpdated) {
+    @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
+    public ProjectUserSummaryDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
         this.projectName = projectName;
         this.projectID = projectID;
-        this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
         this.lastUpdated = lastUpdated;
+        this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
+    }
+
+    public void setUsers(List<UserSummaryDto> users) {
+        this.users = users;
     }
 
     @Override
@@ -34,13 +39,11 @@ public final class ProjectDetailsDto implements ProjectAndTeamInterface {
                 "/" + getProjectID();
 
         this.team.setTeamLocation(PATH);
-
-        if (!columns.isEmpty()) {
-            columns.forEach(column -> column.setColumnLocation(contextPath, projectID));
-        }
     }
-    public void setColumns(List<ColumnDto> columns) {
-        this.columns = columns;
+
+    @Override
+    public TeamSummaryInProjectSummaryDto getTeam() {
+        return team;
     }
 
     @Override
@@ -59,16 +62,11 @@ public final class ProjectDetailsDto implements ProjectAndTeamInterface {
     }
 
     @Override
-    public TeamSummaryInProjectSummaryDto getTeam() {
-        return team;
-    }
-
-    @Override
     public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public List<ColumnDto> getColumns() {
-        return columns;
+    public List<UserSummaryDto> getUsers() {
+        return users;
     }
 }

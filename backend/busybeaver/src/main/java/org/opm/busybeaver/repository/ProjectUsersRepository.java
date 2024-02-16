@@ -1,20 +1,49 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
+import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+import static org.opm.busybeaver.jooq.Tables.BEAVERUSERS;
 import static org.opm.busybeaver.jooq.Tables.PROJECTUSERS;
-import static org.opm.busybeaver.jooq.Tables.TEAMUSERS;
 
 @Repository
 @Component
 public class ProjectUsersRepository {
     private final DSLContext create;
+    private final ProjectRepository projectRepository;
+
     @Autowired
-    public ProjectUsersRepository(DSLContext dslContext) {
+    public ProjectUsersRepository(DSLContext dslContext, ProjectRepository projectRepository) {
         this.create = dslContext;
+        this.projectRepository = projectRepository;
+    }
+
+    public ProjectUserSummaryDto getAllUsersInProject(int projectID) {
+        // Get project and team details
+        ProjectUserSummaryDto projectUserSummaryDto = projectRepository.getProjectAndTeamSummary(projectID);
+
+        // Get all users in project
+        // SELECT BeaverUsers.username, ProjectUsers.user_id,
+        // FROM ProjectUsers
+        // JOIN BeaverUsers
+        // ON ProjectUsers.user_id = BeaverUsers.user_id
+        // WHERE ProjectUsers.project_id = projectID;
+        List<UserSummaryDto> projectUsers = create.select(BEAVERUSERS.USERNAME, PROJECTUSERS.USER_ID)
+                .from(PROJECTUSERS)
+                .join(BEAVERUSERS)
+                .on(PROJECTUSERS.USER_ID.eq(BEAVERUSERS.USER_ID))
+                .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
+                .fetchInto(UserSummaryDto.class);
+
+        projectUserSummaryDto.setUsers(projectUsers);
+
+        return projectUserSummaryDto;
     }
 
     public void addUserToProject(int projectID, int userID) {

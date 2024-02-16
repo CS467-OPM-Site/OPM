@@ -3,6 +3,7 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
@@ -26,6 +27,15 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
     @Autowired
     public ProjectUsersController(ProjectUsersService projectUsersService) {
         this.projectUsersService = projectUsersService;
+    }
+
+    @GetMapping(PROJECT_PATH + "/{projectID}" + USERS_PATH)
+    public ProjectUserSummaryDto getAllUsersInProject(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return projectUsersService.getAllUsersInProject(userDto, projectID, request.getContextPath());
     }
 
     @PostMapping(PROJECT_PATH + "/{projectID}" + USERS_PATH)

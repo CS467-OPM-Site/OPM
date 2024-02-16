@@ -43,7 +43,7 @@ public class TeamService {
 
         newTeamDto.setTeamCreator(newTeamRecord.getTeamCreator());
         newTeamDto.setTeamID(newTeamRecord.getTeamId());
-        newTeamDto.setTeamLocation(contextPath);
+        newTeamDto.setLocations(contextPath);
         newTeamDto.setTeamName(newTeamRecord.getTeamName());
 
         return newTeamDto;
@@ -86,7 +86,7 @@ public class TeamService {
                 teamRepository.getUserHomePageTeams(beaverusersRecord.getUserId());
 
         teams.forEach( team -> {
-            team.setTeamLocation(contextPath);
+            team.setLocations(contextPath);
             team.setIsTeamCreator(beaverusersRecord.getUserId());
         });
 
@@ -114,7 +114,7 @@ public class TeamService {
                 homePageFilterProjectByTeamDtos
         );
 
-        homePageFilterProjectsByTeamDto.setProjectAndTeamLocations(contextPath);
+        homePageFilterProjectsByTeamDto.setLocations(contextPath);
 
         return homePageFilterProjectsByTeamDto;
     }
@@ -138,7 +138,7 @@ public class TeamService {
                 memberInTeamDtos
         );
 
-        membersInTeamDto.setTeamLocation(contextPath);
+        membersInTeamDto.setLocations(contextPath);
 
         return membersInTeamDto;
     }

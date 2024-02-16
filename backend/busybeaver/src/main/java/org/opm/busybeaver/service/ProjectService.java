@@ -60,7 +60,7 @@ public final class ProjectService implements ValidateUserAndProjectInterface {
         );
 
         newProjectDto.setProjectID(newProject.getProjectId());
-        newProjectDto.setProjectLocation(contextPath);
+        newProjectDto.setLocations(contextPath);
         return newProjectDto;
     }
 
@@ -87,7 +87,7 @@ public final class ProjectService implements ValidateUserAndProjectInterface {
         List<ProjectSummaryDto> projects =
                 projectRepository.getUserProjectsSummary(beaverusersRecord.getUserId());
 
-        projects.forEach( project -> project.setProjectAndTeamLocation(contextPath));
+        projects.forEach( project -> project.setLocations(contextPath));
 
         return new ProjectsSummariesDto(projects);
     }
@@ -104,7 +104,7 @@ public final class ProjectService implements ValidateUserAndProjectInterface {
         }
 
         ProjectDetailsDto projectDetails = projectRepository.getSpecificProjectDetails(projectID);
-        projectDetails.setProjectTeamColumnTaskLocation(contextPath);
+        projectDetails.setLocations(contextPath);
 
         return projectDetails;
     }

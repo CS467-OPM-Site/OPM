@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
-import org.opm.busybeaver.dto.Tasks.NewTaskDto;
-import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
+import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
+import org.opm.busybeaver.dto.Tasks.TaskExtendedCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -40,14 +40,14 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
     }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH)
-    public TaskCreatedDto addTask(
+    public TaskExtendedCreatedDto addTask(
             HttpServletRequest request,
             @PathVariable int projectID,
-            @Valid @RequestBody NewTaskDto newTaskDto,
+            @Valid @RequestBody NewTaskDtoExtended newTaskDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        TaskCreatedDto taskCreatedDto = taskService.addTask(newTaskDto, userDto, projectID, request.getContextPath());
+        TaskExtendedCreatedDto taskCreatedDto = taskService.addTask(newTaskDto, userDto, projectID, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), taskCreatedDto.getTaskLocation());
         response.setStatus(HttpStatus.CREATED.value());
 

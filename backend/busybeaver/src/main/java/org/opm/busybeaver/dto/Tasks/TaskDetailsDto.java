@@ -2,6 +2,7 @@ package org.opm.busybeaver.dto.Tasks;
 
 import org.opm.busybeaver.dto.Columns.ColumnInTaskDto;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
+import org.opm.busybeaver.dto.Interfaces.TaskBasicInterface;
 import org.opm.busybeaver.dto.Sprints.SprintInTaskDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -11,7 +12,7 @@ import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 import java.util.List;
 
-public final class TaskDetailsDto {
+public final class TaskDetailsDto implements TaskBasicInterface {
     private final int taskID;
     private final String title;
     @Nullable
@@ -26,11 +27,13 @@ public final class TaskDetailsDto {
 
     private String taskLocation;
 
-    @ConstructorProperties({"task_id", "title", "description", "priority",
+    private LocalDate dueDate;
+
+    @ConstructorProperties({"task_id", "title", "description", "priority", "due_date",
                             "column_id", "column_title", "column_index",
                             "user_id", "username",
                             "sprint_id", "begin_date", "end_date", "sprint_name"})
-    public TaskDetailsDto(int taskID, String title, @Nullable String description, String priority,
+    public TaskDetailsDto(int taskID, String title, @Nullable String description, String priority, LocalDate dueDate,
                           int columnID, String columnTitle, int columnIndex,
                           Integer userID, String username,
                           Integer sprintID, LocalDate startDate, LocalDate endDate, String sprintName) {
@@ -38,6 +41,7 @@ public final class TaskDetailsDto {
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.dueDate = dueDate;
 
         this.columnInTaskDto = new ColumnInTaskDto(columnTitle, columnID, columnIndex);
 
@@ -72,6 +76,7 @@ public final class TaskDetailsDto {
         }
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -85,8 +90,14 @@ public final class TaskDetailsDto {
         return description;
     }
 
+    @Override
     public String getPriority() {
         return priority;
+    }
+
+    @Override
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     public ColumnInTaskDto getColumnInTaskDto() {

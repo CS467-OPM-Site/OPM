@@ -1,5 +1,6 @@
 package org.opm.busybeaver.service;
 
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
@@ -28,6 +29,15 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
         this.projectRepository = projectRepository;
         this.projectUsersRepository = projectUsersRepository;
         this.userRepository = userRepository;
+    }
+
+    public ProjectUserSummaryDto getAllUsersInProject(UserDto userDto, int projectID, String contextPath) {
+       validateUserValidAndInsideValidProject(userDto, projectID);
+
+       ProjectUserSummaryDto projectUserSummaryDto = projectUsersRepository.getAllUsersInProject(projectID);
+       projectUserSummaryDto.setLocations(contextPath);
+
+       return projectUserSummaryDto;
     }
 
     public void addUserToProject(UserDto userDto, int projectID, UsernameDto usernameDto)

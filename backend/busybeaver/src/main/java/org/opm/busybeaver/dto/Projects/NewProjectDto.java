@@ -1,10 +1,12 @@
 package org.opm.busybeaver.dto.Projects;
 
 import jakarta.validation.constraints.*;
+import org.opm.busybeaver.dto.Interfaces.ProjectBasicInterface;
+import org.opm.busybeaver.dto.Interfaces.TeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 
-public final class NewProjectDto {
+public final class NewProjectDto implements ProjectBasicInterface, TeamInterface {
 
     @NotBlank(message = "Missing 'projectName' attribute to generate a new project")
     @Size(min = 3, max = 50, message = "Project name must be between 3 and 50 characters")
@@ -26,33 +28,31 @@ public final class NewProjectDto {
             this.teamID = teamID;
     }
 
-    public String getTeamName() {
-                              return teamName;
-                                              }
+    @Override
+    public String getTeamName() { return teamName; }
 
+    @Override
     public String getProjectLocation() {
                                      return projectLocation;
                                                             }
 
-    public void setProjectLocation(String contextPath) {
+    @Override
+    public void setLocations(String contextPath) {
             final String PATH = contextPath + BusyBeavPaths.V1.getValue();
             this.projectLocation = PATH +
                     BusyBeavPaths.PROJECTS.getValue() +
                     "/" + getProjectID();
     }
 
-    public String getProjectName() {
-                                 return projectName;
-                                                    }
-
-    public int getProjectID() {
-                            return projectID;
-                                             }
+    @Override
+    public String getProjectName() { return projectName; }
+    @Override
+    public int getProjectID() { return projectID; }
 
     public void setProjectID(int projectID) {
                                           this.projectID = projectID;
                                                                      }
-
+    @Override
     public int getTeamID() {
                          return teamID;
         }

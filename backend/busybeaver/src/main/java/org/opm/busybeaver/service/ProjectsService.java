@@ -97,10 +97,12 @@ public final class ProjectsService implements ValidateUserAndProjectInterface {
     }
 
     @Override
-    public void validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
+    public BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         // Validate user in project and project exists
         projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+
+        return beaverusersRecord;
     }
 }

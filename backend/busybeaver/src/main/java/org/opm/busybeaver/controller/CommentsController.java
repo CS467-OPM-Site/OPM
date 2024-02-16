@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
+import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -30,7 +31,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
     public CommentsController(CommentsService commentsService) { this.commentsService = commentsService; }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + TASK_PATH + "/{taskID}")
-    public void addCommentToTask(
+    public CommentInTaskDto addCommentToTask(
             HttpServletRequest request,
             @Valid @RequestBody NewCommentBodyDto newCommentBodyDto,
             @PathVariable int projectID,
@@ -38,11 +39,13 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             HttpServletResponse response
     ) {
-        commentsService.addCommentToTask(userDto, projectID, taskID, newCommentBodyDto);
-//        response.setHeader(BusyBeavConstants.LOCATION.getValue(), newColumn.getColumnLocation());
-//        response.setStatus(HttpStatus.CREATED.value());
-//
-//        return newColumn;
+        CommentInTaskDto newComment = commentsService.addCommentToTask(
+                userDto, projectID, taskID, newCommentBodyDto, request.getContextPath()
+        );
+
+        response.setHeader(BusyBeavConstants.LOCATION.getValue(), newComment.getCommentLocation());
+        response.setStatus(HttpStatus.CREATED.value());
+        return newComment;
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

@@ -1,11 +1,16 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
+import org.jooq.Record3;
+import org.jooq.Result;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
+import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.opm.busybeaver.jooq.Tables.*;
@@ -19,6 +24,20 @@ public class CommentsRepository {
     @Autowired
     public CommentsRepository(DSLContext dslContext) {
         this.create = dslContext;
+    }
+
+    public CommentInTaskDto addComment(int taskID, NewCommentBodyDto newCommentBodyDto, BeaverusersRecord commenter) {
+        Record3<Integer, String, LocalDateTime> newComment = create.insertInto(COMMENTS, COMMENTS.USER_ID, COMMENTS.TASK_ID, COMMENTS.COMMENT_BODY)
+                .values(commenter.getUserId(), taskID, newCommentBodyDto.commentBody())
+                .returningResult(COMMENTS.COMMENT_ID, COMMENTS.COMMENT_BODY, COMMENTS.COMMENT_CREATED)
+                .fetchSingle();
+
+        return new CommentInTaskDto(
+                newComment.getValue(COMMENTS.COMMENT_ID),
+                newComment.getValue(COMMENTS.COMMENT_BODY),
+                commenter.getUsername(),
+                commenter.getUserId(),
+                newComment.getValue(COMMENTS.COMMENT_CREATED));
     }
 
     public List<CommentInTaskDto> getCommentsOnTask(int taskID) {

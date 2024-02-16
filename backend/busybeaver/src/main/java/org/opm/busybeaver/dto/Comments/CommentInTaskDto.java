@@ -5,7 +5,7 @@ import org.opm.busybeaver.enums.BusyBeavPaths;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
-public class CommentInTaskDto {
+public final class CommentInTaskDto {
     private final int commentID;
     private final String commentBody;
     private final String commenterUsername;

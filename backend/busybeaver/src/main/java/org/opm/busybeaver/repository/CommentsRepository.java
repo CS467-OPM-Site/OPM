@@ -5,7 +5,10 @@ import org.jooq.Record3;
 import org.jooq.Result;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
+import org.opm.busybeaver.jooq.tables.records.CommentsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -38,6 +41,44 @@ public class CommentsRepository {
                 commenter.getUsername(),
                 commenter.getUserId(),
                 newComment.getValue(COMMENTS.COMMENT_CREATED));
+    }
+
+    public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userID)
+            throws CommentsExceptions.CommentDoesNotExistOnTask,
+            CommentsExceptions.UserDidNotLeaveThisComment {
+        //  SELECT Comments.comment_id
+        //  FROM Comments
+        //  WHERE Comments.comment_id = commentID
+        //  AND Comments.task_id = taskID
+        //  AND Comments.user_id = userID;
+
+        CommentsRecord commentOnTask =
+                create.selectFrom(COMMENTS)
+                        .where(COMMENTS.COMMENT_ID.eq(commentID))
+                        .and(COMMENTS.TASK_ID.eq(taskID))
+                        .fetchOne();
+
+        if (commentOnTask == null) {
+            throw new CommentsExceptions.CommentDoesNotExistOnTask(
+                    ErrorMessageConstants.COMMENT_NOT_FOUND_ON_TASK.getValue());
+        }
+
+        if (!commentOnTask.getUserId().equals(userID)) {
+            throw new CommentsExceptions.UserDidNotLeaveThisComment(
+                    ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
+        }
+        return commentOnTask;
+    }
+
+    public void modifyCommentOnTask(int taskID, int commentID, NewCommentBodyDto newCommentBodyDto) {
+        // UPDATE Comments SET Comments.comment_body = newCommentBodyDto.CommentBody()
+        // WHERE Comments.task_id = taskID
+        // AND Comments.comment_id = commentID;
+        create.update(COMMENTS)
+                .set(COMMENTS.COMMENT_BODY, newCommentBodyDto.commentBody())
+                .where(COMMENTS.COMMENT_ID.eq(commentID))
+                .and(COMMENTS.TASK_ID.eq(taskID))
+                .execute();
     }
 
     public List<CommentInTaskDto> getCommentsOnTask(int taskID) {

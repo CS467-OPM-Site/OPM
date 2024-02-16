@@ -30,7 +30,10 @@ public enum ErrorMessageConstants {
     USER_ALREADY_IN_PROJECT("User already in this project"),
     USER_NOT_IN_PROJECT("User not in this project"),
     PROJECT_CANNOT_HAVE_ZERO_USERS("The last member of a project cannot remove themselves"),
-    PROJECT_STILL_HAS_TASKS("Projects must have no tasks left before they can be deleted");
+    PROJECT_STILL_HAS_TASKS("Projects must have no tasks left before they can be deleted"),
+    COMMENT_NOT_FOUND_ON_TASK("Comment not found on task"),
+    USER_DID_NOT_LEAVE_THIS_COMMENT("User did not leave this comment"),
+    COMMENT_EQUIVALENT_NOT_MODIFIED("Comment body was not modified");
 
     private final String value;
 

@@ -7,9 +7,11 @@ import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerToken
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.exceptions.Columns.ColumnsExceptions;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
@@ -26,6 +28,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
     private final CommentsService commentsService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String TASK_PATH = BusyBeavPaths.Constants.TASKS;
+    private static final String COMMENT_PATH = BusyBeavPaths.Constants.COMMENTS;
 
     @Autowired
     public CommentsController(CommentsService commentsService) { this.commentsService = commentsService; }
@@ -46,6 +49,22 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newComment.getCommentLocation());
         response.setStatus(HttpStatus.CREATED.value());
         return newComment;
+    }
+
+    @PutMapping(PROJECTS_PATH +"/{projectID}" + TASK_PATH + "/{taskID}" + COMMENT_PATH + "/{commentID}")
+    public SmallJsonResponse addCommentToTask(
+            @Valid @RequestBody NewCommentBodyDto newCommentBodyDto,
+            @PathVariable int projectID,
+            @PathVariable int taskID,
+            @PathVariable int commentID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        commentsService.modifyCommentOnTask(userDto, projectID, taskID, commentID, newCommentBodyDto);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.COMMENT_MODIFIED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

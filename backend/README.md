@@ -652,10 +652,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully modified column name in project. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Column exists in project"}` | Column already exists in project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Column title not changed, title identical to previous"}` | Column title to change to, same as previous title. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given column does not exist in project"}` | Column not found in project. |
+> | `409`         | `application/json`                | `{"code":"409","message":"Given column title already exists in project"}` | Column title already exists in project. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -704,6 +704,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully modified column index in project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"New column index given is same as current column index"}` | New column index is same as previous. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
@@ -714,7 +715,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > ```json
 > {
 >     "columnTitle": "project1",
->     "columnIndex": 0,      # Keeps previous column index
+>     "columnIndex": 0,      # The new index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
 > }

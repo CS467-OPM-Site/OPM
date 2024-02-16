@@ -64,7 +64,7 @@ public class CommentsRepository {
                     ErrorMessageConstants.COMMENT_NOT_FOUND_ON_TASK.getValue());
         }
 
-        if (!commentOnTask.getUserId().equals(userID)) {
+        if (commentOnTask.getUserId() != userID) {
             throw new CommentsExceptions.UserDidNotLeaveThisComment(
                     ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
         }

@@ -42,4 +42,26 @@ public class ColumnsExceptionHandler {
                 HttpStatus.FORBIDDEN
         );
     }
+
+    @ExceptionHandler(ColumnsExceptions.ColumnIndexIdentical.class)
+    public ResponseEntity<?> columnIndexIdentical() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.COLUMN_POSITION_THE_SAME.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(ColumnsExceptions.ColumnIndexOutOfBounds.class)
+    public ResponseEntity<?> columnIndexOutOfBounds() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.COLUMN_INDEX_OUT_OF_BOUNDS.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

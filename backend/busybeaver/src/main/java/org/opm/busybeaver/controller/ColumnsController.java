@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
+import org.opm.busybeaver.dto.Columns.NewColumnIndexDto;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -22,6 +23,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
     private final ColumnsService columnsService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String COLUMNS_PATH = BusyBeavPaths.Constants.COLUMNS;
+    private static final String ORDER_PATH = BusyBeavPaths.Constants.ORDER;
 
     @Autowired
     public ColumnsController(ColumnsService columnsService) { this.columnsService = columnsService; }
@@ -52,6 +54,23 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.COLUMN_DELETED.getValue()
+        );
+    }
+
+    @PutMapping(PROJECTS_PATH + "/{projectID}" + COLUMNS_PATH + "/{columnID}" + ORDER_PATH)
+    public NewColumnDto moveColumnInProject(
+            HttpServletRequest request,
+            @Valid @RequestBody NewColumnIndexDto newColumnIndexDto,
+            @PathVariable int projectID,
+            @PathVariable int columnID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return columnsService.moveColumn(
+                userDto,
+                projectID,
+                columnID,
+                newColumnIndexDto.columnIndex(),
+                request.getContextPath()
         );
     }
 

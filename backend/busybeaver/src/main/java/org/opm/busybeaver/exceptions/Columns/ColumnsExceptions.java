@@ -19,4 +19,16 @@ public final class ColumnsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ColumnIndexIdentical extends RuntimeException {
+        public ColumnIndexIdentical(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static class ColumnIndexOutOfBounds extends RuntimeException {
+        public ColumnIndexOutOfBounds(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

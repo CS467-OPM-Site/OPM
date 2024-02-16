@@ -64,4 +64,15 @@ public class ColumnsExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(ColumnsExceptions.ColumnTitleIdentical.class)
+    public ResponseEntity<?> columnTitleIdentical() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

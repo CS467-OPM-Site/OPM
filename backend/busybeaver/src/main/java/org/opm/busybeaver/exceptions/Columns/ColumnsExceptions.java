@@ -31,4 +31,10 @@ public final class ColumnsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ColumnTitleIdentical extends RuntimeException {
+        public ColumnTitleIdentical(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

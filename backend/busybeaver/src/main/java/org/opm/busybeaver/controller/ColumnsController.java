@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
 import org.opm.busybeaver.dto.Columns.NewColumnIndexDto;
+import org.opm.busybeaver.dto.Columns.NewColumnTitleDto;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -70,6 +71,23 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
                 projectID,
                 columnID,
                 newColumnIndexDto.columnIndex(),
+                request.getContextPath()
+        );
+    }
+
+    @PutMapping(PROJECTS_PATH + "/{projectID}" + COLUMNS_PATH + "/{columnID}")
+    public NewColumnDto changeColumnTitle(
+            HttpServletRequest request,
+            @Valid @RequestBody NewColumnTitleDto newColumnTitleDto,
+            @PathVariable int projectID,
+            @PathVariable int columnID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return columnsService.changeColumnTitle(
+                userDto,
+                projectID,
+                columnID,
+                newColumnTitleDto,
                 request.getContextPath()
         );
     }

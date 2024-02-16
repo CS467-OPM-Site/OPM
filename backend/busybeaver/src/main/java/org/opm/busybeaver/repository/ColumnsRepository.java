@@ -121,6 +121,24 @@ public class ColumnsRepository {
                 .execute();
     }
 
+    public NewColumnDto changeColumnTitle(int projectID, int columnID, String newColumnTitle)
+        throws ColumnsExceptions.ColumnTitleAlreadyInProject {
+
+        try {
+            return create.update(COLUMNS)
+                    .set(COLUMNS.COLUMN_TITLE, newColumnTitle)
+                    .where(COLUMNS.PROJECT_ID.eq(projectID))
+                    .and(COLUMNS.COLUMN_ID.eq(columnID))
+                    .returningResult(COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
+                    .fetchSingleInto(NewColumnDto.class);
+
+        } catch (DuplicateKeyException e) {
+            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(
+                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+        }
+
+    }
+
     @Transactional
     public NewColumnDto addNewColumnToProject(NewColumnDto newColumnDto, int projectID) {
         // First, find the highest index of columns associated in project
@@ -132,7 +150,7 @@ public class ColumnsRepository {
                 .where(COLUMNS.PROJECT_ID.eq(projectID))
                 .fetchSingle().component1();
 
-        // Second, insert new column with next column, making it last in-order column
+        // Second, insert new column with next column index, making it last in-order column
         // INSERT INTO Columns (column_title, project_id, column_index)
         // VALUES (...)
         try {

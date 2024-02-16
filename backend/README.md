@@ -243,12 +243,13 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "project1",
 >     "projectID": 1,
->     "projectLocation": "/api/v1/projects/1",
+>     "lastUpdated": "2024-02-13T14:45:00.023767",  
 >     "team": {
 >         "teamName": "Team1",
 >         "teamID": 1,
 >         "teamLocation": "/api/v1/teams/1"
 >      },
+>     "projectLocation": "/api/v1/projects/1",
 >     "columns": [
 >      {
 >           "columnTitle": "Todo",
@@ -400,8 +401,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Returns all users associated with a project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -420,13 +420,11 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "users": [
 >       {
 >           "username": "username1",
->           "userID": 1,
->           "userInProjectTeam": true,       
+>           "userID": 1
 >       },
 >       {
 >           "username": "username2",
->           "userID": 2,
->           "userInProjectTeam": false,       
+>           "userID": 2
 >       },
 >     ]
 > }
@@ -895,7 +893,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project, or project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project not found"}` | User not in this project, or project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. Project must have at least one column. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Sprint not found"}` | Sprint not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Assignee not found"}` | Assignee not found. |
@@ -954,7 +952,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "title": "Task 1",
 >     "taskID": 1,
->     "taskColumnIndex": 0,       # Indicates location on board
+>     "taskColumnIndex": 0,         # Indicates location on board
 >     "column": {
 >           "columnTitle": "Column",
 >           "columnIndex": 0,
@@ -962,18 +960,19 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "columnLocation": "api/v1/projects/1/columns/1"
 >      },
 >     "description": "This is a task!",
->     "assignedTo": {
+>     "assignedTo": {               # Or null
 >           "username": "username-of-assignee",
 >           "userID": 1
->      } or null,       
->     "priority": "High" or null,
->     "sprint": {
+>      },       
+>     "priority": "High",
+>     "dueDate": "2023-10-31"       # Or null,
+>     "sprint": {                   # Or null,
 >           "startDate": "2023-10-31",
 >           "endDate": "2023-11-01",
 >           "sprintName": "Sprint Name",
 >           "sprintID": 1,
 >           "sprintLocation": "api/v1/projects/1/sprints/1"
->      } or null,
+>      },
 >     "comments": [
 >      {
 >           "commentID": 1,
@@ -1268,9 +1267,8 @@ To keep the attribute the same, do not include the task attribute in the request
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | **Includes a URI to the comment resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given task does not exist in this project"}` | Task not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -1279,10 +1277,9 @@ To keep the attribute the same, do not include the task attribute in the request
 > {
 >     "commentID": 1,
 >     "commentBody": "This is a comment.",
->     "commenter":{
->           "username": "commenter",
->           "userID": 1
->      }
+>     "commentedAt": "This is a comment.",
+>     "commenterUsername": "This is a comment.",
+>     "commenterID": "This is a comment.",
 > }
 > ```
 
@@ -1322,11 +1319,10 @@ To keep the attribute the same, do not include the task attribute in the request
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Comment modified."}` | Successfully edited the comment. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. Delete instead. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Comment does not exist"}` | Comment not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User did not leave this comment"}` | User did not leave this comment. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Comment not found on task"}` | Comment not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given task does not exist in this project"}` | Task not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL

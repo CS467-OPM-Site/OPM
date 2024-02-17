@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
+import org.opm.busybeaver.exceptions.ProjectUsers.ProjectUsersExceptions;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -93,5 +94,24 @@ public class ProjectUsersRepository {
                     ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
         }
         return true;
+    }
+
+    public void isAssignedToUserInProject(int userID, int projectID)
+            throws ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException {
+        // SELECT EXISTS(
+        //      SELECT ProjectUsers.project_id,ProjectUsers.user_id
+        //      FROM ProjectUsers
+        //      WHERE ProjectUsers.project_id = projectID
+        //      AND ProjectUsers.user_id = userID
+        boolean isValidUserInValidProject = create.fetchExists(
+                create.selectFrom(PROJECTUSERS)
+                        .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
+                        .and(PROJECTUSERS.USER_ID.eq(userID))
+        );
+
+        if (!isValidUserInValidProject) {
+            throw new ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent(
+                    ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue());
+        }
     }
 }

@@ -19,6 +19,7 @@ public enum ErrorMessageConstants {
     TEAM_CREATOR_CANNOT_BE_REMOVED("Team creator cannot be removed"),
     PROJECT_ALREADY_EXISTS_FOR_TEAM("Project name for that team already exists, please choose another project name"),
     USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST("User not in project, or project does not exist"),
+    ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST("Assigned-To user not in project, or user does not exist"),
     TEAM_STILL_HAS_PROJECTS("Team still has associated projects - remove them before deleting the team"),
     COLUMN_NOT_IN_PROJECT("Given column does not exist in this project"),
     COLUMN_TITLE_ALREADY_IN_PROJECT("Given column title already exists in this project"),
@@ -38,7 +39,12 @@ public enum ErrorMessageConstants {
     COLUMN_INDEX_OUT_OF_BOUNDS("Column index given is out of bounds for the given project"),
     COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED("Column title not changed, title identical to previous"),
     SPRINT_DATES_INVALID("Sprint dates are invalid"),
-    PROJECT_CONTAINS_SPRINT_NAME("Project contains sprint with that name already");
+    PROJECT_CONTAINS_SPRINT_NAME("Project contains sprint with that name already"),
+    TASK_FIELD_NOT_FOUND("Task field to modify not valid"),
+    TASK_PRIORITY_INVALID("Task priority invalid"),
+    TASK_DUE_DATE_INVALID("Task due date invalid"),
+    TASK_TITLE_INVALID("Title length must be a string from 3 to 50 characters"),
+    TASK_DESCRIPTION_INVALID("Title description must be a string up to 500 characters long");
 
     private final String value;
 

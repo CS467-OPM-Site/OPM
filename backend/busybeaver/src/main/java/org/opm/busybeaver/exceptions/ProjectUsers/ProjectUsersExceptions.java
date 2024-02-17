@@ -19,4 +19,10 @@ public final class ProjectUsersExceptions {
             super(errorMessage);
         }
     }
+
+    public static class AssignedToUserNotInProjectOrNonexistent extends RuntimeException {
+        public AssignedToUserNotInProjectOrNonexistent(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

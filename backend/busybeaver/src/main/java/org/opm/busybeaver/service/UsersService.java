@@ -2,9 +2,7 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
-import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
-import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;

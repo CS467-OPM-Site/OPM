@@ -175,7 +175,7 @@ public class ProjectsRepository {
         @Nullable List<TaskBasicDto> tasksInProject =
                 create.select(TASKS.TITLE, TASKS.TASK_ID, TASKS.PRIORITY, TASKS.DUE_DATE, TASKS.TASK_INDEX,
                                 count(COMMENTS.TASK_ID).as(COMMENTS.getName()),
-                        SPRINTS.SPRINT_NAME, SPRINTS.END_DATE, TASKS.SPRINT_ID, TASKS.ASSIGNED_TO,
+                        SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE, TASKS.SPRINT_ID, TASKS.ASSIGNED_TO,
                             create.select(BEAVERUSERS.USERNAME)
                                 .from(BEAVERUSERS)
                                 .where(BEAVERUSERS.USER_ID.eq(TASKS.ASSIGNED_TO))
@@ -188,7 +188,7 @@ public class ProjectsRepository {
                     .join(COLUMNS)
                     .on(TASKS.COLUMN_ID.eq(COLUMNS.COLUMN_ID))
                     .where(TASKS.PROJECT_ID.eq(projectID))
-                    .groupBy(TASKS.TASK_ID, SPRINTS.SPRINT_NAME, SPRINTS.END_DATE, COLUMNS.COLUMN_INDEX)
+                    .groupBy(TASKS.TASK_ID, SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE, COLUMNS.COLUMN_INDEX)
                     .fetchInto(TaskBasicDto.class);
 
         // Second get all columns

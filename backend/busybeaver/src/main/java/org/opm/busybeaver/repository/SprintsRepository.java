@@ -1,6 +1,8 @@
 package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
+import org.opm.busybeaver.dto.Sprints.NewSprintDto;
+import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Sprints.SprintsExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,34 @@ public class SprintsRepository {
 
     @Autowired
     public SprintsRepository(DSLContext dslContext) { this.create = dslContext; }
+
+    public void isSprintNameInProject(int projectID, String sprintName)
+        throws SprintsExceptions.SprintNameAlreadyInProject {
+
+        // SELECT EXISTS (
+        //      SELECT * FROM Sprints
+        //      WHERE Sprints.project_id = projectID
+        //      AND Sprints.sprint_name = sprintName);
+        boolean isSprintNameInProject = create.fetchExists(
+                create.selectFrom(SPRINTS)
+                        .where(SPRINTS.PROJECT_ID.eq(projectID))
+                        .and(SPRINTS.SPRINT_NAME.eq(sprintName))
+        );
+
+        if (isSprintNameInProject) {
+            throw new SprintsExceptions.SprintNameAlreadyInProject(
+                    ErrorMessageConstants.PROJECT_CONTAINS_SPRINT_NAME.getValue());
+        }
+    }
+
+    public SprintSummaryDto addSprintToProject(int projectID, NewSprintDto newSprintDto) {
+        // INSERT INTO Sprints (project_id, sprint_name, begin_date, end_date)
+        // VALUES ...
+         return create.insertInto(SPRINTS, SPRINTS.PROJECT_ID, SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE)
+                 .values(projectID, newSprintDto.sprintName(), newSprintDto.startDate(), newSprintDto.endDate())
+                 .returningResult(SPRINTS.SPRINT_ID, SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE)
+                 .fetchSingleInto(SprintSummaryDto.class);
+    }
 
     public void doesSprintExistInProject(int sprintID, int projectID)
             throws SprintsExceptions.SprintDoesNotExistInProject {

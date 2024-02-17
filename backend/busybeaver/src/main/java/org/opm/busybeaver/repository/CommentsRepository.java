@@ -2,7 +2,6 @@ package org.opm.busybeaver.repository;
 
 import org.jooq.DSLContext;
 import org.jooq.Record3;
-import org.jooq.Result;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
@@ -17,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.opm.busybeaver.jooq.Tables.*;
-import static org.opm.busybeaver.jooq.tables.Tasks.TASKS;
 
 @Repository
 @Component

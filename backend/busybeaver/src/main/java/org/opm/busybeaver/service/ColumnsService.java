@@ -5,8 +5,6 @@ import org.opm.busybeaver.dto.Columns.NewColumnTitleDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Columns.ColumnsExceptions;
-import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
-import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.ColumnsRecord;
 import org.opm.busybeaver.repository.*;

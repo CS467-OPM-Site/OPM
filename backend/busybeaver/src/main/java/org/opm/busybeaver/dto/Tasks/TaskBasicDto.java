@@ -28,10 +28,10 @@ public final class TaskBasicDto implements TaskBasicInterface {
 
     @ConstructorProperties({
             "title", "task_id", "priority", "due_date", "task_index","comments",
-            "sprint_name", "end_date", "sprint_id", "assigned_to", "username", "column_index"})
+            "sprint_name", "begin_date", "end_date", "sprint_id", "assigned_to", "username", "column_index"})
     public TaskBasicDto(
             String title, int taskID, String priority, @Nullable LocalDate dueDate, int taskIndex, int comments,
-            @Nullable String sprintName, @Nullable LocalDate endDate, @Nullable Integer sprintID,
+            @Nullable String sprintName, @Nullable LocalDate startDate, @Nullable LocalDate endDate, @Nullable Integer sprintID,
             @Nullable Integer assignedToId, @Nullable String username, int columnIndex) {
 
         this.title = title;
@@ -43,8 +43,8 @@ public final class TaskBasicDto implements TaskBasicInterface {
         this.columnIndex = columnIndex;
 
         // Add sprint if not any of sprint properties are null
-        if (sprintName != null && endDate != null && sprintID != null) {
-            this.sprint = new SprintSummaryDto(sprintID, sprintName, endDate);
+        if (sprintName != null && endDate != null && sprintID != null && startDate != null) {
+            this.sprint = new SprintSummaryDto(sprintID, sprintName, startDate, endDate);
         }
 
         // Add assigned to if not any of the assignedTo properties are null

@@ -2,7 +2,7 @@ package org.opm.busybeaver.dto.Tasks;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-import org.opm.busybeaver.annotations.PriorityValidation;
+import org.opm.busybeaver.annotations.TaskPriorityValidation;
 import org.opm.busybeaver.dto.Interfaces.TaskExtendedInterface;
 
 import javax.annotation.Nullable;
@@ -28,7 +28,7 @@ public final class NewTaskDtoExtended implements TaskExtendedInterface {
     @JsonFormat(pattern="yyyy-MM-dd")
     private final LocalDate dueDate;
 
-    @PriorityValidation()
+    @TaskPriorityValidation()
     private String priority;
 
     @Min(value = 1, message = "sprintID must be a positive non-zero integer ID of the associated sprint")

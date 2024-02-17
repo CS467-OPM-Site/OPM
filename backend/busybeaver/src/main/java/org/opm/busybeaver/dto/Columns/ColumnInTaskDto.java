@@ -1,6 +1,5 @@
 package org.opm.busybeaver.dto.Columns;
 
-import org.jooq.util.xml.jaxb.Column;
 import org.opm.busybeaver.dto.Interfaces.ColumnInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 

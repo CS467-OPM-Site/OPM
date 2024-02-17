@@ -32,4 +32,4 @@ Gives little demo or visual representation of project
 ![](my_video.mov)
 
 ## API Reference
-Our API documentation is kept [here](backend/API_Documentation.md)
+Our API documentation is kept [here](backend/README.md)

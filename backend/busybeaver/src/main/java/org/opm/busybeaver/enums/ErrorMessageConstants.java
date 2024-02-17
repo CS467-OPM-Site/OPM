@@ -44,7 +44,8 @@ public enum ErrorMessageConstants {
     TASK_PRIORITY_INVALID("Task priority invalid"),
     TASK_DUE_DATE_INVALID("Task due date invalid"),
     TASK_TITLE_INVALID("Title length must be a string from 3 to 50 characters"),
-    TASK_DESCRIPTION_INVALID("Title description must be a string up to 500 characters long");
+    TASK_DESCRIPTION_INVALID("Title description must be a string up to 500 characters long"),
+    PROJECT_NAME_EQUIVALENT_NOT_MODIFIED("Project name not changed, name identical to previous");
 
     private final String value;
 

@@ -18,4 +18,10 @@ public final class ProjectsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class ProjectNameIdenticalToPrevious extends RuntimeException {
+        public ProjectNameIdenticalToPrevious(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

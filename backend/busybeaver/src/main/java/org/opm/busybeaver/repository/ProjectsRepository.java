@@ -226,6 +226,19 @@ public class ProjectsRepository {
         return projectAndTeam;
     }
 
+    public void modifyProjectName(int projectID, String newProjectName)
+        throws ProjectsExceptions.ProjectNameIdenticalToPrevious {
+        int rowsChanged = create.update(PROJECTS)
+                .set(PROJECTS.PROJECT_NAME, newProjectName)
+                .where(PROJECTS.PROJECT_ID.eq(projectID))
+                .and(PROJECTS.PROJECT_NAME.ne(newProjectName))
+                .execute();
+        if (rowsChanged == 0) {
+            throw new ProjectsExceptions.ProjectNameIdenticalToPrevious(
+                    ErrorMessageConstants.PROJECT_NAME_EQUIVALENT_NOT_MODIFIED.getValue());
+        }
+    }
+
     private void setColumnTasks(List<ColumnDto> columns, @Nullable List<TaskBasicDto> tasks) {
         if (tasks == null) return;
 

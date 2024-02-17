@@ -15,7 +15,8 @@ public enum SuccessMessageConstants {
     COMMENT_DELETED("Comment deleted"),
     SPRINT_DELETED("Sprint deleted"),
     TASK_MODIFIED("Task successfully modified"),
-    TASK_NOT_MODIFIED("Task was not modified"); // Place username in front
+    TASK_NOT_MODIFIED("Task was not modified"),
+    PROJECT_NAME_MODIFIED("Project name was modified"); // Place username in front
 
     private final String value;
 

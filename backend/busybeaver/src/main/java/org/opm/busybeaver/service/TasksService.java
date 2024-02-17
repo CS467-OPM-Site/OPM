@@ -17,12 +17,10 @@ import org.opm.busybeaver.repository.*;
 import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.EnumSet;
 import java.util.Map;
 
 
@@ -145,6 +143,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
         boolean taskUpdated = taskToEdit.changed();
         if (taskUpdated) {
             taskToEdit.update();
+            projectsRepository.updateLastUpdatedForProject(projectID);
         }
 
         return taskUpdated;

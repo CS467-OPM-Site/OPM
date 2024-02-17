@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Projects.NewProjectDto;
+import org.opm.busybeaver.dto.Projects.NewProjectNameDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
 import org.opm.busybeaver.dto.SmallJsonResponse;
@@ -72,6 +73,19 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return projectsService.getSpecificProjectDetails(userDto, projectID, request.getContextPath());
+    }
+
+    @PutMapping(PROJECTS_PATH +"/{projectID}")
+    public SmallJsonResponse modifyProjectName(
+            @PathVariable int projectID,
+            @Valid @RequestBody NewProjectNameDto newProjectNameDto,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        projectsService.modifyProjectName(userDto, projectID, newProjectNameDto);
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.PROJECT_NAME_MODIFIED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

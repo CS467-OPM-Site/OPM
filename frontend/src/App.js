@@ -17,6 +17,8 @@ function App() {
             <Route path="/home" element={<UserHomePage />} />
             {/* The path "/username" corresponds to the UsernameSetup */}
             <Route path="/username" element={<UsernameSetup />} />
+            {/* The path "/" corresponds to the ProjectPage */}
+            <Route path="/project" element={<ProjectPage />} />
           </Routes>
         </AuthProvider>
       </div>

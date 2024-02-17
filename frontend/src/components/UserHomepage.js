@@ -120,6 +120,12 @@ const UserHomepage = () => {
           <AddProjectForm onAddProject={handleAddProject} />
         </main>
       </div>
+        {/* PLACEHOLDER BUTTON TO NAVIGATE TO PROJECT PAGE, WILL FIX + CHANGE LATER*/}
+        <div>
+          <button onClick={() => navigate('/project')} className="project-button">
+            <h3>PROJECT</h3>
+          </button>
+        </div>
     </div>
   );
 };

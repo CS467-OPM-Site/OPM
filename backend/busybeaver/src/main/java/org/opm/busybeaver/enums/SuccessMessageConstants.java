@@ -12,7 +12,8 @@ public enum SuccessMessageConstants {
     USER_WAS_REMOVED_FROM_PROJECT(" was removed from the project"),
     PROJECT_DELETED("Project deleted"),
     COMMENT_MODIFIED("Comment modified"),
-    COMMENT_DELETED("Comment deleted"); // Place username in front
+    COMMENT_DELETED("Comment deleted"),
+    SPRINT_DELETED("Sprint deleted"); // Place username in front
 
     private final String value;
 

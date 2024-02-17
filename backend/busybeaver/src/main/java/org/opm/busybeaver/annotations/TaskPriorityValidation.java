@@ -15,8 +15,8 @@ import static java.lang.annotation.ElementType.PARAMETER;
 @Target({FIELD, PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = PriorityValidator.class)
-public @interface PriorityValidation {
+@Constraint(validatedBy = TaskPriorityValidator.class)
+public @interface TaskPriorityValidation {
     public String message() default
             "Invalid priority value: must be '" + DatabaseConstants.Constants.PRIORITY_HIGH +
                     "', '" + DatabaseConstants.Constants.PRIORITY_MEDIUM +

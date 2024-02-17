@@ -3,7 +3,7 @@ package org.opm.busybeaver.dto.Tasks;
 import org.opm.busybeaver.dto.Columns.ColumnInTaskDto;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Interfaces.TaskBasicInterface;
-import org.opm.busybeaver.dto.Sprints.SprintInTaskDto;
+import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
@@ -22,7 +22,7 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     @Nullable
     private UserSummaryDto assignedTo;
     @Nullable
-    private SprintInTaskDto sprintInTaskDto;
+    private SprintSummaryDto sprintSummaryDto;
     private List<CommentInTaskDto> comments;
 
     private String taskLocation;
@@ -50,7 +50,7 @@ public final class TaskDetailsDto implements TaskBasicInterface {
         }
 
         if (sprintID != null) {
-            this.sprintInTaskDto = new SprintInTaskDto(sprintID, sprintName, startDate, endDate);
+            this.sprintSummaryDto = new SprintSummaryDto(sprintID, sprintName, startDate, endDate);
         }
     }
 
@@ -67,8 +67,8 @@ public final class TaskDetailsDto implements TaskBasicInterface {
 
         columnInTaskDto.setColumnLocation(contextPath, projectID);
 
-        if (sprintInTaskDto != null) {
-            sprintInTaskDto.setSprintLocation(contextPath, projectID);
+        if (sprintSummaryDto != null) {
+            sprintSummaryDto.setSprintLocation(contextPath, projectID);
         }
 
         if (!comments.isEmpty()) {
@@ -110,8 +110,8 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     }
 
     @Nullable
-    public SprintInTaskDto getSprintInTaskDto() {
-        return sprintInTaskDto;
+    public SprintSummaryDto getSprintSummaryDto() {
+        return sprintSummaryDto;
     }
 
     public List<CommentInTaskDto> getComments() {

@@ -74,8 +74,8 @@ CREATE TABLE Sprints (
     begin_date DATE NOT NULL,
     end_date DATE NOT NULL,
 
-    -- Enforcing uniqueness among projects for sprint begin date and end date
-    CONSTRAINT unique_sprint_dates_per_project UNIQUE (project_id, begin_date, end_date)
+    -- Enforcing uniqueness among projects for sprint  name
+    CONSTRAINT unique_sprint_names_per_project UNIQUE (project_id, sprint_name)
 );
 
 -- Make sure the Project's table can associate with the Sprints table 

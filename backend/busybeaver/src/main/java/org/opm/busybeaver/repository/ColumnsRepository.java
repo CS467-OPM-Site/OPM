@@ -34,36 +34,71 @@ public class ColumnsRepository {
         create.insertInto(COLUMNS).set(defaultColumnRecords).execute();
     }
 
-    public void doesColumnExistInProject(int columnID, int projectID)
+    public ColumnsRecord doesColumnExistInProject(int columnID, int projectID)
             throws ColumnsExceptions.ColumnDoesNotExistInProject {
         // SELECT EXISTS(
         //      SELECT *
         //      FROM Columns
         //      WHERE Columns.column_id = columnID
         //      AND Columns.project_id = projectID)
-        boolean isColumnInProject = create.fetchExists(
-                create.selectFrom(COLUMNS)
+        ColumnsRecord columnInProject = create.selectFrom(COLUMNS)
                         .where(COLUMNS.COLUMN_ID.eq(columnID))
                         .and(COLUMNS.PROJECT_ID.eq(projectID))
-        );
+                        .fetchOne();
 
-        if (!isColumnInProject) {
+        if (columnInProject == null) {
             throw new ColumnsExceptions.ColumnDoesNotExistInProject(
                     ErrorMessageConstants.COLUMN_NOT_IN_PROJECT.getValue());
         }
+
+        return columnInProject;
     }
 
-    public Boolean doesColumnExistInProject(String columnTitle, int projectID) {
-        // SELECT EXISTS(
-        //      SELECT *
-        //      FROM Columns
-        //      WHERE Columns.column_title = columnTitle
-        //      AND Columns.project_id = projectID)
-        return create.fetchExists(
+    public int getNumberOfColumnsInProject(int projectID) {
+        return create.fetchCount(
                 create.selectFrom(COLUMNS)
-                        .where(COLUMNS.COLUMN_TITLE.eq(columnTitle))
-                        .and(COLUMNS.PROJECT_ID.eq(projectID))
-        );
+                        .where(COLUMNS.PROJECT_ID.eq(projectID)));
+    }
+
+    public void decrementColumnIndexes(int projectID, int lowerIndex, int upperIndex) {
+        // UPDATE Columns
+        // SET column_index = column_index - 1
+        // WHERE project_id = projectID
+        // AND column_index >= lowerIndex
+        // AND column_index <= upperIndex;
+        create.update(COLUMNS)
+                .set(COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_INDEX.minus(1))
+                .where(COLUMNS.PROJECT_ID.eq(projectID))
+                .and(COLUMNS.COLUMN_INDEX.ge((short) lowerIndex))
+                .and(COLUMNS.COLUMN_INDEX.le((short) upperIndex))
+                .execute();
+    }
+
+    public void incrementColumnIndexes(int projectID, int lowerIndex, int upperIndex) {
+        // UPDATE Columns
+        // SET column_index = column_index + 1
+        // WHERE project_id = projectID
+        // AND column_index >= lowerIndex
+        // AND column_index <= upperIndex;
+        create.update(COLUMNS)
+                .set(COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_INDEX.plus(1))
+                .where(COLUMNS.PROJECT_ID.eq(projectID))
+                .and(COLUMNS.COLUMN_INDEX.ge((short) lowerIndex))
+                .and(COLUMNS.COLUMN_INDEX.le((short) upperIndex))
+                .execute();
+    }
+
+    public NewColumnDto changeColumnIndexAndReturn(int projectID, int columnID, int newColumnIndex) {
+        // UPDATE Columns
+        // SET column_index = newColumnIndex
+        // WHERE project_id = projectID
+        // AND column_id = columnID
+        return create.update(COLUMNS)
+                .set(COLUMNS.COLUMN_INDEX, (short) newColumnIndex)
+                .where(COLUMNS.PROJECT_ID.eq(projectID))
+                .and(COLUMNS.COLUMN_ID.eq(columnID))
+                .returningResult(COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
+                .fetchSingleInto(NewColumnDto.class);
     }
 
     public void removeColumnAndShiftOtherColumns(int projectID, int columnID) {
@@ -75,11 +110,33 @@ public class ColumnsRepository {
                 .fetchSingle().component1();
 
         // Then, find all columns above that column's index, and decrement their index
+        // UPDATE Columns
+        // SET column_index = column_index - 1
+        // WHERE project_id = projectID
+        // AND column_index > indexOfDeletedColumn;
         create.update(COLUMNS)
                 .set(COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_INDEX.minus(1))
                 .where(COLUMNS.PROJECT_ID.eq(projectID))
                 .and(COLUMNS.COLUMN_INDEX.greaterThan((short) indexOfDeletedColumn))
                 .execute();
+    }
+
+    public NewColumnDto changeColumnTitle(int projectID, int columnID, String newColumnTitle)
+        throws ColumnsExceptions.ColumnTitleAlreadyInProject {
+
+        try {
+            return create.update(COLUMNS)
+                    .set(COLUMNS.COLUMN_TITLE, newColumnTitle)
+                    .where(COLUMNS.PROJECT_ID.eq(projectID))
+                    .and(COLUMNS.COLUMN_ID.eq(columnID))
+                    .returningResult(COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
+                    .fetchSingleInto(NewColumnDto.class);
+
+        } catch (DuplicateKeyException e) {
+            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(
+                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+        }
+
     }
 
     @Transactional
@@ -93,7 +150,7 @@ public class ColumnsRepository {
                 .where(COLUMNS.PROJECT_ID.eq(projectID))
                 .fetchSingle().component1();
 
-        // Second, insert new column with next column, making it last in-order column
+        // Second, insert new column with next column index, making it last in-order column
         // INSERT INTO Columns (column_title, project_id, column_index)
         // VALUES (...)
         try {

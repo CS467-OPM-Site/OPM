@@ -7,7 +7,7 @@ import org.opm.busybeaver.enums.DatabaseConstants;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-public class PriorityValidator implements ConstraintValidator<PriorityValidation, String> {
+public class TaskPriorityValidator implements ConstraintValidator<TaskPriorityValidation, String> {
 
     public static final Set<String> ALLOWED_PRIORITIES = Set.of(
             DatabaseConstants.PRIORITY_HIGH.getValue(),

@@ -5,7 +5,6 @@ import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.ProjectUsers.ProjectUsersExceptions;
-import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.ProjectsRepository;
 import org.opm.busybeaver.repository.ProjectUsersRepository;

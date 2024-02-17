@@ -7,4 +7,16 @@ public final class SprintsExceptions {
             super(errorMessage);
         }
     }
+
+    public static class SprintDatesInvalid extends RuntimeException {
+        public SprintDatesInvalid(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    public static class SprintNameAlreadyInProject extends RuntimeException {
+        public SprintNameAlreadyInProject(String errorMessage) {
+            super(errorMessage);
+        }
+    }
 }

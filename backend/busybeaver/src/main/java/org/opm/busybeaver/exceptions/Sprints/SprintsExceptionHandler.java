@@ -20,4 +20,26 @@ public class SprintsExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
+
+    @ExceptionHandler(SprintsExceptions.SprintDatesInvalid.class)
+    public ResponseEntity<?> sprintDatesInvalid() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.SPRINT_DATES_INVALID.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(SprintsExceptions.SprintNameAlreadyInProject.class)
+    public ResponseEntity<?> sprintNameAlreadyInProject() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.PROJECT_CONTAINS_SPRINT_NAME.getValue(),
+                        HttpStatus.CONFLICT.value()
+                ),
+                HttpStatus.CONFLICT
+        );
+    }
 }

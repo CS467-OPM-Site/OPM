@@ -7,8 +7,6 @@ import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
-import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
-import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.ProjectsRecord;
 import org.opm.busybeaver.repository.*;

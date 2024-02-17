@@ -1,7 +1,7 @@
 package org.opm.busybeaver.dto.Columns;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.opm.busybeaver.dto.Interfaces.ColumnInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -9,7 +9,7 @@ import org.opm.busybeaver.enums.BusyBeavPaths;
 import java.beans.ConstructorProperties;
 
 public final class NewColumnDto implements ColumnInterface {
-    @NotEmpty
+    @NotBlank
     @Size(min = 3, max = 50, message = "Column names must be 3 to 50 characters")
     public final String columnTitle;
 

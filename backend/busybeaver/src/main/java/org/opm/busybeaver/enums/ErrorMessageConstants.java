@@ -33,7 +33,12 @@ public enum ErrorMessageConstants {
     PROJECT_STILL_HAS_TASKS("Projects must have no tasks left before they can be deleted"),
     COMMENT_NOT_FOUND_ON_TASK("Comment not found on task"),
     USER_DID_NOT_LEAVE_THIS_COMMENT("User did not leave this comment"),
-    COMMENT_EQUIVALENT_NOT_MODIFIED("Comment body was not modified");
+    COMMENT_EQUIVALENT_NOT_MODIFIED("Comment body was not modified"),
+    COLUMN_POSITION_THE_SAME("New column index given is same as current column index"),
+    COLUMN_INDEX_OUT_OF_BOUNDS("Column index given is out of bounds for the given project"),
+    COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED("Column title not changed, title identical to previous"),
+    SPRINT_DATES_INVALID("Sprint dates are invalid"),
+    PROJECT_CONTAINS_SPRINT_NAME("Project contains sprint with that name already");
 
     private final String value;
 

@@ -328,6 +328,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Project name was modified"}` | Modified the project name. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Project name was not changed, name identical to previous"}` | Project name was identical to previous. |
 > | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 

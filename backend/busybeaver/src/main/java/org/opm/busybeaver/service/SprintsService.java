@@ -15,15 +15,19 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
     private final SprintsRepository sprintsRepository;
     private final ProjectUsersRepository projectUsersRepository;
 
+    private final ProjectsRepository projectsRepository;
+
     @Autowired
     public SprintsService(
             UsersRepository usersRepository,
             ProjectUsersRepository projectUsersRepository,
-            SprintsRepository sprintsRepository
+            SprintsRepository sprintsRepository,
+            ProjectsRepository projectsRepository
     ) {
         this.usersRepository = usersRepository;
         this.projectUsersRepository = projectUsersRepository;
         this.sprintsRepository = sprintsRepository;
+        this.projectsRepository = projectsRepository;
     }
 
     public SprintSummaryDto addSprint(UserDto userDto, int projectID, NewSprintDto newSprintDto, String contextPath) {
@@ -35,7 +39,19 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
 
         newSprint.setSprintLocation(contextPath, projectID);
 
+        projectsRepository.updateLastUpdatedForProject(projectID);
+
         return newSprint;
+    }
+
+    public void removeSprintFromProject(UserDto userDto, int projectID, int sprintID) {
+        validateUserValidAndInsideValidProject(userDto, projectID);
+
+        sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+
+        sprintsRepository.removeSprintFromProject(sprintID, projectID);
+
+        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     @Override

@@ -48,6 +48,16 @@ public class SprintsRepository {
                  .fetchSingleInto(SprintSummaryDto.class);
     }
 
+    public void removeSprintFromProject(int sprintID, int projectID) {
+        // DELETE FROM Sprints
+        // WHERE Sprints.project_id = projectID
+        // AND Sprints.sprint_id = sprintID;
+        create.deleteFrom(SPRINTS)
+                .where(SPRINTS.PROJECT_ID.eq(projectID))
+                .and(SPRINTS.SPRINT_ID.eq(sprintID))
+                .execute();
+    }
+
     public void doesSprintExistInProject(int sprintID, int projectID)
             throws SprintsExceptions.SprintDoesNotExistInProject {
         // SELECT EXISTS(

@@ -4,11 +4,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
+import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
+import org.opm.busybeaver.enums.SuccessMessageConstants;
 import org.opm.busybeaver.service.SprintsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,20 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
         response.setStatus(HttpStatus.CREATED.value());
 
         return newSprint;
+    }
+
+    @DeleteMapping(PROJECTS_PATH + "/{projectID}" + SPRINT_PATH + "/{sprintID}")
+    public SmallJsonResponse deleteSprintFromProject(
+            @PathVariable int projectID,
+            @PathVariable int sprintID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        sprintsService.removeSprintFromProject(userDto, projectID, sprintID);
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.SPRINT_DELETED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

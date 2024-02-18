@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import '../styles/UserProjectPage.css';
 
+
 const AddTaskForm = ({ onAddTask}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [taskName, setTaskName] = useState('');

@@ -1,8 +1,11 @@
+// Note - this is Ryu's WIP that James messed around with. It's a WIP. This is a mock-up of the project page.
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddTaskForm from './AddTaskForm';
 import '../styles/UserProjectPage.css';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
+import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
 //import ViewTaskFrom from './ViewTaskForm';
 
 const ProjectPage = () => {

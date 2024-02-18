@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #1b4332; /* Dark green background */
+  background-color: #1b4332;
 }
 
 .user-homepage-header {
@@ -12,12 +12,11 @@
   align-items: center;
   width: 100%;
   padding: 20px;
-  background-color: #2d6a4f; /* Light green background */
+  background-color: #2d6a4f;
   border-radius: 8px;
   color: white;
-  margin-bottom: 20px; /* Space between header and content */
+  margin-bottom: 20px;
 }
-
 
 .user-homepage-header img {
   width: 150px;
@@ -25,23 +24,22 @@
   margin-right: 0px;
 }
 
-
 .user-homepage-buttons {
   display: flex;
-  gap: 10px; /* Space between elements */
+  gap: 10px;
 }
 
 .user-homepage-buttons input[type="text"] {
   padding: 10px 15px;
   border: none;
   border-radius: 4px;
-  background-color: #a5becc; /* Lighter background for input */
+  background-color: #a5becc;
   color: #333;
 }
 
 .user-homepage-buttons input[type="text"]:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #81b29a; /* Focus state */
+  box-shadow: 0 0 0 2px #81b29a;
 }
 
 .user-homepage-buttons button {
@@ -180,7 +178,6 @@
   gap: 10px;
 }
 
-
 .project-card {
   background-color: #81b29a;
   padding: 15px;
@@ -190,7 +187,7 @@
 }
 
 .project-card:hover {
-  transform: translateY(-px);
+  transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -201,14 +198,14 @@
 }
 
 .project-header {
-  color: white;
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .add-project-input {
+  flex: 1;
   padding: 10px;
-  margin-right: 10px;
   border: 2px solid #ddd;
   border-radius: 4px;
   color: #333;
@@ -225,4 +222,37 @@
 
 .add-project-button:hover {
   background-color: #679267;
+}
+
+.delete-button {
+  background-color: #e63946;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #d62828;
+}
+
+.team-member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  background-color: #81b29a;
+  border-radius: 4px;
+  color: white;
+}
+
+.remove-member-button {
+  padding: 5px 10px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remove-member-button:hover {
+  background-color: #d62828;
 }

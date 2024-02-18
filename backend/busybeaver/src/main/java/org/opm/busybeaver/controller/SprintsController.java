@@ -7,6 +7,7 @@ import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerToken
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
+import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -56,6 +57,15 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.SPRINT_DELETED.getValue()
         );
+    }
+
+    @GetMapping(PROJECTS_PATH + "/{projectID}" + SPRINT_PATH)
+    public SprintsInProjectDto getAllSprintsForProject(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return sprintsService.getAllSprintsForProject(userDto, projectID, request.getContextPath());
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

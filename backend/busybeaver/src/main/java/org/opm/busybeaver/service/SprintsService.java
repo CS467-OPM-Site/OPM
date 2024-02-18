@@ -2,6 +2,7 @@ package org.opm.busybeaver.service;
 
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
+import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.*;
@@ -14,7 +15,6 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
     private final UsersRepository usersRepository;
     private final SprintsRepository sprintsRepository;
     private final ProjectUsersRepository projectUsersRepository;
-
     private final ProjectsRepository projectsRepository;
 
     @Autowired
@@ -52,6 +52,15 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         sprintsRepository.removeSprintFromProject(sprintID, projectID);
 
         projectsRepository.updateLastUpdatedForProject(projectID);
+    }
+
+    public SprintsInProjectDto getAllSprintsForProject(UserDto userDto, int projectID, String contextPath) {
+        validateUserValidAndInsideValidProject(userDto, projectID);
+
+        SprintsInProjectDto sprintsInProjectDto = sprintsRepository.getAllSprintsForProject(projectID);
+        sprintsInProjectDto.setLocations(contextPath);
+
+        return sprintsInProjectDto;
     }
 
     @Override

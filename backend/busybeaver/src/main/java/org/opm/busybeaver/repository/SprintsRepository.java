@@ -3,12 +3,16 @@ package org.opm.busybeaver.repository;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
+import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Sprints.SprintsExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+import static org.opm.busybeaver.jooq.Tables.PROJECTS;
 import static org.opm.busybeaver.jooq.Tables.SPRINTS;
 
 @Repository
@@ -75,5 +79,30 @@ public class SprintsRepository {
             throw new SprintsExceptions.SprintDoesNotExistInProject(
                     ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
         }
+    }
+
+    public SprintsInProjectDto getAllSprintsForProject(int projectID) {
+        // SELECT Projects.project_name, Projects.project_id
+        // FROM Projects
+        // WHERE Projects.project_id = projectID;
+        SprintsInProjectDto sprintsInProjectDto = create
+                .select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID)
+                .from(PROJECTS)
+                .where(PROJECTS.PROJECT_ID.eq(projectID))
+                .fetchSingleInto(SprintsInProjectDto.class);
+
+        // SELECT Sprints.sprint_id, Sprints.sprint_name, Sprints.begin_date, Sprints.end_date
+        // FROM Sprints
+        // WHERE Sprints.project_id = projectID
+        // ORDER BY Sprints.end_date ASC;
+        List<SprintSummaryDto> sprints = create
+                .select(SPRINTS.SPRINT_ID, SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE)
+                .from(SPRINTS)
+                .where(SPRINTS.PROJECT_ID.eq(projectID))
+                .orderBy(SPRINTS.END_DATE.asc())
+                .fetchInto(SprintSummaryDto.class);
+
+        sprintsInProjectDto.setSprints(sprints);
+        return sprintsInProjectDto;
     }
 }

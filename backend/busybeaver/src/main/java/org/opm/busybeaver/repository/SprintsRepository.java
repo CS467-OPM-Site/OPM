@@ -6,10 +6,10 @@ import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
 import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
-import org.opm.busybeaver.dto.Tasks.TaskBasicDto;
 import org.opm.busybeaver.dto.Tasks.TaskBasicInSprintDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Sprints.SprintsExceptions;
+import org.opm.busybeaver.jooq.tables.records.SprintsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -66,23 +66,23 @@ public class SprintsRepository {
                 .execute();
     }
 
-    public void doesSprintExistInProject(int sprintID, int projectID)
+    public SprintsRecord doesSprintExistInProject(int sprintID, int projectID)
             throws SprintsExceptions.SprintDoesNotExistInProject {
-        // SELECT EXISTS(
-        //      SELECT *
-        //      FROM Sprints
-        //      WHERE Sprint.sprint_id = sprintID
-        //      AND Sprint.project_id = projectID)
-        boolean isSprintInProject = create.fetchExists(
+        //  SELECT *
+        //  FROM Sprints
+        //  WHERE Sprint.sprint_id = sprintID
+        //  AND Sprint.project_id = projectID;
+        SprintsRecord sprintInProject =
                 create.selectFrom(SPRINTS)
                         .where(SPRINTS.SPRINT_ID.eq(sprintID))
                         .and(SPRINTS.PROJECT_ID.eq(projectID))
-        );
+                        .fetchOneInto(SprintsRecord.class);
 
-        if (!isSprintInProject) {
+        if (sprintInProject == null) {
             throw new SprintsExceptions.SprintDoesNotExistInProject(
                     ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
         }
+        return sprintInProject;
     }
 
     public SprintsInProjectDto getAllSprintsForProject(int projectID) {

@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
-import org.opm.busybeaver.dto.Sprints.NewSprintDto;
-import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
-import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
-import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
+import org.opm.busybeaver.dto.Sprints.*;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -77,6 +74,27 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return sprintsService.getAllTasksInSprint(userDto, projectID, sprintID, request.getContextPath());
+    }
+
+    @PutMapping(PROJECTS_PATH + "/{projectID}" + SPRINT_PATH + "/{sprintID}")
+    public SmallJsonResponse modifySprint(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @PathVariable int sprintID,
+            @Valid @RequestBody EditSprintDto editSprintDto,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        boolean sprintModified = sprintsService.modifySprint(userDto, projectID, sprintID, editSprintDto);
+        if (sprintModified) {
+            return new SmallJsonResponse(
+                    HttpStatus.OK.value(),
+                    SuccessMessageConstants.SPRINT_MODIFIED.getValue()
+            );
+        }
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.SPRINT_NOT_MODIFIED.getValue()
+        );
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public final class NewTaskDtoExtended implements TaskExtendedInterface {
 
-    @NotBlank(message = "Missing 'username' attribute to make a new user")
+    @NotBlank(message = "Missing 'title' attribute to make a new task")
     @Size(min = 3, max = 100, message = "Task title must be 3 to 100 characters")
     private final String title;
 

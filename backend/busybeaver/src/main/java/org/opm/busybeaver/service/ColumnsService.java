@@ -121,13 +121,7 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         validateUserValidAndInsideValidProject(userDto, projectID);
 
         // Validate column exists in project
-        ColumnsRecord columnInProject = columnsRepository.doesColumnExistInProject(columnID, projectID);
-        String currentColumnTitle = columnInProject.getColumnTitle();
-
-        if (currentColumnTitle.equals(newColumnTitleDto.columnTitle())) {
-            throw new ColumnsExceptions.ColumnTitleIdentical(
-                    ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue());
-        }
+        columnsRepository.doesColumnExistInProject(columnID, projectID);
 
         NewColumnDto changedColumn = columnsRepository.changeColumnTitle(
                 projectID,

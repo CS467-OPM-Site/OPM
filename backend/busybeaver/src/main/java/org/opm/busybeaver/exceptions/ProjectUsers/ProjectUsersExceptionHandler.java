@@ -42,4 +42,15 @@ public class ProjectUsersExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent.class)
+    public ResponseEntity<?> assignedToNotInProjectOrNonexistent() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue(),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

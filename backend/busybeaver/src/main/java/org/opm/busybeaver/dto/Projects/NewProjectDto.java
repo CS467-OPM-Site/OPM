@@ -9,7 +9,7 @@ import org.opm.busybeaver.enums.BusyBeavPaths;
 public final class NewProjectDto implements ProjectBasicInterface, TeamInterface {
 
     @NotBlank(message = "Missing 'projectName' attribute to generate a new project")
-    @Size(min = 3, max = 50, message = "Project name must be between 3 and 50 characters")
+    @Size(min = 3, max = 50, message = "Project name must be 3 and 50 characters")
     private final String projectName;
 
     @NotBlank(message = "Missing 'teamName' attribute to generate a new project")

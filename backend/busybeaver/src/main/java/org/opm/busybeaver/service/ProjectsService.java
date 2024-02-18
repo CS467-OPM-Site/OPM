@@ -1,9 +1,6 @@
 package org.opm.busybeaver.service;
 
-import org.opm.busybeaver.dto.Projects.NewProjectDto;
-import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
-import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
-import org.opm.busybeaver.dto.Projects.ProjectsSummariesDto;
+import org.opm.busybeaver.dto.Projects.*;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
@@ -92,6 +89,13 @@ public final class ProjectsService implements ValidateUserAndProjectInterface {
         projectDetails.setLocations(contextPath);
 
         return projectDetails;
+    }
+
+    public void modifyProjectName(UserDto userDto, int projectID, NewProjectNameDto newProjectNameDto) {
+        validateUserValidAndInsideValidProject(userDto, projectID);
+        String newProjectName = newProjectNameDto.projectName();
+        projectsRepository.modifyProjectName(projectID, newProjectName);
+        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     @Override

@@ -31,4 +31,59 @@ public class TasksExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(TasksExceptions.TaskFieldNotFound.class)
+    public ResponseEntity<?> taskFieldNotFound() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TASK_FIELD_NOT_FOUND.getValue(),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(TasksExceptions.InvalidTaskPriority.class)
+    public ResponseEntity<?> taskInvalidPriority() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TASK_PRIORITY_INVALID.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(TasksExceptions.InvalidTaskDueDate.class)
+    public ResponseEntity<?> taskInvalidDueDate() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TASK_DUE_DATE_INVALID.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(TasksExceptions.InvalidTaskTitle.class)
+    public ResponseEntity<?> taskInvalidTitleLength() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TASK_TITLE_INVALID.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(TasksExceptions.InvalidTaskDescription.class)
+    public ResponseEntity<?> taskInvalidDescriptionLength() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.TASK_DESCRIPTION_INVALID.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

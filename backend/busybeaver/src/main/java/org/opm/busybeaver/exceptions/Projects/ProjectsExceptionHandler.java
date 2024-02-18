@@ -42,4 +42,15 @@ public class ProjectsExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler(ProjectsExceptions.ProjectNameIdenticalToPrevious.class)
+    public ResponseEntity<?> projectNameIdenticalToPrevious() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.PROJECT_NAME_EQUIVALENT_NOT_MODIFIED.getValue(),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

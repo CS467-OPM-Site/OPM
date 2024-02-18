@@ -1,10 +1,12 @@
 package org.opm.busybeaver.controller;
 
+import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
+import org.opm.busybeaver.dto.Tasks.EditTaskDto;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
@@ -16,6 +18,8 @@ import org.opm.busybeaver.service.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @ApiPrefixController
 @RestController
@@ -64,6 +68,27 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
         tasksService.moveTask(userDto, projectID, taskID, columnID);
 
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_MOVED.getValue());
+    }
+
+    @PutMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH + "/{taskID}")
+    public SmallJsonResponse modifyTask(
+            @PathVariable int projectID,
+            @PathVariable int taskID,
+            @Valid @RequestBody Map<String, Object> editTaskData,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        // Including the
+        if (tasksService.modifyTask(userDto, projectID, taskID, editTaskData)) {
+           return new SmallJsonResponse(
+                   HttpStatus.OK.value(),
+                   SuccessMessageConstants.TASK_MODIFIED.getValue()
+           );
+        }
+
+        return new SmallJsonResponse(
+                HttpStatus.OK.value(),
+                SuccessMessageConstants.TASK_NOT_MODIFIED.getValue()
+        );
     }
 
     @DeleteMapping(PROJECTS_PATH + "/{projectID}" + TASKS_PATH + "/{taskID}")

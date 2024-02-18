@@ -2,6 +2,7 @@ package org.opm.busybeaver.repository;
 
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.jooq.exception.NoDataFoundException;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
 import org.opm.busybeaver.enums.DefaultColumnNames;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
@@ -129,12 +130,18 @@ public class ColumnsRepository {
                     .set(COLUMNS.COLUMN_TITLE, newColumnTitle)
                     .where(COLUMNS.PROJECT_ID.eq(projectID))
                     .and(COLUMNS.COLUMN_ID.eq(columnID))
+                    .and(COLUMNS.COLUMN_TITLE.ne(newColumnTitle))
                     .returningResult(COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_ID)
                     .fetchSingleInto(NewColumnDto.class);
 
         } catch (DuplicateKeyException e) {
             throw new ColumnsExceptions.ColumnTitleAlreadyInProject(
                     ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+
+        } catch (NoDataFoundException e) {
+            throw new ColumnsExceptions.ColumnTitleIdentical(
+                    ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue()
+            );
         }
 
     }

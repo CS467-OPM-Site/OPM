@@ -8,6 +8,7 @@ import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Tasks.TasksExceptions;
+import org.opm.busybeaver.jooq.tables.records.TasksRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -115,21 +116,22 @@ public class TasksRepository {
         return task;
     }
 
-    public void doesTaskExistInProject(int taskID, int projectID) throws TasksExceptions.TaskDoesNotExistInProject {
-        // SELECT EXISTS (
-        //      SELECT Tasks.task_id
-        //      FROM Tasks
-        //      WHERE Tasks.task_id = taskID
-        //      AND Tasks.project_id = projectID);
-        boolean taskInProject = create.fetchExists(
-                create.select(TASKS.TASK_ID)
-                        .from(TASKS)
+    public TasksRecord doesTaskExistInProject(int taskID, int projectID)
+            throws TasksExceptions.TaskDoesNotExistInProject {
+        // SELECT Tasks.task_id
+        // FROM Tasks
+        // WHERE Tasks.task_id = taskID
+        // AND Tasks.project_id = projectID);
+        TasksRecord taskInProject =
+                create.selectFrom(TASKS)
                         .where(TASKS.TASK_ID.eq(taskID))
-                        .and(TASKS.PROJECT_ID.eq(projectID)));
+                        .and(TASKS.PROJECT_ID.eq(projectID)).fetchOneInto(TasksRecord.class);
 
-        if (!taskInProject) {
+
+        if (taskInProject == null) {
             throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
         }
+        return taskInProject;
     }
 
     public Boolean doesProjectHaveZeroTasks(int projectID) {

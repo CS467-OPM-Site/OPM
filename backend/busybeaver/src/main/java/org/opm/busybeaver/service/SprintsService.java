@@ -3,6 +3,7 @@ package org.opm.busybeaver.service;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
+import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.repository.*;
@@ -61,6 +62,16 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         sprintsInProjectDto.setLocations(contextPath);
 
         return sprintsInProjectDto;
+    }
+
+    public TasksInSprintDto getAllTasksInSprint(UserDto userDto, int projectID, int sprintID, String contextPath) {
+        validateUserValidAndInsideValidProject(userDto, projectID);
+
+        sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+
+        TasksInSprintDto tasksInSprintDto = sprintsRepository.getAllTasksInSprint(projectID, sprintID);
+        tasksInSprintDto.setSprintLocation(contextPath, projectID);
+        return tasksInSprintDto;
     }
 
     @Override

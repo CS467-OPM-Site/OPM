@@ -8,6 +8,7 @@ import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
+import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
@@ -66,6 +67,16 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         return sprintsService.getAllSprintsForProject(userDto, projectID, request.getContextPath());
+    }
+
+    @GetMapping(PROJECTS_PATH + "/{projectID}" + SPRINT_PATH + "/{sprintID}")
+    public TasksInSprintDto getAllTasksInSprint(
+            HttpServletRequest request,
+            @PathVariable int projectID,
+            @PathVariable int sprintID,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
+    ) {
+        return sprintsService.getAllTasksInSprint(userDto, projectID, sprintID, request.getContextPath());
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)

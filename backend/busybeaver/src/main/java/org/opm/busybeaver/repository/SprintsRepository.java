@@ -1,9 +1,13 @@
 package org.opm.busybeaver.repository;
 
+import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
+import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
+import org.opm.busybeaver.dto.Tasks.TaskBasicDto;
+import org.opm.busybeaver.dto.Tasks.TaskBasicInSprintDto;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Sprints.SprintsExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +16,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.opm.busybeaver.jooq.Tables.PROJECTS;
-import static org.opm.busybeaver.jooq.Tables.SPRINTS;
+import static org.jooq.impl.DSL.count;
+import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
@@ -104,5 +108,55 @@ public class SprintsRepository {
 
         sprintsInProjectDto.setSprints(sprints);
         return sprintsInProjectDto;
+    }
+
+    public TasksInSprintDto getAllTasksInSprint(int projectID, int sprintID) {
+        // First get all tasks in sprint
+        // SELECT Tasks.title, Tasks.task_id, Tasks.priority, Tasks.due_date, Tasks.description,
+        //          COUNT(Comments.task_id) as comments,
+        //          Tasks.assigned_to,
+        //          (SELECT BeaverUsers.username FROM BeaverUsers WHERE BeaverUsers.user_id = Tasks.assigned_to),
+        //          Tasks.column_id, Columns.column_index, Columns.column_name, Columns.column_id
+        // FROM Tasks
+        // LEFT JOIN Comments
+        // ON Tasks.task_id = Comments.task_id
+        // JOIN Columns
+        // ON Tasks.column_id = Columns.column_id
+        // WHERE Tasks.project_id = projectID
+        // GROUP BY Tasks.task_id, Columns.column_index, Columns.column_title, Columns.column_id;
+        @Nullable List<TaskBasicInSprintDto> tasksInSprintInProject =
+                create.select(TASKS.TITLE, TASKS.TASK_ID, TASKS.PRIORITY, TASKS.DUE_DATE, TASKS.DESCRIPTION,
+                                count(COMMENTS.TASK_ID).as(COMMENTS.getName()),
+                                TASKS.ASSIGNED_TO,
+                                create.select(BEAVERUSERS.USERNAME)
+                                        .from(BEAVERUSERS)
+                                        .where(BEAVERUSERS.USER_ID.eq(TASKS.ASSIGNED_TO))
+                                        .asField(BEAVERUSERS.USERNAME.getName()),
+                                COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_ID)
+                        .from(TASKS)
+                        .leftJoin(COMMENTS)
+                        .on(TASKS.TASK_ID.eq(COMMENTS.TASK_ID))
+                        .join(COLUMNS)
+                        .on(TASKS.COLUMN_ID.eq(COLUMNS.COLUMN_ID))
+                        .where(TASKS.PROJECT_ID.eq(projectID))
+                        .and(TASKS.SPRINT_ID.eq(sprintID))
+                        .groupBy(TASKS.TASK_ID, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_ID)
+                        .fetchInto(TaskBasicInSprintDto.class);
+
+        // Next, get sprint details
+        // SELECT Sprints.sprint_id, Sprints.sprint_name, Sprints.begin_date, Sprints.end_date,
+        // FROM Sprints
+        // WHERE Sprints.sprint_id = sprintID
+        // AND Sprints.project_id = projectID;
+        TasksInSprintDto tasksInSprintDto = create
+                .select(SPRINTS.SPRINT_ID, SPRINTS.SPRINT_NAME, SPRINTS.BEGIN_DATE, SPRINTS.END_DATE)
+                .from(SPRINTS)
+                .where(SPRINTS.SPRINT_ID.eq(sprintID))
+                .and(SPRINTS.PROJECT_ID.eq(projectID))
+                .fetchSingleInto(TasksInSprintDto.class);
+
+        tasksInSprintDto.setTasks(tasksInSprintInProject);
+
+        return tasksInSprintDto;
     }
 }

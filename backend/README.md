@@ -243,12 +243,13 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "projectName": "project1",
 >     "projectID": 1,
->     "projectLocation": "/api/v1/projects/1",
+>     "lastUpdated": "2024-02-13T14:45:00.023767",  
 >     "team": {
 >         "teamName": "Team1",
 >         "teamID": 1,
 >         "teamLocation": "/api/v1/teams/1"
 >      },
+>     "projectLocation": "/api/v1/projects/1",
 >     "columns": [
 >      {
 >           "columnTitle": "Todo",
@@ -306,7 +307,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}</b></code> <code>(modifies specific project details)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}</b></code> <code>(modifies specific project details)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -326,21 +327,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Modify the project name. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Project name was modified"}` | Modified the project name. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Project name was not changed, name identical to previous"}` | Project name was identical to previous. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
-
-###### 200 HTTP Code Response Body
-
-> ```json
-> {
->     "projectName": "new-name",
->     "projectID": 1,
->     "projectLocation": "/api/v1/projects/1",
->     "lastUpdated": "2023-10-31T15:45:00Z",
-> }
-> ```
 
 ##### Example cURL
 
@@ -387,7 +377,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 #### Users and Project Management
 
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}/users</b></code> <code>(gets all users associated with a project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/users</b></code> <code>(gets all users associated with a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -400,8 +390,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Returns all users associated with a project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -420,13 +409,11 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "users": [
 >       {
 >           "username": "username1",
->           "userID": 1,
->           "userInProjectTeam": true,       
+>           "userID": 1
 >       },
 >       {
 >           "username": "username2",
->           "userID": 2,
->           "userInProjectTeam": false,       
+>           "userID": 2
 >       },
 >     ]
 > }
@@ -632,7 +619,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/name</b></code> <code>(modifies column name)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/name</b></code> <code>(modifies column name)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -654,10 +641,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully modified column name in project. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Column exists in project"}` | Column already exists in project. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Column title not changed, title identical to previous"}` | Column title to change to, same as previous title. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given column does not exist in project"}` | Column not found in project. |
+> | `409`         | `application/json`                | `{"code":"409","message":"Given column title already exists in project"}` | Column title already exists in project. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -684,7 +671,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/order</b></code> <code>(modifies column order)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/columns/{columnID}/order</b></code> <code>(modifies column order)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -706,6 +693,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully modified column index in project. |
+> | `400`         | `application/json`                | `{"code":"400","message":"New column index given is same as current column index"}` | New column index is same as previous. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. |
@@ -716,7 +704,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > ```json
 > {
 >     "columnTitle": "project1",
->     "columnIndex": 0,      # Keeps previous column index
+>     "columnIndex": 0,      # The new index
 >     "columnID": 1,
 >     "columnLocation": "/api/v1/projects/1/columns/1
 > }
@@ -895,10 +883,10 @@ All endpoints should use this format as a prefix in their requests. For example,
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the task resource in the Location Header** |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project, or project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project not found"}` | User not in this project, or project not found. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Column does not exist"}` | Column not found in project. Project must have at least one column. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Sprint not found"}` | Sprint not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Assignee not found"}` | Assignee not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Assigned-to user not in this project, or user does not exist"}` | Assignee not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -954,7 +942,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 > {
 >     "title": "Task 1",
 >     "taskID": 1,
->     "taskColumnIndex": 0,       # Indicates location on board
+>     "taskColumnIndex": 0,         # Indicates location on board
 >     "column": {
 >           "columnTitle": "Column",
 >           "columnIndex": 0,
@@ -962,18 +950,19 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "columnLocation": "api/v1/projects/1/columns/1"
 >      },
 >     "description": "This is a task!",
->     "assignedTo": {
+>     "assignedTo": {               # Or null
 >           "username": "username-of-assignee",
 >           "userID": 1
->      } or null,       
->     "priority": "High" or null,
->     "sprint": {
+>      },       
+>     "priority": "High",
+>     "dueDate": "2023-10-31"       # Or null,
+>     "sprint": {                   # Or null,
 >           "startDate": "2023-10-31",
 >           "endDate": "2023-11-01",
 >           "sprintName": "Sprint Name",
 >           "sprintID": 1,
 >           "sprintLocation": "api/v1/projects/1/sprints/1"
->      } or null,
+>      },
 >     "comments": [
 >      {
 >           "commentID": 1,
@@ -1071,7 +1060,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}</b></code> <code>(modifies task in column in project)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}</b></code> <code>(modifies task in column in project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1083,14 +1072,16 @@ All endpoints should use this format as a prefix in their requests. For example,
 ##### Request Payload
 
 To keep the attribute the same, do not include the task attribute in the request payload.
+To delete the attribute, set the attribute to null in the request payload.
 
 > ```json
 > {
 >     "title": "New Title",                     # Optional - note that a title is mandatory for a task, so no possibility of deleting a title
->     "description": "This is another task!",   # Optional, set as empty string to delete
->     "assignedTo": 1,                          # Optional, ID of the user who it is being assigned to, or -1 to delete
+>     "description": "This is another task!",   # Optional
+>     "assignedTo": 1,                          # Optional, ID of the user who it is being assigned to
 >     "priority": "High",                       # Optional, must be one of 'High', 'Medium', 'Low', 'None'
->     "sprintID": 1,                            # Optional, ID of sprint to change to, or -1 to delete
+>     "sprintID": 1,                            # Optional, ID of sprint to change to
+>     "dueDate": "2024-08-08",                  # Optional, new due date
 >     "customFields": [ ... ],                  # Optional, for future implementation
 > }
 > ```
@@ -1099,13 +1090,13 @@ To keep the attribute the same, do not include the task attribute in the request
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `{"code":"200","message":"Task modified"}` | Successfully modified task. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Task successfully modified"}` | Successfully modified task. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Task was not modified"}` | Server processed request but did not find any differences in the task. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Invalid task"}` | Task attribute not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Invalid sprint"}` | Sprint not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Assignee"}` | Assignee not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Task field to modify not valid"}` | Task attribute not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given sprint does not exist in this project"}` | Sprint not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Assigned-to user not in project, or user does not exist"}` | Assignee not found, or does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL
@@ -1245,7 +1236,7 @@ To keep the attribute the same, do not include the task attribute in the request
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments</b></code> <code>(add a comment to a task)</code></summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments</b></code> <code>(add a comment to a task)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1268,9 +1259,8 @@ To keep the attribute the same, do not include the task attribute in the request
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | **Includes a URI to the comment resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given task does not exist in this project"}` | Task not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -1279,10 +1269,9 @@ To keep the attribute the same, do not include the task attribute in the request
 > {
 >     "commentID": 1,
 >     "commentBody": "This is a comment.",
->     "commenter":{
->           "username": "commenter",
->           "userID": 1
->      }
+>     "commentedAt": "This is a comment.",
+>     "commenterUsername": "This is a comment.",
+>     "commenterID": "This is a comment.",
 > }
 > ```
 
@@ -1299,7 +1288,7 @@ To keep the attribute the same, do not include the task attribute in the request
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(modify a comment on a task)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(modify a comment on a task)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1322,11 +1311,10 @@ To keep the attribute the same, do not include the task attribute in the request
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `{"code":"200","message":"Comment modified."}` | Successfully edited the comment. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. Delete instead. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Comment does not exist"}` | Comment not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Task does not exist"}` | Task not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User did not leave this comment"}` | User did not leave this comment. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Comment not found on task"}` | Comment not found. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given task does not exist in this project"}` | Task not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ##### Example cURL
@@ -1342,7 +1330,7 @@ To keep the attribute the same, do not include the task attribute in the request
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(delete a comment on a task)</code></summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/tasks/{taskID}/comments/{commentID}</b></code> <code>(delete a comment on a task)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1431,7 +1419,7 @@ To keep the attribute the same, do not include the task attribute in the request
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(adds a sprint to a project)</code></summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(adds a sprint to a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1455,9 +1443,11 @@ To keep the attribute the same, do not include the task attribute in the request
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the sprint resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Sprint name must be unique for project"}` | Sprint name must be unique for this project. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Invalid date range"}` | Invalid date range for sprint. |
+> | `400`         | `application/json`                | `{"code":"400","message":"Sprint dates are invalid"}` | Invalid date range for sprint. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `409`         | `application/json`                | `{"code":"409","message":"Project contains sprint with those dates already"}` | Sprint dates must be unique for this project. |
+> | `409`         | `application/json`                | `{"code":"409","message":"Project contains sprint with that name already"}` | Sprint name must be unique for this project. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 201 HTTP Code Response Body
@@ -1636,7 +1626,7 @@ No fields can be deleted, or have just empty spaces.
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(deletes a sprint in a project)</code></summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(deletes a sprint in a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1650,10 +1640,9 @@ No fields can be deleted, or have just empty spaces.
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `{"code":"200","message":"Not authorized"}` | Sprint successfully deleted. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Sprint deleted"}` | Sprint successfully deleted. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given sprint does not exist in this project"}` | Sprint not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 

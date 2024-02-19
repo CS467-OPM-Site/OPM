@@ -11,6 +11,7 @@ import UsernameSetup from './components/UsernameSetup';
 
 function App() {
 
+
   const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
 
   useEffect(() => {
@@ -20,6 +21,8 @@ function App() {
   }, []);
 
   if (!isFirebaseInitialized) {
+    // Wait until firebase is initialized before doing anything else, or
+    // the AuthContext will fail
     return <div>Loading...</div>;
   }
 

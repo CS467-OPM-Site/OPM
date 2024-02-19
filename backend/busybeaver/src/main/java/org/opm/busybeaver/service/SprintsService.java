@@ -95,6 +95,7 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         boolean isSprintUpdated = sprintToEdit.changed();
         if (isSprintUpdated) {
             sprintToEdit.update();
+            projectsRepository.updateLastUpdatedForProject(projectID);
         }
 
         return isSprintUpdated;

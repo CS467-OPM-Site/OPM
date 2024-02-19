@@ -16,7 +16,7 @@ the Bearer scheme included in the Authorization HTTP header.
 
 ### Optional Values
 
-Optional values must still include the given key, but should be set to null if not looking
+For POST requests, optional values must still include the given key, but should be set to null if not looking
 to include them in the payload.
 
 For example, for the following optional username JSON body:
@@ -34,6 +34,10 @@ Setting username to null, as follows, would indicate desire to not include it in
     "username": null
 }
 ```
+
+For PUT requests, leaving out optional values will indicate no desired change to that attribute.
+Including the attribute and setting it to null will indicate a request to delete or set to NULL
+the attribute in question.
 
 ------------------------------------------------------------------------------------------
 
@@ -1094,14 +1098,16 @@ To delete the attribute, set the attribute to null in the request payload.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully retrieved all sprints for the task. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
 
+Sprints are ordered in ascending order by sprint end date.
+
 > ```json
 > {
+>     "projectName": "MyProjectName",
 >     "projectID": 1,
 >     "projectLocation": "/api/v1/projects/1",
 >     "sprints": [
@@ -1207,9 +1213,8 @@ To delete the attribute, set the attribute to null in the request payload.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `200`         | `application/json`                | `See below.` | Successfully retrieved all tasks for the sprint. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
+> | `404`         | `application/json`                | `{"code":"404","message":"Given sprint does not exist in this project"}` | Sprint not found. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body
@@ -1220,47 +1225,44 @@ To delete the attribute, set the attribute to null in the request payload.
 >     "sprintName": "Sprint Name",
 >     "startDate": "2023-10-31",
 >     "endDate": "2023-11-15",
+>     "sprintLocation": "/api/v1/projects/1/sprints/1",
 >     "tasks": [
 >      {
 >           "title": "Task 1",
 >           "taskID": 1,
->           "taskColumnIndex": 0,       # Indicates location on board
+>           "priority": "High",
+>           "dueDate": "2024-08-08",
 >           "description": "This is a task!",
+>           "comments": 1,
+>           "column": {
+>                 "columnTitle": "Column title",
+>                 "columnID": 1,
+>                 "columnIndex": 1,
+>                 "columnLocation": "/api/v1/projects/1/columns/1"
+>            },
 >           "assignedTo": {
 >                 "username": "username-of-assignee",
 >                 "userID": 1
 >            } or null,       
->           "priority": "High",
->           "comments": [
->            {
->                 "commentID": 1,
->                 "commentBody": "This is a comment",
->                 "commenter": "username-here",
->                 "commentLocation": "/api/v1/projects/1/tasks/1/comments/1"
->            },
->           ],
->           "customFields": [ ... ],
 >           "taskLocation": "/api/v1/projects/1/tasks/1",
 >      },
 >      {
 >           "title": "Task 2",
 >           "taskID": 2,
->           "taskColumnIndex": 1,       # Indicates location on board
+>           "priority": "High",
+>           "dueDate": "2024-08-08",
 >           "description": "This is another task!",
+>           "comments": 2,
+>           "column": {
+>                 "columnTitle": "Column title",
+>                 "columnID": 1,
+>                 "columnIndex": 1,
+>                 "columnLocation": "/api/v1/projects/1/columns/1"
+>            },
 >           "assignedTo": {
 >                 "username": "username-of-assignee",
 >                 "userID": 1
 >            } or null,       
->           "priority": "High",
->           "comments": [
->            {
->                 "commentID": 2,
->                 "commentBody": "This is another comment",
->                 "commenter": "username-here",
->                 "commentLocation": "/api/v1/projects/1/tasks/2/comments/2"
->            },
->           ],
->           "customFields": [ ... ],
 >           "taskLocation": "/api/v1/projects/1/tasks/2",
 >      },
 >     ]
@@ -1305,13 +1307,13 @@ No fields can be deleted, or have just empty spaces.
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | Successfully modified the sprint. |
-> | `400`         | `application/json`                | `{"code":"400","message":"Sprint name must be unique for project"}` | Sprint name must be unique for this project. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Sprint was modified"}` | Successfully modified the sprint. |
+> | `200`         | `application/json`                | `{"code":"200","message":"Sprint was not modified"}` | No modification applied to the sprint. |
 > | `400`         | `application/json`                | `{"code":"400","message":"Invalid date range"}` | Invalid date range for sprint. |
 > | `400`         | `application/json`                | `{"code":"400","message":"Invalid sprint attributes"}` | Invalid sprint attributes. |
-> | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
-> | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
+> | `403`         | `application/json`                | `{"code":"403","message":"User not in project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Sprint does not exist"}` | Sprint not found. |
+> | `409`         | `application/json`                | `{"code":"409","message":"Project contains sprint with that name already"}` | Sprint name must be unique for this project. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 
 ###### 200 HTTP Code Response Body

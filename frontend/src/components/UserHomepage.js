@@ -1,91 +1,259 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AddProjectForm from './AddProjectForm';
-import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
-import { getAuth } from 'firebase/auth';
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
-  const [teams, setTeams] = useState([
-    { teamID: 1, teamName: 'Team Name 1', isTeamCreator: true, members: ['creator'] },
-    { teamID: 2, teamName: 'Team Name 2', isTeamCreator: true, members: ['creator'] },
-  ]);
+  const [teams, setTeams] = useState([]);
   const [teamName, setTeamName] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [membersError, setMembersError] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // Use currentUser from AuthContext
+  const { currentUser } = useAuth();
 
-  const handleLogout = () => {
-    const auth = getAuth();
-    auth.signOut().then(() => {
-      navigate('/');
-    }).catch((error) => {
-      console.error('Logout Error:', error);
-    });
+  useEffect(() => {
+    fetchTeams();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      fetchTeamMembers(selectedTeam.teamID);
+    }
+  }, [selectedTeam]);
+
+  const fetchTeams = async () => {
+    const API_ENDPOINT = 'https://opm-api.propersi.me/api/v1/teams';
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch teams');
+      const data = await response.json();
+      setTeams(data.teams);
+    } catch (error) {
+      console.error('Fetch Teams Error:', error);
+      setError('Failed to load teams.');
+    }
   };
 
-  const handleAddTeam = () => {
+  const fetchTeamMembers = async (teamID) => {
+    setLoadingMembers(true);
+    setMembersError('');
+    try {
+      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch team members');
+      const data = await response.json();
+      console.log(data.members); // Log to see if member objects have IDs
+      setTeamMembers(data.members);
+    } catch (error) {
+      console.error('Fetch Team Members Error:', error);
+      setMembersError('Failed to load team members.');
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+  
+
+  const handleAddTeam = async () => {
     if (!teamName.trim()) {
       setError('Team name cannot be empty');
       return;
     }
-    const newTeam = {
-      teamID: teams.length + 1,
-      teamName,
-      isTeamCreator: true,
-      members: ['creator'],
-    };
-    setTeams((prevTeams) => [...prevTeams, newTeam]);
-    setTeamName('');
-    setError('');
-  };
-
-  const handleTeamNameChange = (event) => {
-    setTeamName(event.target.value);
-  };
-
-  const handleTeamClick = (teamID) => {
-    setSelectedTeam(teams.find((t) => t.teamID === teamID));
-  };
-
-  const handleCloseTeam = () => {
-    setSelectedTeam(null);
-  };
-
-  const handleDeleteTeam = (teamID) => {
-    if (window.confirm('Are you sure you want to delete this team?')) {
-      setTeams((prevTeams) => prevTeams.filter((team) => team.teamID !== teamID));
+  
+    try {
+      const response = await fetch('https://opm-api.propersi.me/api/v1/teams', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+        body: JSON.stringify({ teamName }),
+      });
+      if (!response.ok) throw new Error('Failed to add team');
+      const newTeam = await response.json();
+      
+      // Assuming that the server response includes the isTeamCreator property
+      // and it's set to true for the creator.
+      setTeams(prev => [...prev, { ...newTeam, isTeamCreator: true }]);
+      setTeamName('');
+      setError('');
+    } catch (error) {
+      console.error('Add Team Error:', error);
+      setError('Failed to add team.');
     }
   };
+  
 
-  const handleAddMember = () => {
-    if (!selectedTeam) {
-      alert('Please select a team first.');
-      return;
-    }
-    const newMemberName = window.prompt("Enter the new team member's name:");
-    if (!newMemberName) {
+  const handleAddMember = async (teamID) => {
+    const memberName = prompt("Enter the new team member's name:");
+    if (!memberName) {
       alert('Member name cannot be empty.');
       return;
     }
-    setTeams((prevTeams) =>
-      prevTeams.map((team) =>
-        team.teamID === selectedTeam.teamID ? { ...team, members: [...team.members, newMemberName] } : team
-      )
-    );
+
+    try {
+      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+        body: JSON.stringify({ username: memberName }),
+      });
+      if (!response.ok) throw new Error('Failed to add member');
+      fetchTeamMembers(teamID); // Refresh team members list
+    } catch (error) {
+      console.error('Add Member Error:', error);
+      setError('Failed to add team member.');
+    }
   };
 
-  const handleAddProject = (projectName) => {
-    const newProject = {
-      id: projects.length + 1,
-      name: projectName,
-      tasks: [],
-      teamID: selectedTeam ? selectedTeam.teamID : null,
+  const handleRemoveMember = async (teamID, memberID) => {
+    if (memberID === undefined) {
+      console.error('Member ID is undefined');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members/${memberID}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to remove member');
+      fetchTeamMembers(teamID); // Refresh team members list
+    } catch (error) {
+      console.error('Remove Member Error:', error);
+      setError('Failed to remove team member.');
+    }
+  };
+  
+  
+
+  const handleDeleteTeam = async (teamID) => {
+    // Check if there are members other than the creator.
+    const nonCreatorMembers = teamMembers.filter(member => !member.isTeamCreator);
+    if (nonCreatorMembers.length > 0) {
+      // If there are, alert the user and do not proceed with deletion.
+      alert('You cannot delete this team because there are other members in it. Please remove all members except the creator before attempting to delete the team.');
+      return;
+    }
+  
+    // If it's only the creator, confirm the deletion.
+    if (!window.confirm('Are you sure you want to delete this team?')) return;
+  
+    try {
+      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete team');
+      
+      // Update the UI after successful deletion.
+      setTeams(prev => prev.filter(team => team.teamID !== teamID));
+      setSelectedTeam(null);
+      setTeamMembers([]); // Clear team members state
+    } catch (error) {
+      console.error('Delete Team Error:', error);
+      setError('Failed to delete team.');
+    }
+  };
+  
+
+  const handleAddProject = async (projectName) => {
+    if (!selectedTeam) {
+      setError('Please select a team to add projects to.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${selectedTeam.teamID}/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`,
+        },
+        body: JSON.stringify({ name: projectName }),
+      });
+      if (!response.ok) throw new Error('Failed to add project');
+      const newProject = await response.json();
+      setProjects(prev => [...prev, newProject]);
+    } catch (error) {
+      console.error('Add Project Error:', error);
+      setError('Failed to add project.');
+    }
+  };
+
+  const handleLogout = () => {
+    // Implement logout functionality
+    navigate('/'); // Redirect to splash page after logout
+  };
+
+  const renderTeamMembers = () => {
+    if (loadingMembers) return <div>Loading members...</div>;
+    if (membersError) return <div className="error-message">{membersError}</div>;
+  
+    const confirmAndRemoveMember = (memberID) => {
+      if (window.confirm('Are you sure you want to remove this member?')) {
+        handleRemoveMember(selectedTeam.teamID, memberID);
+      }
     };
-    setProjects([...projects, newProject]);
+  
+    return teamMembers.map((member, index) => (
+      <div key={index} className="team-member">
+        {member.username}
+        <button onClick={() => confirmAndRemoveMember(member.userID)} className="remove-member-button">
+          Remove Member
+        </button>
+      </div>
+    ));
+  };
+  
+  
+  
+  
+
+  const renderTeams = () => {
+    return teams.map((team) => (
+      <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected' : ''}`}>
+        <div className="team-header">
+          <button onClick={() => setSelectedTeam(team)} className="team-button">
+            {team.teamName}
+          </button>
+          {team.isTeamCreator && (
+            <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
+              Delete Team
+            </button>
+          )}
+          {selectedTeam?.teamID === team.teamID && (
+            <button onClick={() => setSelectedTeam(null)} className="close-button">
+              X
+            </button>
+          )}
+        </div>
+        {selectedTeam?.teamID === team.teamID && (
+          <div className="team-details">
+            <div className="team-members-list">
+              {renderTeamMembers()}
+            </div>
+            <div className="team-actions">
+              <button onClick={() => handleAddMember(team.teamID)}>Add Member</button>
+              {/* Add more team actions if required */}
+            </div>
+          </div>
+        )}
+      </div>
+    ));
   };
 
   return (
@@ -94,15 +262,13 @@ const UserHomepage = () => {
         <div className="busy-beaver-logo">
           <img src={BusyBeaverNoBG} alt="Busy Beaver" />
         </div>
-        <div className="user-homepage-header-card">
-          <h1>User Homepage</h1>
-        </div>
+        <h1>User Homepage</h1>
         <div className="user-homepage-buttons">
           <input
             type="text"
             value={teamName}
-            onChange={handleTeamNameChange}
-            placeholder="Team Name"
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="Enter new team name"
             className={error ? "input-error" : ""}
           />
           <button onClick={handleAddTeam}>Add Team</button>
@@ -113,11 +279,18 @@ const UserHomepage = () => {
       <div className="content-container">
         <aside className="team-list">
           <h2>Teams</h2>
-          {/* Render teams */}
+          {renderTeams()}
         </aside>
         <main className="project-list">
-          {/* Render projects */}
-          <AddProjectForm onAddProject={handleAddProject} />
+          <form onSubmit={(e) => { e.preventDefault(); handleAddProject(e.target.elements.projectName.value); }}>
+            <input
+              name="projectName"
+              type="text"
+              placeholder="Enter project name"
+              required
+            />
+            <button type="submit" className="add-project-button">Add Project</button>
+          </form>
         </main>
       </div>
     </div>

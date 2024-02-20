@@ -27,11 +27,13 @@
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->
-            <fileNamePattern>${LOGS}/archived/busybeaver-logger-%d{yyyy-MM-dd}.%i.log
-            </fileNamePattern>
+            <fileNamePattern>${LOGS}/archived/busybeaver-logger-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
+                <maxHistory>60</maxHistory>
+                <totalSizeCap>2GB</totalSizeCap>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>

@@ -3,6 +3,9 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Teams.MembersInTeamDto;
@@ -23,42 +26,54 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
+@Slf4j
 public final class TeamsController implements GetUserFromBearerTokenInterface {
     private final TeamsService teamsService;
     private static final String TEAMS_PATH = BusyBeavPaths.Constants.TEAMS;
     private static final String MEMBERS_PATH = BusyBeavPaths.Constants.MEMBERS;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TeamsController(TeamsService teamsService) { this.teamsService = teamsService; }
 
     @GetMapping(TEAMS_PATH)
     public TeamsSummariesDto getUserHomePageTeams(
-            HttpServletRequest request,
+            @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamsService.getUserHomePageTeams(userDto, request.getContextPath());
+        TeamsSummariesDto teamsSummariesDto = teamsService.getUserHomePageTeams(userDto, request.getContextPath());
+        log.info("Retrieved user's team summaries. | RID: {}", request.getAttribute(RID));
+
+        return teamsSummariesDto;
     }
 
     @PostMapping(TEAMS_PATH)
-    public NewTeamDto makeNewTeam(
-            HttpServletRequest request,
+    public @NotNull NewTeamDto makeNewTeam(
+            @NotNull HttpServletRequest request,
             @Valid @RequestBody NewTeamDto newTeamOnlyTeamNameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
-            HttpServletResponse response
+            @NotNull HttpServletResponse response
     ) {
         NewTeamDto newTeam = teamsService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
         response.setStatus(HttpStatus.CREATED.value());
+        log.info("Created a new team with team name '{}'. | RID: {}",
+                newTeamOnlyTeamNameDto.getTeamName(),
+                request.getAttribute(RID));
 
         return newTeam;
     }
 
+    @Contract("_, _, _ -> new")
     @DeleteMapping(TEAMS_PATH + "/{teamID}")
-    public SmallJsonResponse deleteTeam(
+    public @NotNull SmallJsonResponse deleteTeam(
+            @NotNull HttpServletRequest request,
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         teamsService.deleteTeam(userDto, teamID);
+        log.info("Deleted a team. | RID: {}", request.getAttribute(RID));
+
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.TEAM_DELETED.getValue()
@@ -67,29 +82,36 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
 
     @GetMapping(TEAMS_PATH + "/{teamID}")
     public ProjectsByTeamDto getProjectsAssociatedWithTeam(
-            HttpServletRequest request,
+            @NotNull HttpServletRequest request,
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamsService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
+        ProjectsByTeamDto projectsByTeamDto = teamsService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
+        log.info("Successfully retrieved all projects for a team. | RID: {}", request.getAttribute(RID));
+
+        return projectsByTeamDto;
     }
 
     @GetMapping(TEAMS_PATH + "/{teamID}" + MEMBERS_PATH)
     public MembersInTeamDto getMembersInTeam(
-            HttpServletRequest request,
+            @NotNull HttpServletRequest request,
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return teamsService.getMembersInTeam(userDto, teamID, request.getContextPath());
+        MembersInTeamDto membersInTeamDto = teamsService.getMembersInTeam(userDto, teamID, request.getContextPath());
+        log.info("Successfully retrieved all members for a team. | RID: {}", request.getAttribute(RID));
+
+        return membersInTeamDto;
     }
 
+    @Contract("_, _, _, _, _ -> new")
     @PostMapping(TEAMS_PATH + "/{teamID}" + MEMBERS_PATH)
-    public SmallJsonResponse addMemberToTeam(
-            HttpServletRequest request,
+    public @NotNull SmallJsonResponse addMemberToTeam(
+            @NotNull HttpServletRequest request,
             @PathVariable int teamID,
             @Valid @RequestBody UsernameDto usernameToAdd,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
-            HttpServletResponse response
+            @NotNull HttpServletResponse response
     ) {
         String newUserInTeamLocation = teamsService.addMemberToTeam(userDto, teamID, usernameToAdd, request.getContextPath());
         response.setHeader(
@@ -97,19 +119,25 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
                 newUserInTeamLocation
                 );
 
+        log.info("Added a member to a team. | RID: {}", request.getAttribute(RID));
+
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.USER_ADDED.getValue()
         );
     }
 
+    @Contract("_, _, _, _ -> new")
     @DeleteMapping(TEAMS_PATH + "/{teamID}" + MEMBERS_PATH + "/{userID}")
-    public SmallJsonResponse deleteMemberFromTeam(
+    public @NotNull SmallJsonResponse deleteMemberFromTeam(
+            @NotNull HttpServletRequest request,
             @PathVariable int userID,
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
        teamsService.removeMemberFromTeam(userDto, userID, teamID);
+
+       log.info("Removed a member from a team. | RID: {}", request.getAttribute(RID));
        return new SmallJsonResponse(
                HttpStatus.OK.value(),
                SuccessMessageConstants.TEAM_MEMBER_REMOVED.getValue()
@@ -118,7 +146,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override
-    public UserDto getUserFromToken(HttpServletRequest request) {
+    public UserDto getUserFromToken(@NotNull HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 }

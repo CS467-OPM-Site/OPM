@@ -3,6 +3,8 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
+@Slf4j
 public final class UsersController implements GetUserFromBearerTokenInterface {
 
     private final UsersService usersService;
     private static final String USERS_PATH = BusyBeavPaths.Constants.USERS;
     private static final String REGISTER_PATH  = BusyBeavPaths.Constants.REGISTER;
     private static final String AUTH_PATH  = BusyBeavPaths.Constants.AUTH;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public UsersController(UsersService usersService) {
@@ -33,29 +37,34 @@ public final class UsersController implements GetUserFromBearerTokenInterface {
 
     @PostMapping(USERS_PATH + REGISTER_PATH)
     public AuthenticatedUser registerUser(
-            @Valid @RequestBody UsernameDto usernameRegisterDto,
-            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
-            HttpServletResponse response
+            @NotNull HttpServletRequest request,
+            @Valid @RequestBody @NotNull UsernameDto usernameRegisterDto,
+            @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) @NotNull UserDto userDto,
+            @NotNull HttpServletResponse response
     ) throws UsersExceptions.UserAlreadyExistsException {
 
         userDto.setUsername(usernameRegisterDto.username());
         AuthenticatedUser newUser = usersService.registerUser(userDto);
         response.setStatus(HttpStatus.CREATED.value());
+        log.info("Added a new user. | RID: {}", request.getAttribute(RID));
 
         return newUser;
     }
 
     @PostMapping(USERS_PATH + AUTH_PATH)
     public AuthenticatedUser authenticateUser(
+            @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
     throws UsersExceptions.UserDoesNotExistException {
+        AuthenticatedUser authenticatedUser = usersService.getUserByEmailAndId(userDto);
+        log.info("Authenticated user. | RID: {}", request.getAttribute(RID));
 
-        return usersService.getUserByEmailAndId(userDto);
+        return authenticatedUser;
     }
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override
-    public UserDto getUserFromToken(HttpServletRequest request) {
+    public UserDto getUserFromToken(@NotNull HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 

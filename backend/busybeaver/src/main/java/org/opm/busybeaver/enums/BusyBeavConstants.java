@@ -5,7 +5,8 @@ public enum BusyBeavConstants {
     JSON_CONTENT_TYPE("application/json"),
     UTF_8_ENCODING("UTF-8"),
     LOCATION("Location"),
-    RESOURCES_DIR("./src/main/resources/");
+    RESOURCES_DIR("./src/main/resources/"),
+    REQUEST_ID("RID");
 
     private final String value;
 

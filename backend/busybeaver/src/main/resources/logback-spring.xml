@@ -7,7 +7,6 @@
               class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-<!--                %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n-->
                 %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
             </Pattern>
         </layout>
@@ -20,7 +19,11 @@
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
         </encoder>
-
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>DEBUG</level>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+        </filter>
         <rollingPolicy
                 class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->
@@ -39,5 +42,6 @@
         <appender-ref ref="Console" />
     </root>
 
+    <logger name="org.jooq" level="debug"/>
 
 </configuration>

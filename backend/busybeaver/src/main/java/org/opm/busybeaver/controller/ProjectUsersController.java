@@ -40,7 +40,7 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         ProjectUserSummaryDto projectUserSummaryDto = projectUsersService
-                .getAllUsersInProject(userDto, projectID, request.getContextPath());
+                .getAllUsersInProject(userDto, projectID, request);
 
         log.info("Retrieved all users in a project. | RID: {}", request.getAttribute(RID));
 

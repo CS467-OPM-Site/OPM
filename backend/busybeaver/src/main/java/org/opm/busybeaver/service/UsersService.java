@@ -1,5 +1,6 @@
 package org.opm.busybeaver.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.opm.busybeaver.dto.Users.AuthenticatedUser;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.SuccessMessageConstants;
@@ -18,8 +19,8 @@ public class UsersService {
         this.usersRepository = usersRepository;
     }
 
-    public AuthenticatedUser getUserByEmailAndId(UserDto userDto) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public AuthenticatedUser getUserByEmailAndId(UserDto userDto, HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         return new AuthenticatedUser(
                 beaverusersRecord.getUsername(),
@@ -27,8 +28,8 @@ public class UsersService {
         );
     }
 
-    public AuthenticatedUser registerUser(UserDto userDto) {
-        String newUsername = usersRepository.registerUser(userDto);
+    public AuthenticatedUser registerUser(UserDto userDto, HttpServletRequest request) {
+        String newUsername = usersRepository.registerUser(userDto, request);
 
         return new AuthenticatedUser(
                 newUsername,

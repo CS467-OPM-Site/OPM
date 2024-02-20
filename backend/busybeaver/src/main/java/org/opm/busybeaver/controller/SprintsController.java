@@ -41,7 +41,7 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @NotNull HttpServletResponse response
     ) {
 
-        SprintSummaryDto newSprint = sprintsService.addSprint(userDto, projectID, newSprintDto, request.getContextPath());
+        SprintSummaryDto newSprint = sprintsService.addSprint(userDto, projectID, newSprintDto, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newSprint.getSprintLocation());
         response.setStatus(HttpStatus.CREATED.value());
         log.info("Added sprint '{}' to a project. | RID: {}", newSprintDto.getSprintName(), request.getAttribute(RID));
@@ -57,7 +57,7 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @PathVariable int sprintID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        sprintsService.removeSprintFromProject(userDto, projectID, sprintID);
+        sprintsService.removeSprintFromProject(userDto, projectID, sprintID, request);
         log.info("Removed sprint from a project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
@@ -73,7 +73,7 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         SprintsInProjectDto sprintsInProjectDto = sprintsService
-                .getAllSprintsForProject(userDto, projectID, request.getContextPath());
+                .getAllSprintsForProject(userDto, projectID, request);
 
         log.info("Retrieved all sprints for a project. | RID: {}", request.getAttribute(RID));
 
@@ -88,7 +88,7 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         TasksInSprintDto tasksInSprintDto = sprintsService
-                .getAllTasksInSprint(userDto, projectID, sprintID, request.getContextPath());
+                .getAllTasksInSprint(userDto, projectID, sprintID, request);
 
         log.info("Retrieved all tasks for a sprint in a project. | RID: {}", request.getAttribute(RID));
 

@@ -42,7 +42,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             @NotNull HttpServletResponse response
     ) {
-        NewColumnDto newColumn = columnsService.addNewColumn(userDto, newColumnDto, projectID, request.getContextPath());
+        NewColumnDto newColumn = columnsService.addNewColumn(userDto, newColumnDto, projectID, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newColumn.getColumnLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -102,7 +102,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
                 projectID,
                 columnID,
                 newColumnTitleDto,
-                request.getContextPath()
+                request
         );
 
         log.info("Modified column title to {}. | RID: {}", newColumnTitleDto.columnTitle(), request.getAttribute(RID));

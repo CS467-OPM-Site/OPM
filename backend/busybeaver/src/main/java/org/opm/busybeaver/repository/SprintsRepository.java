@@ -1,5 +1,7 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Sprints.NewSprintDto;
@@ -7,6 +9,7 @@ import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
 import org.opm.busybeaver.dto.Sprints.SprintsInProjectDto;
 import org.opm.busybeaver.dto.Sprints.TasksInSprintDto;
 import org.opm.busybeaver.dto.Tasks.TaskBasicInSprintDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Sprints.SprintsExceptions;
 import org.opm.busybeaver.jooq.tables.records.SprintsRecord;
@@ -21,14 +24,16 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
+@Slf4j
 public class SprintsRepository {
 
     private final DSLContext create;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public SprintsRepository(DSLContext dslContext) { this.create = dslContext; }
 
-    public void isSprintNameInProject(int projectID, String sprintName)
+    public void isSprintNameInProject(int projectID, String sprintName, HttpServletRequest request)
         throws SprintsExceptions.SprintNameAlreadyInProject {
 
         // SELECT EXISTS (
@@ -42,8 +47,17 @@ public class SprintsRepository {
         );
 
         if (isSprintNameInProject) {
-            throw new SprintsExceptions.SprintNameAlreadyInProject(
-                    ErrorMessageConstants.PROJECT_CONTAINS_SPRINT_NAME.getValue());
+            SprintsExceptions.SprintNameAlreadyInProject sprintNameAlreadyInProject =
+                    new SprintsExceptions.SprintNameAlreadyInProject(
+                            ErrorMessageConstants.PROJECT_CONTAINS_SPRINT_NAME.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.PROJECT_CONTAINS_SPRINT_NAME,
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    sprintNameAlreadyInProject);
+
+            throw sprintNameAlreadyInProject;
         }
     }
 
@@ -66,7 +80,7 @@ public class SprintsRepository {
                 .execute();
     }
 
-    public SprintsRecord doesSprintExistInProject(int sprintID, int projectID)
+    public SprintsRecord doesSprintExistInProject(int sprintID, int projectID, HttpServletRequest request)
             throws SprintsExceptions.SprintDoesNotExistInProject {
         //  SELECT *
         //  FROM Sprints
@@ -79,8 +93,17 @@ public class SprintsRepository {
                         .fetchOneInto(SprintsRecord.class);
 
         if (sprintInProject == null) {
-            throw new SprintsExceptions.SprintDoesNotExistInProject(
-                    ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
+            SprintsExceptions.SprintDoesNotExistInProject sprintDoesNotExistInProject =
+                    new SprintsExceptions.SprintDoesNotExistInProject(
+                            ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.SPRINT_NOT_IN_PROJECT,
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    sprintDoesNotExistInProject);
+
+            throw sprintDoesNotExistInProject;
         }
         return sprintInProject;
     }

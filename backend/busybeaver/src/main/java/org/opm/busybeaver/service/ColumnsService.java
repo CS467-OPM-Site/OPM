@@ -1,6 +1,7 @@
 package org.opm.busybeaver.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jdk.jfr.Frequency;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
@@ -41,13 +42,17 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         this.projectUsersRepository = projectUsersRepository;
     }
 
-    public NewColumnDto addNewColumn(UserDto userDto, NewColumnDto newColumnDto, int projectID, String contextPath) {
+    public NewColumnDto addNewColumn(
+            UserDto userDto,
+            NewColumnDto newColumnDto,
+            int projectID,
+            HttpServletRequest request) {
         // Validate user, is user in project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Create column, add to project after validating for duplicate, move to end
-        NewColumnDto newColumn = columnsRepository.addNewColumnToProject(newColumnDto, projectID);
-        newColumn.setColumnLocation(contextPath, projectID);
+        NewColumnDto newColumn = columnsRepository.addNewColumnToProject(newColumnDto, projectID, request);
+        newColumn.setColumnLocation(request.getContextPath(), projectID);
 
         // Update last updated time for project
         projectsRepository.updateLastUpdatedForProject(projectID);
@@ -57,10 +62,10 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
 
     public void deleteColumn(UserDto userDto, int projectID, int columnID, HttpServletRequest request) {
         // Validate user, is user in project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate column exists in project
-        columnsRepository.doesColumnExistInProject(columnID, projectID);
+        columnsRepository.doesColumnExistInProject(columnID, projectID, request);
 
         // Validate column no longer contains any tasks
         if (tasksRepository.doesColumnContainTasks(projectID, columnID)) {
@@ -92,10 +97,10 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         throws ColumnsExceptions.ColumnIndexIdentical,
             ColumnsExceptions.ColumnIndexOutOfBounds {
         // Validate user, is user in project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate column exists in project
-        ColumnsRecord columnInProject = columnsRepository.doesColumnExistInProject(columnID, projectID);
+        ColumnsRecord columnInProject = columnsRepository.doesColumnExistInProject(columnID, projectID, request);
         int currentIndex = columnInProject.getColumnIndex();
 
         // Validate new index is different from previous
@@ -155,31 +160,35 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
             int projectID,
             int columnID,
             @NotNull NewColumnTitleDto newColumnTitleDto,
-            String contextPath) throws ColumnsExceptions.ColumnTitleIdentical {
+            HttpServletRequest request) throws ColumnsExceptions.ColumnTitleIdentical {
 
         // Validate user, is user in project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate column exists in project
-        columnsRepository.doesColumnExistInProject(columnID, projectID);
+        columnsRepository.doesColumnExistInProject(columnID, projectID, request);
 
         NewColumnDto changedColumn = columnsRepository.changeColumnTitle(
                 projectID,
                 columnID,
-                newColumnTitleDto.columnTitle()
+                newColumnTitleDto.columnTitle(),
+                request
         );
 
-        changedColumn.setColumnLocation(contextPath, projectID);
+        changedColumn.setColumnLocation(request.getContextPath(), projectID);
 
         return changedColumn;
     }
 
     @Override
-    public BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public BeaverusersRecord validateUserValidAndInsideValidProject(
+            UserDto userDto,
+            int projectID,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         // Validate user in project and project exists
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         return beaverusersRecord;
     }

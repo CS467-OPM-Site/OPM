@@ -1,8 +1,11 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.ProjectUsers.ProjectUsersExceptions;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
@@ -17,9 +20,11 @@ import static org.opm.busybeaver.jooq.Tables.PROJECTUSERS;
 
 @Repository
 @Component
+@Slf4j
 public class ProjectUsersRepository {
     private final DSLContext create;
     private final ProjectsRepository projectsRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ProjectUsersRepository(DSLContext dslContext, ProjectsRepository projectsRepository) {
@@ -76,7 +81,7 @@ public class ProjectUsersRepository {
         return (projectUserCount > 1);
     }
 
-    public boolean isUserInProjectAndDoesProjectExist(int userID, int projectID)
+    public boolean isUserInProjectAndDoesProjectExist(int userID, int projectID, HttpServletRequest request)
             throws ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException {
         // SELECT EXISTS(
         //      SELECT ProjectUsers.project_id,ProjectUsers.user_id
@@ -90,13 +95,22 @@ public class ProjectUsersRepository {
         );
 
         if (!isValidUserInValidProject) {
-            throw new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
-                    ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
+            ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException userNotInProjectOrProjectDoesNotExistException =
+                    new ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException(
+                            ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_NOT_IN_PROJECT_OR_PROJECT_NOT_EXIST.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userNotInProjectOrProjectDoesNotExistException);
+
+            throw userNotInProjectOrProjectDoesNotExistException;
         }
         return true;
     }
 
-    public void isAssignedToUserInProject(int userID, int projectID)
+    public void isAssignedToUserInProject(int userID, int projectID, HttpServletRequest request)
             throws ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException {
         // SELECT EXISTS(
         //      SELECT ProjectUsers.project_id,ProjectUsers.user_id
@@ -110,8 +124,17 @@ public class ProjectUsersRepository {
         );
 
         if (!isValidUserInValidProject) {
-            throw new ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent(
-                    ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue());
+            ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent assignedToUserNotInProjectOrNonexistent =
+                    new ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent(
+                            ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    assignedToUserNotInProjectOrNonexistent);
+
+            throw assignedToUserNotInProjectOrNonexistent;
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.opm.busybeaver.controller;
 
-import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -9,7 +8,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.SmallJsonResponse;
-import org.opm.busybeaver.dto.Tasks.EditTaskDto;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
@@ -46,7 +44,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         TaskDetailsDto taskDetailsDto = tasksService
-                .getTaskDetails(userDto, projectID, taskID, request.getContextPath());
+                .getTaskDetails(userDto, projectID, taskID, request);
 
         log.info("Retrieved all details for task {}. | RID: {}", taskID, request.getAttribute(RID));
 
@@ -61,7 +59,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             @NotNull HttpServletResponse response
     ) {
-        TaskCreatedDto taskCreatedDto = tasksService.addTask(newTaskDto, userDto, projectID, request.getContextPath());
+        TaskCreatedDto taskCreatedDto = tasksService.addTask(newTaskDto, userDto, projectID, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), taskCreatedDto.getTaskLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -79,7 +77,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @PathVariable int columnID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        tasksService.moveTask(userDto, projectID, taskID, columnID);
+        tasksService.moveTask(userDto, projectID, taskID, columnID, request);
         log.info("Moved task to a new column. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_MOVED.getValue());
@@ -118,7 +116,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @PathVariable int taskID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        tasksService.deleteTask(userDto, projectID, taskID);
+        tasksService.deleteTask(userDto, projectID, taskID, request);
         log.info("Task was successfully deleted. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(HttpStatus.OK.value(), SuccessMessageConstants.TASK_DELETED.getValue());

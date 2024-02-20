@@ -44,7 +44,7 @@ public final class UsersController implements GetUserFromBearerTokenInterface {
     ) throws UsersExceptions.UserAlreadyExistsException {
 
         userDto.setUsername(usernameRegisterDto.username());
-        AuthenticatedUser newUser = usersService.registerUser(userDto);
+        AuthenticatedUser newUser = usersService.registerUser(userDto, request);
         response.setStatus(HttpStatus.CREATED.value());
         log.info("Added a new user. | RID: {}", request.getAttribute(RID));
 
@@ -56,7 +56,7 @@ public final class UsersController implements GetUserFromBearerTokenInterface {
             @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto)
     throws UsersExceptions.UserDoesNotExistException {
-        AuthenticatedUser authenticatedUser = usersService.getUserByEmailAndId(userDto);
+        AuthenticatedUser authenticatedUser = usersService.getUserByEmailAndId(userDto, request);
         log.info("Authenticated user. | RID: {}", request.getAttribute(RID));
 
         return authenticatedUser;

@@ -46,24 +46,28 @@ public final class ProjectsService implements ValidateUserAndProjectInterface {
     }
 
     @Contract("_, _, _ -> param2")
-    public @NotNull NewProjectDto makeNewProject(UserDto userDto, @NotNull NewProjectDto newProjectDto, String contextPath) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public @NotNull NewProjectDto makeNewProject(
+            UserDto userDto,
+            @NotNull NewProjectDto newProjectDto,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
-        teamsRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), newProjectDto.getTeamID());
+        teamsRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), newProjectDto.getTeamID(), request);
 
         ProjectsRecord newProject = projectsRepository.makeNewProject(
                 newProjectDto.getProjectName(),
-                newProjectDto.getTeamID()
+                newProjectDto.getTeamID(),
+                request
         );
 
         newProjectDto.setProjectID(newProject.getProjectId());
-        newProjectDto.setLocations(contextPath);
+        newProjectDto.setLocations(request.getContextPath());
         return newProjectDto;
     }
 
     public void deleteProject(UserDto userDto, int projectID, HttpServletRequest request) {
         // Validate user exists and in a valid project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate if tasks still exist in project
         boolean projectHasZeroTasksLeft = tasksRepository.doesProjectHaveZeroTasks(projectID);
@@ -87,41 +91,48 @@ public final class ProjectsService implements ValidateUserAndProjectInterface {
     }
 
     @Contract("_, _ -> new")
-    public @NotNull ProjectsSummariesDto getUserProjectsSummary(UserDto userDto, String contextPath) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public @NotNull ProjectsSummariesDto getUserProjectsSummary(UserDto userDto, HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         List<ProjectSummaryDto> projects =
                 projectsRepository.getUserProjectsSummary(beaverusersRecord.getUserId());
 
-        projects.forEach( project -> project.setLocations(contextPath));
+        projects.forEach( project -> project.setLocations(request.getContextPath()));
 
         return new ProjectsSummariesDto(projects);
     }
 
-    public @NotNull ProjectDetailsDto getSpecificProjectDetails(UserDto userDto, int projectID, String contextPath) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public @NotNull ProjectDetailsDto getSpecificProjectDetails(UserDto userDto, int projectID, HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         ProjectDetailsDto projectDetails = projectsRepository.getSpecificProjectDetails(projectID);
-        projectDetails.setLocations(contextPath);
+        projectDetails.setLocations(request.getContextPath());
 
         return projectDetails;
     }
 
-    public void modifyProjectName(UserDto userDto, int projectID, @NotNull NewProjectNameDto newProjectNameDto) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+    public void modifyProjectName(
+            UserDto userDto,
+            int projectID,
+            @NotNull NewProjectNameDto newProjectNameDto,
+            HttpServletRequest request) {
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
         String newProjectName = newProjectNameDto.projectName();
-        projectsRepository.modifyProjectName(projectID, newProjectName);
+        projectsRepository.modifyProjectName(projectID, newProjectName, request);
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     @Override
-    public @NotNull BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public @NotNull BeaverusersRecord validateUserValidAndInsideValidProject(
+            UserDto userDto,
+            int projectID,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         // Validate user in project and project exists
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         return beaverusersRecord;
     }

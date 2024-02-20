@@ -1,5 +1,7 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.exception.NoDataFoundException;
@@ -22,6 +24,7 @@ import static org.opm.busybeaver.jooq.Tables.COLUMNS;
 
 @Repository
 @Component
+@Slf4j
 public class ColumnsRepository {
     private final DSLContext create;
     private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
@@ -37,7 +40,7 @@ public class ColumnsRepository {
         create.insertInto(COLUMNS).set(defaultColumnRecords).execute();
     }
 
-    public ColumnsRecord doesColumnExistInProject(int columnID, int projectID)
+    public ColumnsRecord doesColumnExistInProject(int columnID, int projectID, HttpServletRequest request)
             throws ColumnsExceptions.ColumnDoesNotExistInProject {
         // SELECT EXISTS(
         //      SELECT *
@@ -50,8 +53,17 @@ public class ColumnsRepository {
                         .fetchOne();
 
         if (columnInProject == null) {
-            throw new ColumnsExceptions.ColumnDoesNotExistInProject(
-                    ErrorMessageConstants.COLUMN_NOT_IN_PROJECT.getValue());
+            ColumnsExceptions.ColumnDoesNotExistInProject columnDoesNotExistInProject =
+                    new ColumnsExceptions.ColumnDoesNotExistInProject(
+                            ErrorMessageConstants.COLUMN_NOT_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {}, {}",
+                    ErrorMessageConstants.COLUMN_NOT_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    columnDoesNotExistInProject);
+
+            throw columnDoesNotExistInProject;
         }
 
         return columnInProject;
@@ -124,7 +136,7 @@ public class ColumnsRepository {
                 .execute();
     }
 
-    public NewColumnDto changeColumnTitle(int projectID, int columnID, String newColumnTitle)
+    public NewColumnDto changeColumnTitle(int projectID, int columnID, String newColumnTitle, HttpServletRequest request)
         throws ColumnsExceptions.ColumnTitleAlreadyInProject {
 
         try {
@@ -137,19 +149,36 @@ public class ColumnsRepository {
                     .fetchSingleInto(NewColumnDto.class);
 
         } catch (DuplicateKeyException e) {
-            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(
-                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+            ColumnsExceptions.ColumnTitleAlreadyInProject columnTitleAlreadyInProject =
+                    new ColumnsExceptions.ColumnTitleAlreadyInProject(
+                            ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    columnTitleAlreadyInProject);
+
+            throw columnTitleAlreadyInProject;
 
         } catch (NoDataFoundException e) {
-            throw new ColumnsExceptions.ColumnTitleIdentical(
-                    ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue()
-            );
+            ColumnsExceptions.ColumnTitleIdentical columnTitleIdentical =
+                    new ColumnsExceptions.ColumnTitleIdentical(
+                            ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.COLUMN_TITLE_EQUIVALENT_NOT_MODIFIED.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    columnTitleIdentical);
+
+            throw columnTitleIdentical;
         }
 
     }
 
     @Transactional
-    public NewColumnDto addNewColumnToProject(NewColumnDto newColumnDto, int projectID) {
+    public NewColumnDto addNewColumnToProject(@NotNull NewColumnDto newColumnDto, int projectID, HttpServletRequest request) {
         // First, find the highest index of columns associated in project
         // SELECT MAX(Columns.column_index)
         // FROM Columns
@@ -170,7 +199,17 @@ public class ColumnsRepository {
                     .fetchSingleInto(NewColumnDto.class);
         } catch (DuplicateKeyException e) {
             // Column title already exists in project, constraint does not allow this
-            throw new ColumnsExceptions.ColumnTitleAlreadyInProject(ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+            ColumnsExceptions.ColumnTitleAlreadyInProject columnTitleAlreadyInProject =
+                    new ColumnsExceptions.ColumnTitleAlreadyInProject(
+                            ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.COLUMN_TITLE_ALREADY_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    columnTitleAlreadyInProject);
+
+            throw columnTitleAlreadyInProject;
         }
     }
 
@@ -187,7 +226,7 @@ public class ColumnsRepository {
     }
 
     @NotNull
-    private static ArrayList<ColumnsRecord> createDefaultColumnRecords(DefaultColumnNames[] defaultColumnNames, int projectID) {
+    private static ArrayList<ColumnsRecord> createDefaultColumnRecords(DefaultColumnNames @NotNull [] defaultColumnNames, int projectID) {
         ArrayList<ColumnsRecord> newColumnRecords = new ArrayList<>(defaultColumnNames.length);
         int columnIndex = 0;
         for (DefaultColumnNames defaultColumName : defaultColumnNames) {

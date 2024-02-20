@@ -42,7 +42,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             @NotNull HttpServletResponse response
     ) {
-        NewProjectDto projectDto = projectsService.makeNewProject(userDto, newProjectDto, request.getContextPath());
+        NewProjectDto projectDto = projectsService.makeNewProject(userDto, newProjectDto, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), projectDto.getProjectLocation());
         response.setStatus(HttpStatus.CREATED.value());
 
@@ -74,7 +74,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        ProjectsSummariesDto projectsSummariesDto = projectsService.getUserProjectsSummary(userDto, request.getContextPath());
+        ProjectsSummariesDto projectsSummariesDto = projectsService.getUserProjectsSummary(userDto, request);
         log.info("Retrieved user's project summaries. | RID {}", request.getAttribute(RID));
 
         return projectsSummariesDto;
@@ -86,7 +86,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @PathVariable int projectID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        ProjectDetailsDto projectDetailsDto = projectsService.getSpecificProjectDetails(userDto, projectID, request.getContextPath());
+        ProjectDetailsDto projectDetailsDto = projectsService.getSpecificProjectDetails(userDto, projectID, request);
         log.info("Retrieved project details. | RID: {}", request.getAttribute(RID));
 
         return projectDetailsDto;
@@ -100,7 +100,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @Valid @RequestBody NewProjectNameDto newProjectNameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectsService.modifyProjectName(userDto, projectID, newProjectNameDto);
+        projectsService.modifyProjectName(userDto, projectID, newProjectNameDto, request);
         log.info("Modified a project name. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(

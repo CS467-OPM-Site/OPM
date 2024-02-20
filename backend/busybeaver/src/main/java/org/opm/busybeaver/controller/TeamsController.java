@@ -41,7 +41,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        TeamsSummariesDto teamsSummariesDto = teamsService.getUserHomePageTeams(userDto, request.getContextPath());
+        TeamsSummariesDto teamsSummariesDto = teamsService.getUserHomePageTeams(userDto, request);
         log.info("Retrieved user's team summaries. | RID: {}", request.getAttribute(RID));
 
         return teamsSummariesDto;
@@ -54,7 +54,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             @NotNull HttpServletResponse response
     ) {
-        NewTeamDto newTeam = teamsService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request.getContextPath());
+        NewTeamDto newTeam = teamsService.makeNewTeam(userDto, newTeamOnlyTeamNameDto, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newTeam.getTeamLocation());
         response.setStatus(HttpStatus.CREATED.value());
         log.info("Created a new team with team name '{}'. | RID: {}",
@@ -86,7 +86,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        ProjectsByTeamDto projectsByTeamDto = teamsService.getProjectsAssociatedWithTeam(userDto, teamID, request.getContextPath());
+        ProjectsByTeamDto projectsByTeamDto = teamsService.getProjectsAssociatedWithTeam(userDto, teamID, request);
         log.info("Successfully retrieved all projects for a team. | RID: {}", request.getAttribute(RID));
 
         return projectsByTeamDto;
@@ -98,7 +98,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        MembersInTeamDto membersInTeamDto = teamsService.getMembersInTeam(userDto, teamID, request.getContextPath());
+        MembersInTeamDto membersInTeamDto = teamsService.getMembersInTeam(userDto, teamID, request);
         log.info("Successfully retrieved all members for a team. | RID: {}", request.getAttribute(RID));
 
         return membersInTeamDto;
@@ -113,7 +113,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
             @NotNull HttpServletResponse response
     ) {
-        String newUserInTeamLocation = teamsService.addMemberToTeam(userDto, teamID, usernameToAdd, request.getContextPath());
+        String newUserInTeamLocation = teamsService.addMemberToTeam(userDto, teamID, usernameToAdd, request);
         response.setHeader(
                 BusyBeavConstants.LOCATION.getValue(),
                 newUserInTeamLocation

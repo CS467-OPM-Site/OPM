@@ -59,13 +59,13 @@ public class TasksService implements ValidateUserAndProjectInterface {
             @NotNull NewTaskDtoExtended newTaskDto,
             UserDto userDto,
             int projectID,
-            String contextPath) {
+            HttpServletRequest request) {
         // Validate user exists, is in project and project exists
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // If column, validate column in project
         if (newTaskDto.getColumnID() != null) {
-            columnsRepository.doesColumnExistInProject(newTaskDto.getColumnID(), projectID);
+            columnsRepository.doesColumnExistInProject(newTaskDto.getColumnID(), projectID, request);
         } else {
             // Default to first in-order column if user did not specify a column
             newTaskDto.setColumnID(columnsRepository.getFirstInOrderColumnFromProject(projectID));
@@ -73,12 +73,12 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
         // If assignedTo, validate user exists in Project
         if (newTaskDto.getAssignedTo() != null) {
-            projectUsersRepository.isAssignedToUserInProject(newTaskDto.getAssignedTo(), projectID);
+            projectUsersRepository.isAssignedToUserInProject(newTaskDto.getAssignedTo(), projectID, request);
         }
 
         // If sprint, validate sprint exists in project
         if (newTaskDto.getSprintID() != null) {
-            sprintsRepository.doesSprintExistInProject(newTaskDto.getSprintID(), projectID);
+            sprintsRepository.doesSprintExistInProject(newTaskDto.getSprintID(), projectID, request);
         }
 
         // If priority is null, default to 'None'
@@ -88,35 +88,35 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
         // Add task
         TaskCreatedDto taskCreatedDto = tasksRepository.addTask(newTaskDto, projectID);
-        taskCreatedDto.setTaskLocation(contextPath, projectID);
+        taskCreatedDto.setTaskLocation(request.getContextPath(), projectID);
 
         // Update project last updated time
         projectsRepository.updateLastUpdatedForProject(projectID);
         return taskCreatedDto;
     }
 
-    public TaskDetailsDto getTaskDetails(UserDto userDto, int projectID, int taskID, String contextPath) {
+    public TaskDetailsDto getTaskDetails(UserDto userDto, int projectID, int taskID, HttpServletRequest request) {
         // Validate user, and user in valid project
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
-        TaskDetailsDto taskDetailsDto = tasksRepository.getTaskDetails(taskID);
-        taskDetailsDto.setTaskLocation(contextPath, projectID);
+        TaskDetailsDto taskDetailsDto = tasksRepository.getTaskDetails(taskID, request);
+        taskDetailsDto.setTaskLocation(request.getContextPath(), projectID);
 
         return taskDetailsDto;
     }
 
-    public void moveTask(UserDto userDto, int projectID, int taskID, int columnID) {
+    public void moveTask(UserDto userDto, int projectID, int taskID, int columnID, HttpServletRequest request) {
         // Validate user exists, is in project and project exists
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate new column exists in project
-        columnsRepository.doesColumnExistInProject(columnID, projectID);
+        columnsRepository.doesColumnExistInProject(columnID, projectID, request);
 
         // Validate task, task in project
-        tasksRepository.doesTaskExistInProject(taskID, projectID);
+        tasksRepository.doesTaskExistInProject(taskID, projectID, request);
 
         // Validate if task already in the column to move to
-        tasksRepository.isTaskAlreadyInColumn(taskID, columnID);
+        tasksRepository.isTaskAlreadyInColumn(taskID, columnID, request);
 
         // Move task over to the other column
         tasksRepository.moveTaskToAnotherColumn(taskID, projectID, columnID);
@@ -135,7 +135,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
         if (fieldsToEdit.isEmpty()) return false;
 
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         if (!TaskFields.areTaskFieldsValid(fieldsToEdit)) {
             TasksExceptions.TaskFieldNotFound taskFieldNotFound =
@@ -150,7 +150,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
             throw taskFieldNotFound;
         }
 
-        TasksRecord taskToEdit = tasksRepository.doesTaskExistInProject(taskID, projectID);
+        TasksRecord taskToEdit = tasksRepository.doesTaskExistInProject(taskID, projectID, request);
 
         modifyTaskPriority(taskToEdit, fieldsToEdit, request);
         modifyTaskDueDate(taskToEdit, fieldsToEdit, request);
@@ -168,12 +168,12 @@ public class TasksService implements ValidateUserAndProjectInterface {
         return taskUpdated;
     }
 
-    public void deleteTask(UserDto userDto, int projectID, int taskID) {
+    public void deleteTask(UserDto userDto, int projectID, int taskID, HttpServletRequest request) {
         // Validate user exists, is in project and project exists
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         // Validate task, task in project
-        tasksRepository.doesTaskExistInProject(taskID, projectID);
+        tasksRepository.doesTaskExistInProject(taskID, projectID, request);
 
         // Delete task from project
         tasksRepository.deleteTask(taskID);
@@ -278,7 +278,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
             if (fieldsToEdit.get(SPRINT_ID) != null) {
                 try {
                     int sprintID = Integer.parseInt(fieldsToEdit.get(SPRINT_ID).toString());
-                    sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+                    sprintsRepository.doesSprintExistInProject(sprintID, projectID, request);
 
                     if (taskToEdit.getSprintId() == null || !taskToEdit.getSprintId().equals(sprintID)) {
                         taskToEdit.setSprintId(sprintID);
@@ -381,7 +381,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
             if (fieldsToEdit.get(ASSIGNED_TO) != null) {
                 try {
                     int assignedToID = Integer.parseInt(fieldsToEdit.get(ASSIGNED_TO).toString());
-                    projectUsersRepository.isAssignedToUserInProject(assignedToID, projectID);
+                    projectUsersRepository.isAssignedToUserInProject(assignedToID, projectID, request);
 
                     if (taskToEdit.getAssignedTo() == null || !taskToEdit.getAssignedTo().equals(assignedToID)) {
                         taskToEdit.setAssignedTo(assignedToID);
@@ -410,11 +410,14 @@ public class TasksService implements ValidateUserAndProjectInterface {
     }
 
     @Override
-    public BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public BeaverusersRecord validateUserValidAndInsideValidProject(
+            UserDto userDto,
+            int projectID,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         // Validate user in project and project exists
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         return beaverusersRecord;
     }

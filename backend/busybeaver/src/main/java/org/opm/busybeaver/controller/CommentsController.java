@@ -44,7 +44,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
             @NotNull HttpServletResponse response
     ) {
         CommentInTaskDto newComment = commentsService.addCommentToTask(
-                userDto, projectID, taskID, newCommentBodyDto, request.getContextPath()
+                userDto, projectID, taskID, newCommentBodyDto, request
         );
 
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newComment.getCommentLocation());
@@ -81,7 +81,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
             @PathVariable int commentID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        commentsService.removeCommentFromTask(userDto, projectID, taskID, commentID);
+        commentsService.removeCommentFromTask(userDto, projectID, taskID, commentID, request);
         log.info("Comment removed from task. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(

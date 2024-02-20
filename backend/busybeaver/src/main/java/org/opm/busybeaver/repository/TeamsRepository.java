@@ -1,9 +1,12 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.opm.busybeaver.dto.Teams.MemberInTeamDto;
 import org.opm.busybeaver.dto.Teams.ProjectByTeamDto;
 import org.opm.busybeaver.dto.Teams.TeamSummaryDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
@@ -20,13 +23,16 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
+@Slf4j
 public class TeamsRepository {
     private final DSLContext create;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TeamsRepository(DSLContext dslContext) { this.create = dslContext; }
 
-    public TeamsRecord makeNewTeam(int userID, String teamName) throws TeamsExceptions.TeamAlreadyExistsForUserException {
+    public TeamsRecord makeNewTeam(int userID, String teamName, HttpServletRequest request)
+            throws TeamsExceptions.TeamAlreadyExistsForUserException {
         // INSERT INTO Teams (Teams.team_name, Teams.team_creator)
         // VALUES
         // (teamName, userID);
@@ -36,12 +42,19 @@ public class TeamsRepository {
                     .returningResult(TEAMS.TEAM_NAME, TEAMS.TEAM_ID, TEAMS.TEAM_CREATOR)
                     .fetchSingleInto(TeamsRecord.class);
 
-            if (newTeamRecord == null) {
-                throw new TeamsExceptions
-                        .TeamAlreadyExistsForUserException(
-                                ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue()
-                );
-            }
+//            if (newTeamRecord == null) {
+//                TeamsExceptions.TeamAlreadyExistsForUserException teamAlreadyExistsForUserException =
+//                        new TeamsExceptions.TeamAlreadyExistsForUserException(
+//                                ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+//
+//                log.error("{}. | RID: {} {}",
+//                        ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue(),
+//                        request.getAttribute(RID),
+//                        System.lineSeparator(),
+//                        teamAlreadyExistsForUserException);
+//
+//                throw teamAlreadyExistsForUserException;
+//            }
 
             // Trigger option - Add the creator to the TeamUsers table, role of Creator
             create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID, TEAMUSERS.USER_TEAM_ROLE)
@@ -51,10 +64,17 @@ public class TeamsRepository {
             return newTeamRecord;
 
         } catch (DuplicateKeyException e) {
-            throw new TeamsExceptions
-                    .TeamAlreadyExistsForUserException(
-                            ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue()
-            );
+            TeamsExceptions.TeamAlreadyExistsForUserException teamAlreadyExistsForUserException =
+                    new TeamsExceptions.TeamAlreadyExistsForUserException(
+                            ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    teamAlreadyExistsForUserException);
+
+            throw teamAlreadyExistsForUserException;
         }
     }
 
@@ -78,7 +98,7 @@ public class TeamsRepository {
                 .fetchInto(TeamSummaryDto.class);
     }
 
-    public void isUserInTeamAndDoesTeamExist(int userID, int teamID)
+    public void isUserInTeamAndDoesTeamExist(int userID, int teamID, HttpServletRequest request)
             throws TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException {
         // SELECT EXISTS(
         //      SELECT TeamUsers.team_id,TeamUsers.user_id
@@ -92,8 +112,17 @@ public class TeamsRepository {
                     );
 
         if (!isUserInTeamAndDoesTeamExist) {
-            throw new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(
-                    ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+            TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException userNotInTeamOrTeamDoesNotExistException =
+                    new TeamsExceptions.UserNotInTeamOrTeamDoesNotExistException(
+                            ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_NOT_IN_TEAM_OR_TEAM_NOT_EXIST.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userNotInTeamOrTeamDoesNotExistException);
+
+            throw userNotInTeamOrTeamDoesNotExistException;
         }
     }
 
@@ -128,7 +157,8 @@ public class TeamsRepository {
                 .execute();
     }
 
-    public void doesTeamStillHaveMembers(int teamID) throws TeamsExceptions.TeamStillHasMembersException {
+    public void doesTeamStillHaveMembers(int teamID, HttpServletRequest request)
+            throws TeamsExceptions.TeamStillHasMembersException {
         // SELECT COUNT(*)
         // FROM TeamUsers
         // WHERE TeamUsers.team_id = teamID
@@ -140,8 +170,17 @@ public class TeamsRepository {
                 .fetchSingleInto(int.class);
 
         if (memberCount > 1) {
-            throw new TeamsExceptions.TeamStillHasMembersException(
-                    ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+            TeamsExceptions.TeamStillHasMembersException teamStillHasMembersException =
+                    new TeamsExceptions.TeamStillHasMembersException(
+                            ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TEAM_STILL_HAS_MEMBERS.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    teamStillHasMembersException);
+
+            throw teamStillHasMembersException;
         }
     }
 
@@ -187,7 +226,7 @@ public class TeamsRepository {
                 .fetchInto(MemberInTeamDto.class);
     }
 
-    public void addMemberToTeam(BeaverusersRecord userToAdd, int teamID)
+    public void addMemberToTeam(BeaverusersRecord userToAdd, int teamID, HttpServletRequest request)
             throws TeamsExceptions.UserAlreadyInTeamException {
         // INSERT INTO TeamUsers (user_id, team_id, user_team_role)
         // VALUES (
@@ -199,7 +238,17 @@ public class TeamsRepository {
                     .values(teamID, userToAdd.getUserId())
                     .execute();
         } catch (DuplicateKeyException e) {
-            throw new TeamsExceptions.UserAlreadyInTeamException(ErrorMessageConstants.USER_DOES_NOT_EXIST.getValue());
+            TeamsExceptions.UserAlreadyInTeamException userAlreadyInTeamException =
+                    new TeamsExceptions.UserAlreadyInTeamException(
+                            ErrorMessageConstants.USER_ALREADY_IN_TEAM.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_ALREADY_IN_TEAM.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userAlreadyInTeamException);
+
+            throw userAlreadyInTeamException;
         }
     }
 }

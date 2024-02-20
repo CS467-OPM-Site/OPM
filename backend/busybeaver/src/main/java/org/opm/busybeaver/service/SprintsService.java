@@ -39,46 +39,50 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         this.projectsRepository = projectsRepository;
     }
 
-    public @NotNull SprintSummaryDto addSprint(UserDto userDto, int projectID, @NotNull NewSprintDto newSprintDto, String contextPath) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+    public @NotNull SprintSummaryDto addSprint(
+            UserDto userDto,
+            int projectID,
+            @NotNull NewSprintDto newSprintDto,
+            HttpServletRequest request) {
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
-        sprintsRepository.isSprintNameInProject(projectID, newSprintDto.sprintName());
+        sprintsRepository.isSprintNameInProject(projectID, newSprintDto.sprintName(), request);
 
         SprintSummaryDto newSprint = sprintsRepository.addSprintToProject(projectID, newSprintDto);
 
-        newSprint.setSprintLocation(contextPath, projectID);
+        newSprint.setSprintLocation(request.getContextPath(), projectID);
 
         projectsRepository.updateLastUpdatedForProject(projectID);
 
         return newSprint;
     }
 
-    public void removeSprintFromProject(UserDto userDto, int projectID, int sprintID) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+    public void removeSprintFromProject(UserDto userDto, int projectID, int sprintID, HttpServletRequest request) {
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
-        sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+        sprintsRepository.doesSprintExistInProject(sprintID, projectID, request);
 
         sprintsRepository.removeSprintFromProject(sprintID, projectID);
 
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
-    public @NotNull SprintsInProjectDto getAllSprintsForProject(UserDto userDto, int projectID, String contextPath) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+    public @NotNull SprintsInProjectDto getAllSprintsForProject(UserDto userDto, int projectID, HttpServletRequest request) {
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
         SprintsInProjectDto sprintsInProjectDto = sprintsRepository.getAllSprintsForProject(projectID);
-        sprintsInProjectDto.setLocations(contextPath);
+        sprintsInProjectDto.setLocations(request.getContextPath());
 
         return sprintsInProjectDto;
     }
 
-    public @NotNull TasksInSprintDto getAllTasksInSprint(UserDto userDto, int projectID, int sprintID, String contextPath) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+    public @NotNull TasksInSprintDto getAllTasksInSprint(UserDto userDto, int projectID, int sprintID, HttpServletRequest request) {
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
-        sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+        sprintsRepository.doesSprintExistInProject(sprintID, projectID, request);
 
         TasksInSprintDto tasksInSprintDto = sprintsRepository.getAllTasksInSprint(projectID, sprintID);
-        tasksInSprintDto.setSprintLocation(contextPath, projectID);
+        tasksInSprintDto.setSprintLocation(request.getContextPath(), projectID);
         return tasksInSprintDto;
     }
 
@@ -88,9 +92,9 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
             int sprintID,
             @NotNull EditSprintDto editSprintDto,
             HttpServletRequest request) {
-        validateUserValidAndInsideValidProject(userDto, projectID);
+        validateUserValidAndInsideValidProject(userDto, projectID, request);
 
-        SprintsRecord sprintToEdit = sprintsRepository.doesSprintExistInProject(sprintID, projectID);
+        SprintsRecord sprintToEdit = sprintsRepository.doesSprintExistInProject(sprintID, projectID, request);
 
         modifySprintName(sprintToEdit, projectID, editSprintDto, request);
         if (editSprintDto.getStartDate() != null && editSprintDto.getEndDate() != null) {
@@ -119,7 +123,7 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         if (editSprintDto.getSprintName() != null &&
                 !editSprintDto.getSprintName().equals(sprintToEdit.getSprintName())) {
 
-            sprintsRepository.isSprintNameInProject(projectID, editSprintDto.getSprintName());
+            sprintsRepository.isSprintNameInProject(projectID, editSprintDto.getSprintName(), request);
 
             sprintToEdit.setSprintName(editSprintDto.getSprintName());
             log.info("Sprint name modified. | RID: {}", request.getAttribute(RID));
@@ -234,11 +238,14 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
     }
 
     @Override
-    public @NotNull BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
-        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
+    public @NotNull BeaverusersRecord validateUserValidAndInsideValidProject(
+            UserDto userDto,
+            int projectID,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         // Validate user in project and project exists
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID);
+        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         return beaverusersRecord;
     }

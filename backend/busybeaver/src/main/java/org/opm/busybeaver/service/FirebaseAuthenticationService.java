@@ -4,8 +4,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 
-
-public class FirebaseAuthenticationService  {
+public final class FirebaseAuthenticationService  {
     private String email = null;
     private String uid = null;
     private boolean isAuthenticated = false;

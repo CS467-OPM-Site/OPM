@@ -54,7 +54,7 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
             @Valid @RequestBody UsernameDto usernameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectUsersService.addUserToProject(userDto, projectID, usernameDto);
+        projectUsersService.addUserToProject(userDto, projectID, usernameDto, request);
         log.info("Added a user to a project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
@@ -70,7 +70,7 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
             @Valid @RequestBody UsernameDto usernameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectUsersService.removeUserFromProject(userDto, projectID, usernameDto);
+        projectUsersService.removeUserFromProject(userDto, projectID, usernameDto, request);
         log.info("Removed a user from a project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(

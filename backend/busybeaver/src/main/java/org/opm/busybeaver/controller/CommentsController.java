@@ -63,7 +63,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
             @PathVariable int commentID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        commentsService.modifyCommentOnTask(userDto, projectID, taskID, commentID, newCommentBodyDto);
+        commentsService.modifyCommentOnTask(userDto, projectID, taskID, commentID, newCommentBodyDto, request);
         log.info("Comment modified. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(

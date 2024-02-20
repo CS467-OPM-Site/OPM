@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.exception.NoDataFoundException;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.DefaultColumnNames;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Columns.ColumnsExceptions;
@@ -23,6 +24,7 @@ import static org.opm.busybeaver.jooq.Tables.COLUMNS;
 @Component
 public class ColumnsRepository {
     private final DSLContext create;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ColumnsRepository(DSLContext dslContext) { this.create = dslContext; }

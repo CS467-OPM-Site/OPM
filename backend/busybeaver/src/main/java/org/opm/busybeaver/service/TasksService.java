@@ -1,10 +1,13 @@
 package org.opm.busybeaver.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
 import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.DatabaseConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.enums.TaskFields;
@@ -25,6 +28,7 @@ import java.util.Map;
 
 
 @Service
+@Slf4j
 public class TasksService implements ValidateUserAndProjectInterface {
     private final ProjectsRepository projectsRepository;
     private final UsersRepository usersRepository;
@@ -32,6 +36,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
     private final ColumnsRepository columnsRepository;
     private final SprintsRepository sprintsRepository;
     private final ProjectUsersRepository projectUsersRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TasksService(
@@ -51,7 +56,7 @@ public class TasksService implements ValidateUserAndProjectInterface {
     }
 
     public TaskCreatedDto addTask(
-            NewTaskDtoExtended newTaskDto,
+            @NotNull NewTaskDtoExtended newTaskDto,
             UserDto userDto,
             int projectID,
             String contextPath) {
@@ -120,7 +125,12 @@ public class TasksService implements ValidateUserAndProjectInterface {
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
-    public boolean modifyTask(UserDto userDto, int projectID, int taskID, Map<String, Object> fieldsToEdit)
+    public boolean modifyTask(
+            UserDto userDto,
+            int projectID,
+            int taskID,
+            @NotNull Map<String, Object> fieldsToEdit,
+            HttpServletRequest request)
         throws TasksExceptions.TaskFieldNotFound {
 
         if (fieldsToEdit.isEmpty()) return false;
@@ -128,17 +138,26 @@ public class TasksService implements ValidateUserAndProjectInterface {
         validateUserValidAndInsideValidProject(userDto, projectID);
 
         if (!TaskFields.areTaskFieldsValid(fieldsToEdit)) {
-            throw new TasksExceptions.TaskFieldNotFound(ErrorMessageConstants.TASK_FIELD_NOT_FOUND.getValue());
+            TasksExceptions.TaskFieldNotFound taskFieldNotFound =
+                    new TasksExceptions.TaskFieldNotFound(ErrorMessageConstants.TASK_FIELD_NOT_FOUND.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TASK_FIELD_NOT_FOUND.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    taskFieldNotFound);
+
+            throw taskFieldNotFound;
         }
 
         TasksRecord taskToEdit = tasksRepository.doesTaskExistInProject(taskID, projectID);
 
-        modifyTaskPriority(taskToEdit, fieldsToEdit);
-        modifyTaskDueDate(taskToEdit, fieldsToEdit);
-        modifyTaskSprintID(taskToEdit, fieldsToEdit, projectID);
-        modifyTaskAssignedTo(taskToEdit, fieldsToEdit, projectID);
-        modifyTaskDescription(taskToEdit, fieldsToEdit);
-        modifyTaskTitle(taskToEdit, fieldsToEdit);
+        modifyTaskPriority(taskToEdit, fieldsToEdit, request);
+        modifyTaskDueDate(taskToEdit, fieldsToEdit, request);
+        modifyTaskSprintID(taskToEdit, fieldsToEdit, projectID, request);
+        modifyTaskAssignedTo(taskToEdit, fieldsToEdit, projectID, request);
+        modifyTaskDescription(taskToEdit, fieldsToEdit, request);
+        modifyTaskTitle(taskToEdit, fieldsToEdit, request);
 
         boolean taskUpdated = taskToEdit.changed();
         if (taskUpdated) {
@@ -163,14 +182,27 @@ public class TasksService implements ValidateUserAndProjectInterface {
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
-    private void modifyTaskPriority(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit)
+    private void modifyTaskPriority(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            HttpServletRequest request)
         throws TasksExceptions.InvalidTaskPriority {
 
         final String PRIORITY = TaskFields.priority.toString();
         if (fieldsToEdit.containsKey(PRIORITY) && fieldsToEdit.get(PRIORITY) != null) {
+            log.info("Changing task priority to: {} | RID: {}", fieldsToEdit.get(PRIORITY), request.getAttribute(RID));
 
             if (!TaskFields.priorityFields.isPriorityFieldValid(fieldsToEdit.get(PRIORITY).toString())) {
-                throw new TasksExceptions.InvalidTaskPriority(ErrorMessageConstants.TASK_PRIORITY_INVALID.getValue());
+                TasksExceptions.InvalidTaskPriority taskPriorityException =
+                        new TasksExceptions.InvalidTaskPriority(ErrorMessageConstants.TASK_PRIORITY_INVALID.getValue());
+
+                log.error("{}. | RID: {} {}",
+                        ErrorMessageConstants.TASK_PRIORITY_INVALID,
+                        request.getAttribute(RID),
+                        System.lineSeparator(),
+                        taskPriorityException);
+
+                throw taskPriorityException;
             }
 
             if (taskToEdit.getPriority() == null || !taskToEdit.getPriority().equals(fieldsToEdit.get(PRIORITY).toString())) {
@@ -179,7 +211,10 @@ public class TasksService implements ValidateUserAndProjectInterface {
         }
     }
 
-    private void modifyTaskDueDate(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit)
+    private void modifyTaskDueDate(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            HttpServletRequest request)
         throws TasksExceptions.InvalidTaskDueDate {
         // Task due date can be set to NULL, indicated by incoming JSON field for dueDate being set to null
 
@@ -189,9 +224,19 @@ public class TasksService implements ValidateUserAndProjectInterface {
                 DateTimeFormatter dueDateFormat = DateTimeFormatter.ISO_LOCAL_DATE;
                 try {
                     LocalDate dueDate = LocalDate.parse(fieldsToEdit.get(DUE_DATE).toString(), dueDateFormat);
+                    log.info("Changing task due date to: {} | RID: {}", dueDate, request.getAttribute(RID));
                     if (dueDate.isBefore(LocalDate.now())) {
-                        throw new TasksExceptions.InvalidTaskDueDate(
-                                ErrorMessageConstants.TASK_DUE_DATE_INVALID.getValue());
+                        TasksExceptions.InvalidTaskDueDate taskDueDateException =
+                                new TasksExceptions.InvalidTaskDueDate(
+                                        ErrorMessageConstants.TASK_DUE_DATE_INVALID.getValue());
+
+                        log.error("{}. | RID: {} {}",
+                                ErrorMessageConstants.TASK_DUE_DATE_INVALID,
+                                request.getAttribute(RID),
+                                System.lineSeparator(),
+                                taskDueDateException);
+
+                        throw taskDueDateException;
                     }
 
                     if (taskToEdit.getDueDate() == null || !taskToEdit.getDueDate().isEqual(dueDate)) {
@@ -199,8 +244,17 @@ public class TasksService implements ValidateUserAndProjectInterface {
                     }
 
                 } catch (DateTimeParseException dateTimeParseException) {
-                    throw new TasksExceptions.InvalidTaskDueDate(
-                            ErrorMessageConstants.TASK_DUE_DATE_INVALID.getValue());
+                    TasksExceptions.InvalidTaskDueDate taskDueDateException =
+                            new TasksExceptions.InvalidTaskDueDate(
+                                    ErrorMessageConstants.TASK_DUE_DATE_INVALID.getValue());
+
+                    log.error("{}. | RID: {} {}",
+                            ErrorMessageConstants.TASK_DUE_DATE_INVALID,
+                            request.getAttribute(RID),
+                            System.lineSeparator(),
+                            taskDueDateException);
+
+                    throw taskDueDateException;
                 }
             } else {
                 if (taskToEdit.getDueDate() != null) {
@@ -210,12 +264,17 @@ public class TasksService implements ValidateUserAndProjectInterface {
         }
     }
 
-    private void modifyTaskSprintID(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit, int projectID)
+    private void modifyTaskSprintID(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            int projectID,
+            HttpServletRequest request)
         throws SprintsExceptions.SprintDoesNotExistInProject {
         // Task sprintID can be set to NULL, indicated by incoming JSON field for sprintID being set to null
 
         final String SPRINT_ID = TaskFields.sprintID.toString();
         if (fieldsToEdit.containsKey(SPRINT_ID)) {
+            log.info("Changing task sprint to: {} | RID: {}", fieldsToEdit.get(SPRINT_ID), request.getAttribute(RID));
             if (fieldsToEdit.get(SPRINT_ID) != null) {
                 try {
                     int sprintID = Integer.parseInt(fieldsToEdit.get(SPRINT_ID).toString());
@@ -226,7 +285,17 @@ public class TasksService implements ValidateUserAndProjectInterface {
                     }
 
                 } catch (IllegalArgumentException illegalArgumentException) {
-                    throw new SprintsExceptions.SprintDoesNotExistInProject(ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
+                    SprintsExceptions.SprintDoesNotExistInProject sprintDoesNotExistInProject =
+                            new SprintsExceptions.SprintDoesNotExistInProject(
+                                    ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue());
+
+                    log.error("{}. | RID: {} {}",
+                            ErrorMessageConstants.SPRINT_NOT_IN_PROJECT.getValue(),
+                            request.getAttribute(RID),
+                            System.lineSeparator(),
+                            sprintDoesNotExistInProject);
+
+                    throw sprintDoesNotExistInProject;
                 }
             } else {
                 if (taskToEdit.getSprintId() != null) {
@@ -236,7 +305,10 @@ public class TasksService implements ValidateUserAndProjectInterface {
         }
     }
 
-    private void modifyTaskDescription(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit)
+    private void modifyTaskDescription(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            HttpServletRequest request)
         throws TasksExceptions.InvalidTaskDescription {
         // Task description can be set to NULL, indicated by incoming JSON field for description being set to null
 
@@ -245,7 +317,17 @@ public class TasksService implements ValidateUserAndProjectInterface {
             Object description = fieldsToEdit.get(DESCRIPTION);
             if (description != null) {
                 if (!(description instanceof String) || (((String) description).length() > 500)) {
-                    throw new TasksExceptions.InvalidTaskDescription(ErrorMessageConstants.TASK_DESCRIPTION_INVALID.getValue());
+                    TasksExceptions.InvalidTaskDescription invalidTaskDescription =
+                            new TasksExceptions.InvalidTaskDescription(
+                                    ErrorMessageConstants.TASK_DESCRIPTION_INVALID.getValue());
+
+                    log.error("{}. | RID: {} {}",
+                            ErrorMessageConstants.TASK_DESCRIPTION_INVALID.getValue(),
+                            request.getAttribute(RID),
+                            System.lineSeparator(),
+                            invalidTaskDescription);
+
+                    throw invalidTaskDescription;
                 }
                 if (taskToEdit.getDescription() == null || !taskToEdit.getDescription().equals(description)) {
                     taskToEdit.setDescription((String) description);
@@ -258,14 +340,26 @@ public class TasksService implements ValidateUserAndProjectInterface {
         }
     }
 
-    private void modifyTaskTitle(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit)
+    private void modifyTaskTitle(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            HttpServletRequest request)
         throws TasksExceptions.InvalidTaskTitle {
 
         final String TITLE = TaskFields.title.toString();
         if (fieldsToEdit.containsKey(TITLE) && fieldsToEdit.get(TITLE) != null) {
             Object title = fieldsToEdit.get(TITLE);
             if (!(title instanceof String) || (((((String) title).length() > 50) || ((String) title).length() < 3))) {
-                throw new TasksExceptions.InvalidTaskTitle(ErrorMessageConstants.TASK_TITLE_INVALID.getValue());
+                TasksExceptions.InvalidTaskTitle invalidTaskTitle =
+                        new TasksExceptions.InvalidTaskTitle(ErrorMessageConstants.TASK_TITLE_INVALID.getValue());
+
+                log.error("{}. | RID: {} {}",
+                        ErrorMessageConstants.TASK_TITLE_INVALID.getValue(),
+                        request.getAttribute(RID),
+                        System.lineSeparator(),
+                        invalidTaskTitle);
+
+                throw invalidTaskTitle;
             }
 
             if (!taskToEdit.getTitle().equals(title)) {
@@ -274,7 +368,11 @@ public class TasksService implements ValidateUserAndProjectInterface {
         }
     }
 
-    private void modifyTaskAssignedTo(TasksRecord taskToEdit, @NotNull Map<String, Object> fieldsToEdit, int projectID)
+    private void modifyTaskAssignedTo(
+            TasksRecord taskToEdit,
+            @NotNull Map<String, Object> fieldsToEdit,
+            int projectID,
+            HttpServletRequest request)
         throws ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent {
         // Task assignedTo can be set to NULL, indicated by incoming JSON field for assignedTo being set to null
 
@@ -290,8 +388,18 @@ public class TasksService implements ValidateUserAndProjectInterface {
                     }
 
                 } catch (IllegalArgumentException illegalArgumentException) {
-                    throw new ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent(
-                            ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue());
+                    ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent assignedToUserNotInProjectOrNonexistent =
+                            new ProjectUsersExceptions.AssignedToUserNotInProjectOrNonexistent(
+                                    ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue()
+                            );
+
+                    log.error("{}. | RID: {} {}",
+                            ErrorMessageConstants.ASSIGNED_TO_USER_NOT_IN_PROJECT_OR_USER_NOT_EXIST.getValue(),
+                            request.getAttribute(RID),
+                            System.lineSeparator(),
+                            assignedToUserNotInProjectOrNonexistent);
+
+                    throw assignedToUserNotInProjectOrNonexistent;
                 }
             } else {
                 if (taskToEdit.getAssignedTo() != null) {

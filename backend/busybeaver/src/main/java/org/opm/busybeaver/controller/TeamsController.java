@@ -71,7 +71,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        teamsService.deleteTeam(userDto, teamID);
+        teamsService.deleteTeam(userDto, teamID, request);
         log.info("Deleted a team. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
@@ -135,7 +135,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
             @PathVariable int teamID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-       teamsService.removeMemberFromTeam(userDto, userID, teamID);
+       teamsService.removeMemberFromTeam(userDto, userID, teamID, request);
 
        log.info("Removed a member from a team. | RID: {}", request.getAttribute(RID));
        return new SmallJsonResponse(

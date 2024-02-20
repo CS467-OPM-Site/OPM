@@ -1,8 +1,13 @@
 package org.opm.busybeaver.service;
 
+import com.google.api.Http;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Teams.*;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Teams.*;
@@ -15,14 +20,17 @@ import org.opm.busybeaver.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpRequest;
 import java.util.List;
 
 
 @Service
+@Slf4j
 public class TeamsService {
     private final TeamsRepository teamsRepository;
     private final UsersRepository usersRepository;
     private final ProjectsRepository projectsRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TeamsService(
@@ -35,7 +43,7 @@ public class TeamsService {
         this.projectsRepository = projectsRepository;
     }
 
-    public NewTeamDto makeNewTeam(UserDto userDto, NewTeamDto newTeamDto, String contextPath) {
+    public NewTeamDto makeNewTeam(UserDto userDto, @NotNull NewTeamDto newTeamDto, String contextPath) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         TeamsRecord newTeamRecord = teamsRepository.makeNewTeam(beaverusersRecord.getUserId(), newTeamDto.getTeamName());
@@ -48,18 +56,39 @@ public class TeamsService {
         return newTeamDto;
     }
 
-    public void deleteTeam(UserDto userDto, Integer teamID) throws TeamsExceptions.TeamDoesNotExistException,
+    public void deleteTeam(UserDto userDto, Integer teamID, HttpServletRequest request)
+            throws TeamsExceptions.TeamDoesNotExistException,
             TeamsExceptions.UserNotTeamCreatorException {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         TeamsRecord teamToDelete = teamsRepository.getSingleTeam(teamID);
 
         if (teamToDelete == null) {
-            throw new TeamsExceptions.TeamDoesNotExistException(ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue());
+            TeamsExceptions.TeamDoesNotExistException teamDoesNotExistException =
+                    new TeamsExceptions.TeamDoesNotExistException(
+                            ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TEAM_DOES_NOT_EXIST.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    teamDoesNotExistException);
+
+            throw teamDoesNotExistException;
         }
 
         if (!teamToDelete.getTeamCreator().equals(beaverusersRecord.getUserId())) {
-            throw new TeamsExceptions.UserNotTeamCreatorException(ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue());
+            TeamsExceptions.UserNotTeamCreatorException userNotTeamCreatorException =
+                    new TeamsExceptions.UserNotTeamCreatorException(
+                            ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_NOT_CREATOR_OF_TEAM.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userNotTeamCreatorException);
+
+            throw userNotTeamCreatorException;
         }
 
         // Verify project has 1 team member left (user who is deleting), and no projects left associated with it
@@ -122,7 +151,7 @@ public class TeamsService {
         return membersInTeamDto;
     }
 
-    public String addMemberToTeam(UserDto userDto, Integer teamID, UsernameDto usernameToAdd, String contextPath) {
+    public String addMemberToTeam(UserDto userDto, Integer teamID, @NotNull UsernameDto usernameToAdd, String contextPath) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         teamsRepository.isUserInTeamAndDoesTeamExist(beaverusersRecord.getUserId(), teamID);
@@ -135,7 +164,7 @@ public class TeamsService {
                 "/" + teamID + BusyBeavPaths.MEMBERS.getValue() + "/" + userToAdd.getUserId();
     }
 
-    public void removeMemberFromTeam(UserDto userDto, Integer userIDtoDelete, Integer teamID)
+    public void removeMemberFromTeam(UserDto userDto, Integer userIDtoDelete, Integer teamID, HttpServletRequest request)
         throws TeamsExceptions.TeamCreatorCannotBeRemovedException {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
@@ -147,7 +176,17 @@ public class TeamsService {
         }
 
         if (teamsRepository.isUserCreatorOfTeam(userIDtoDelete, teamID)) {
-            throw new TeamsExceptions.TeamCreatorCannotBeRemovedException(ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
+            TeamsExceptions.TeamCreatorCannotBeRemovedException teamCreatorCannotBeRemovedException =
+                    new TeamsExceptions.TeamCreatorCannotBeRemovedException(
+                            ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED,
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    teamCreatorCannotBeRemovedException);
+
+            throw teamCreatorCannotBeRemovedException;
         }
 
        teamsRepository.deleteSingleTeamMember(userIDtoDelete, teamID);

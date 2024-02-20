@@ -95,7 +95,7 @@ public final class TasksController implements GetUserFromBearerTokenInterface {
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
         // Including the
-        if (tasksService.modifyTask(userDto, projectID, taskID, editTaskData)) {
+        if (tasksService.modifyTask(userDto, projectID, taskID, editTaskData, request)) {
            log.info("Task successfully modified. | RID: {}", request.getAttribute(RID));
            return new SmallJsonResponse(
                    HttpStatus.OK.value(),

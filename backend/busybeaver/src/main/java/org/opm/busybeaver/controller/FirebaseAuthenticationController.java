@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static org.opm.busybeaver.utils.Utils.calculateTimeLengthMillis;
-
 @Component
 @CrossOrigin
 @Slf4j
@@ -124,6 +122,10 @@ public class FirebaseAuthenticationController extends OncePerRequestFilter {
                 firebaseAuthenticationService.getEmail(),
                 firebaseAuthenticationService.getUid()
         );
+    }
+
+    private static @NotNull Long calculateTimeLengthMillis(Instant startTime) {
+        return Duration.between(startTime, Instant.now()).toMillis();
     }
 
     private static String generateReturnUniqueRequestID() {

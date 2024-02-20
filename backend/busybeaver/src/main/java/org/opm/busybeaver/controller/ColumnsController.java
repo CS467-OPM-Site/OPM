@@ -59,7 +59,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
             @PathVariable int columnID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        columnsService.deleteColumn(userDto, projectID, columnID);
+        columnsService.deleteColumn(userDto, projectID, columnID, request);
         log.info("Column removed from project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
@@ -81,7 +81,7 @@ public final class ColumnsController implements GetUserFromBearerTokenInterface 
                 projectID,
                 columnID,
                 newColumnIndexDto.columnIndex(),
-                request.getContextPath()
+                request
         );
 
         log.info("Column moved within project. | RID: {}", request.getAttribute(RID));

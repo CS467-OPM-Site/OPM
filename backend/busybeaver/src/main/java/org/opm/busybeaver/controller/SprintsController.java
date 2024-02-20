@@ -104,7 +104,7 @@ public final class SprintsController implements GetUserFromBearerTokenInterface 
             @Valid @RequestBody EditSprintDto editSprintDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        boolean sprintModified = sprintsService.modifySprint(userDto, projectID, sprintID, editSprintDto);
+        boolean sprintModified = sprintsService.modifySprint(userDto, projectID, sprintID, editSprintDto, request);
         if (sprintModified) {
             log.info("Sprint successfully modified. | RID: {}", request.getAttribute(RID));
             return new SmallJsonResponse(

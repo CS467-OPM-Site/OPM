@@ -60,7 +60,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
             @PathVariable int projectID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectsService.deleteProject(userDto, projectID);
+        projectsService.deleteProject(userDto, projectID, request);
         log.info("Deleted a project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(

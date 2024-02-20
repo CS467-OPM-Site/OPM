@@ -1,8 +1,12 @@
 package org.opm.busybeaver.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
 import org.opm.busybeaver.dto.Users.UserDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -13,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CommentsService implements ValidateUserAndProjectInterface {
     private final UsersRepository usersRepository;
     private final CommentsRepository commentsRepository;
     private final TasksRepository tasksRepository;
     private final ProjectUsersRepository projectUsersRepository;
     private final ProjectsRepository projectsRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public CommentsService(
@@ -52,7 +58,8 @@ public class CommentsService implements ValidateUserAndProjectInterface {
             int projectID,
             int taskID,
             int commentID,
-            NewCommentBodyDto newCommentBodyDto) throws CommentsExceptions.CommentBodyIdenticalNotModified {
+            @NotNull NewCommentBodyDto newCommentBodyDto,
+            HttpServletRequest request) throws CommentsExceptions.CommentBodyIdenticalNotModified {
         BeaverusersRecord commenter = validateUserValidAndInsideValidProject(userDto, projectID);
 
         tasksRepository.doesTaskExistInProject(taskID, projectID);
@@ -62,8 +69,17 @@ public class CommentsService implements ValidateUserAndProjectInterface {
 
         // Check if comment bodies are identical
         if (comment.getCommentBody().equals(newCommentBodyDto.commentBody())) {
-            throw new CommentsExceptions.CommentBodyIdenticalNotModified(
-                    ErrorMessageConstants.COMMENT_EQUIVALENT_NOT_MODIFIED.getValue());
+            CommentsExceptions.CommentBodyIdenticalNotModified commentBodyIdenticalNotModified =
+                    new CommentsExceptions.CommentBodyIdenticalNotModified(
+                            ErrorMessageConstants.COMMENT_EQUIVALENT_NOT_MODIFIED.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.COMMENT_EQUIVALENT_NOT_MODIFIED.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    commentBodyIdenticalNotModified);
+
+            throw commentBodyIdenticalNotModified;
         }
 
         commentsRepository.modifyCommentOnTask(taskID, commentID, newCommentBodyDto);

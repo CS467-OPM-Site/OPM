@@ -1,8 +1,12 @@
 package org.opm.busybeaver.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.ProjectUsers.ProjectUsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -14,10 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public final class ProjectUsersService implements ValidateUserAndProjectInterface {
     private final ProjectsRepository projectsRepository;
     private final ProjectUsersRepository projectUsersRepository;
     private final UsersRepository usersRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ProjectUsersService(
@@ -30,7 +36,7 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
         this.usersRepository = usersRepository;
     }
 
-    public ProjectUserSummaryDto getAllUsersInProject(UserDto userDto, int projectID, String contextPath) {
+    public @NotNull ProjectUserSummaryDto getAllUsersInProject(UserDto userDto, int projectID, String contextPath) {
        validateUserValidAndInsideValidProject(userDto, projectID);
 
        ProjectUserSummaryDto projectUserSummaryDto = projectUsersRepository.getAllUsersInProject(projectID);
@@ -39,7 +45,11 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
        return projectUserSummaryDto;
     }
 
-    public void addUserToProject(UserDto userDto, int projectID, UsernameDto usernameDto)
+    public void addUserToProject(
+            UserDto userDto,
+            int projectID,
+            @NotNull UsernameDto usernameDto,
+            HttpServletRequest request)
         throws ProjectUsersExceptions.UserAlreadyInProject
     {
         // Validate user exists, validate user in project
@@ -50,7 +60,17 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
 
         // Verify user is not in project
         if (projectUsersRepository.isUserInProjectAndDoesProjectExist(userToAdd.getUserId(), projectID)) {
-            throw new ProjectUsersExceptions.UserAlreadyInProject(ErrorMessageConstants.USER_ALREADY_IN_PROJECT.getValue());
+            ProjectUsersExceptions.UserAlreadyInProject userAlreadyInProject =
+                    new ProjectUsersExceptions.UserAlreadyInProject(
+                            ErrorMessageConstants.USER_ALREADY_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_ALREADY_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userAlreadyInProject);
+
+            throw userAlreadyInProject;
         }
 
         // Add user to project
@@ -60,7 +80,11 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
-    public void removeUserFromProject(UserDto userDto, int projectID, UsernameDto usernameDto)
+    public void removeUserFromProject(
+            UserDto userDto,
+            int projectID,
+            @NotNull UsernameDto usernameDto,
+            HttpServletRequest request)
         throws ProjectUsersExceptions.ProjectCannotHaveZeroUsers {
         // Validate user exists, validate user in project
         validateUserValidAndInsideValidProject(userDto, projectID);
@@ -75,7 +99,17 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
 
         // Ensure not the last user in the project
         if (!projectUsersRepository.doesProjectStillHaveUsers(projectID)) {
-            throw new ProjectUsersExceptions.ProjectCannotHaveZeroUsers(ErrorMessageConstants.PROJECT_CANNOT_HAVE_ZERO_USERS.getValue());
+            ProjectUsersExceptions.ProjectCannotHaveZeroUsers projectCannotHaveZeroUsers =
+                    new ProjectUsersExceptions.ProjectCannotHaveZeroUsers(
+                            ErrorMessageConstants.PROJECT_CANNOT_HAVE_ZERO_USERS.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.PROJECT_CANNOT_HAVE_ZERO_USERS.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    projectCannotHaveZeroUsers);
+
+            throw projectCannotHaveZeroUsers;
         }
 
         // Remove user from project
@@ -86,7 +120,7 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
     }
 
     @Override
-    public BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
+    public @NotNull BeaverusersRecord validateUserValidAndInsideValidProject(UserDto userDto, int projectID) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto);
 
         // Validate user in project and project exists

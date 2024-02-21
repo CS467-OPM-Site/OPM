@@ -3,6 +3,7 @@ package org.opm.busybeaver;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.opm.busybeaver.config.FirebaseConfig;
+import org.slf4j.event.LoggingEvent;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -17,6 +18,9 @@ class BusybeaverApplicationTests {
 
     @MockBean
     private DataSource dataSource;
+
+    @MockBean
+    private LoggingEvent loggingEvent;
 
     @Test
     void contextLoads() {

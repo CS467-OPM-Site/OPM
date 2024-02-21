@@ -3,6 +3,9 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
@@ -19,57 +22,67 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
+@Slf4j
 public final class CommentsController implements GetUserFromBearerTokenInterface {
 
     private final CommentsService commentsService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
     private static final String TASK_PATH = BusyBeavPaths.Constants.TASKS;
     private static final String COMMENT_PATH = BusyBeavPaths.Constants.COMMENTS;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public CommentsController(CommentsService commentsService) { this.commentsService = commentsService; }
 
     @PostMapping(PROJECTS_PATH + "/{projectID}" + TASK_PATH + "/{taskID}")
-    public CommentInTaskDto addCommentToTask(
-            HttpServletRequest request,
+    public @NotNull CommentInTaskDto addCommentToTask(
+            @NotNull HttpServletRequest request,
             @Valid @RequestBody NewCommentBodyDto newCommentBodyDto,
             @PathVariable int projectID,
             @PathVariable int taskID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
-            HttpServletResponse response
+            @NotNull HttpServletResponse response
     ) {
         CommentInTaskDto newComment = commentsService.addCommentToTask(
-                userDto, projectID, taskID, newCommentBodyDto, request.getContextPath()
+                userDto, projectID, taskID, newCommentBodyDto, request
         );
 
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), newComment.getCommentLocation());
         response.setStatus(HttpStatus.CREATED.value());
+        log.info("Successfully added comment to task. | RID: {}", request.getAttribute(RID));
         return newComment;
     }
 
+    @Contract("_, _, _, _, _, _ -> new")
     @PutMapping(PROJECTS_PATH +"/{projectID}" + TASK_PATH + "/{taskID}" + COMMENT_PATH + "/{commentID}")
-    public SmallJsonResponse addCommentToTask(
+    public @NotNull SmallJsonResponse addCommentToTask(
+            @NotNull HttpServletRequest request,
             @Valid @RequestBody NewCommentBodyDto newCommentBodyDto,
             @PathVariable int projectID,
             @PathVariable int taskID,
             @PathVariable int commentID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        commentsService.modifyCommentOnTask(userDto, projectID, taskID, commentID, newCommentBodyDto);
+        commentsService.modifyCommentOnTask(userDto, projectID, taskID, commentID, newCommentBodyDto, request);
+        log.info("Comment modified. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.COMMENT_MODIFIED.getValue()
         );
     }
+
+    @Contract("_, _, _, _, _ -> new")
     @DeleteMapping(PROJECTS_PATH +"/{projectID}" + TASK_PATH + "/{taskID}" + COMMENT_PATH + "/{commentID}")
-    public SmallJsonResponse removeCommentFromTask(
+    public @NotNull SmallJsonResponse removeCommentFromTask(
+            @NotNull HttpServletRequest request,
             @PathVariable int projectID,
             @PathVariable int taskID,
             @PathVariable int commentID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        commentsService.removeCommentFromTask(userDto, projectID, taskID, commentID);
+        commentsService.removeCommentFromTask(userDto, projectID, taskID, commentID, request);
+        log.info("Comment removed from task. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
@@ -79,7 +92,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override
-    public UserDto getUserFromToken(HttpServletRequest request) {
+    public UserDto getUserFromToken(@NotNull HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 }

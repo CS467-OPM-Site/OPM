@@ -3,6 +3,9 @@ package org.opm.busybeaver.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
 import org.opm.busybeaver.dto.Projects.NewProjectDto;
 import org.opm.busybeaver.dto.Projects.NewProjectNameDto;
@@ -22,35 +25,43 @@ import org.springframework.web.bind.annotation.*;
 @ApiPrefixController
 @RestController
 @CrossOrigin
+@Slf4j
 public final class ProjectsController implements GetUserFromBearerTokenInterface {
 
     private final ProjectsService projectsService;
     private static final String PROJECTS_PATH = BusyBeavPaths.Constants.PROJECTS;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ProjectsController(ProjectsService projectsService) { this.projectsService = projectsService; }
 
     @PostMapping(PROJECTS_PATH)
-    public NewProjectDto makeNewProject(
-            HttpServletRequest request,
+    public @NotNull NewProjectDto makeNewProject(
+            @NotNull HttpServletRequest request,
             @Valid @RequestBody NewProjectDto newProjectDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto,
-            HttpServletResponse response
+            @NotNull HttpServletResponse response
     ) {
-        NewProjectDto projectDto = projectsService.makeNewProject(userDto, newProjectDto, request.getContextPath());
+        NewProjectDto projectDto = projectsService.makeNewProject(userDto, newProjectDto, request);
         response.setHeader(BusyBeavConstants.LOCATION.getValue(), projectDto.getProjectLocation());
         response.setStatus(HttpStatus.CREATED.value());
+
+        log.info("Created a new project called {}. | RID: {}",
+                newProjectDto.getProjectName(),
+                request.getAttribute(RID));
 
         return projectDto;
     }
 
+    @Contract("_, _, _ -> new")
     @DeleteMapping(PROJECTS_PATH + "/{projectID}")
-    public SmallJsonResponse deleteProject(
-            HttpServletRequest request,
+    public @NotNull SmallJsonResponse deleteProject(
+            @NotNull HttpServletRequest request,
             @PathVariable int projectID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectsService.deleteProject(userDto, projectID);
+        projectsService.deleteProject(userDto, projectID, request);
+        log.info("Deleted a project. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
@@ -59,29 +70,39 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
     }
 
     @GetMapping(PROJECTS_PATH)
-    public ProjectsSummariesDto getUserProjectsSummary(
-            HttpServletRequest request,
+    public @NotNull ProjectsSummariesDto getUserProjectsSummary(
+            @NotNull HttpServletRequest request,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return projectsService.getUserProjectsSummary(userDto, request.getContextPath());
+        ProjectsSummariesDto projectsSummariesDto = projectsService.getUserProjectsSummary(userDto, request);
+        log.info("Retrieved user's project summaries. | RID {}", request.getAttribute(RID));
+
+        return projectsSummariesDto;
     }
 
     @GetMapping(PROJECTS_PATH + "/{projectID}")
-    public ProjectDetailsDto getSpecificProjectDetails(
-            HttpServletRequest request,
+    public @NotNull ProjectDetailsDto getSpecificProjectDetails(
+            @NotNull HttpServletRequest request,
             @PathVariable int projectID,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        return projectsService.getSpecificProjectDetails(userDto, projectID, request.getContextPath());
+        ProjectDetailsDto projectDetailsDto = projectsService.getSpecificProjectDetails(userDto, projectID, request);
+        log.info("Retrieved project details. | RID: {}", request.getAttribute(RID));
+
+        return projectDetailsDto;
     }
 
+    @Contract("_, _, _, _ -> new")
     @PutMapping(PROJECTS_PATH +"/{projectID}")
-    public SmallJsonResponse modifyProjectName(
+    public @NotNull SmallJsonResponse modifyProjectName(
+            @NotNull HttpServletRequest request,
             @PathVariable int projectID,
             @Valid @RequestBody NewProjectNameDto newProjectNameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectsService.modifyProjectName(userDto, projectID, newProjectNameDto);
+        projectsService.modifyProjectName(userDto, projectID, newProjectNameDto, request);
+        log.info("Modified a project name. | RID: {}", request.getAttribute(RID));
+
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),
                 SuccessMessageConstants.PROJECT_NAME_MODIFIED.getValue()
@@ -90,7 +111,7 @@ public final class ProjectsController implements GetUserFromBearerTokenInterface
 
     @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL)
     @Override
-    public UserDto getUserFromToken(HttpServletRequest request) {
+    public UserDto getUserFromToken(@NotNull HttpServletRequest request) {
         return (UserDto) request.getAttribute(BusyBeavConstants.USER_KEY_VAL.getValue());
     }
 }

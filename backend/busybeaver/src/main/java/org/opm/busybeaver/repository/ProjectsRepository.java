@@ -1,5 +1,8 @@
 package org.opm.busybeaver.repository;
 
+import com.google.api.Http;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.*;
@@ -8,6 +11,7 @@ import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Projects.ProjectDetailsDto;
 import org.opm.busybeaver.dto.Projects.ProjectSummaryDto;
 import org.opm.busybeaver.dto.Tasks.TaskBasicDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Projects.ProjectsExceptions;
 import org.opm.busybeaver.exceptions.Teams.TeamsExceptions;
@@ -29,10 +33,12 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
+@Slf4j
 public class ProjectsRepository {
 
     private final DSLContext create;
     private final ColumnsRepository columnsRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ProjectsRepository(DSLContext dslContext, ColumnsRepository columnsRepository) {
@@ -40,7 +46,8 @@ public class ProjectsRepository {
         this.columnsRepository = columnsRepository;
     }
 
-    public void doesTeamHaveProjectsAssociatedWithIt(int teamID) throws TeamsExceptions.TeamStillHasProjectsException {
+    public void doesTeamHaveProjectsAssociatedWithIt(int teamID, HttpServletRequest request)
+            throws TeamsExceptions.TeamStillHasProjectsException {
         // SELECT COUNT(*)
         // FROM Projects
         // WHERE Projects.team_id = teamID
@@ -52,7 +59,17 @@ public class ProjectsRepository {
                 .fetchSingleInto(int.class);
 
         if (projectCount >= 1) {
-            throw new TeamsExceptions.TeamStillHasProjectsException(ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
+            TeamsExceptions.TeamStillHasProjectsException teamStillHasProjectsException =
+                    new TeamsExceptions.TeamStillHasProjectsException(
+                            ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TEAM_STILL_HAS_PROJECTS.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    teamStillHasProjectsException);
+
+            throw teamStillHasProjectsException;
         }
     }
 
@@ -67,7 +84,7 @@ public class ProjectsRepository {
     }
 
     @Transactional
-    public ProjectsRecord makeNewProject(String projectName, int teamID)
+    public ProjectsRecord makeNewProject(String projectName, int teamID, HttpServletRequest request)
         throws ProjectsExceptions.ProjectAlreadyExistsForTeamException {
         try {
             ProjectsRecord newProject = create.insertInto(PROJECTS, PROJECTS.PROJECT_NAME, PROJECTS.TEAM_ID)
@@ -92,8 +109,17 @@ public class ProjectsRepository {
             return newProject;
 
         } catch (DuplicateKeyException e) {
-            throw new ProjectsExceptions.ProjectAlreadyExistsForTeamException(
-                    ErrorMessageConstants.PROJECT_ALREADY_EXISTS_FOR_TEAM.getValue());
+            ProjectsExceptions.ProjectAlreadyExistsForTeamException projectAlreadyExistsForTeamException =
+                    new ProjectsExceptions.ProjectAlreadyExistsForTeamException(
+                            ErrorMessageConstants.PROJECT_ALREADY_EXISTS_FOR_TEAM.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.PROJECT_ALREADY_EXISTS_FOR_TEAM.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    projectAlreadyExistsForTeamException);
+
+            throw projectAlreadyExistsForTeamException;
         }
     }
 
@@ -102,7 +128,7 @@ public class ProjectsRepository {
     }
 
     @NotNull
-    private static ArrayList<ProjectusersRecord> createProjectusersRecords(List<TeamusersRecord> teamusersRecordList, ProjectsRecord newProject) {
+    private static ArrayList<ProjectusersRecord> createProjectusersRecords(@NotNull List<TeamusersRecord> teamusersRecordList, ProjectsRecord newProject) {
         ArrayList<ProjectusersRecord> newProjectUsers = new ArrayList<>(teamusersRecordList.size());
 
         for (TeamusersRecord teamusersRecord : teamusersRecordList) {
@@ -226,7 +252,7 @@ public class ProjectsRepository {
         return projectAndTeam;
     }
 
-    public void modifyProjectName(int projectID, String newProjectName)
+    public void modifyProjectName(int projectID, String newProjectName, HttpServletRequest request)
         throws ProjectsExceptions.ProjectNameIdenticalToPrevious {
         int rowsChanged = create.update(PROJECTS)
                 .set(PROJECTS.PROJECT_NAME, newProjectName)
@@ -234,8 +260,17 @@ public class ProjectsRepository {
                 .and(PROJECTS.PROJECT_NAME.ne(newProjectName))
                 .execute();
         if (rowsChanged == 0) {
-            throw new ProjectsExceptions.ProjectNameIdenticalToPrevious(
-                    ErrorMessageConstants.PROJECT_NAME_EQUIVALENT_NOT_MODIFIED.getValue());
+            ProjectsExceptions.ProjectNameIdenticalToPrevious projectNameIdenticalToPrevious =
+                    new ProjectsExceptions.ProjectNameIdenticalToPrevious(
+                            ErrorMessageConstants.PROJECT_NAME_EQUIVALENT_NOT_MODIFIED.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.PROJECT_NAME_EQUIVALENT_NOT_MODIFIED.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    projectNameIdenticalToPrevious);
+
+            throw projectNameIdenticalToPrevious;
         }
     }
 

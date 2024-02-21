@@ -1,11 +1,14 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Tasks.TasksExceptions;
 import org.opm.busybeaver.jooq.tables.records.TasksRecord;
@@ -21,9 +24,11 @@ import static org.opm.busybeaver.jooq.tables.Tasks.TASKS;
 
 @Repository
 @Component
+@Slf4j
 public class TasksRepository {
     private final DSLContext create;
     private final CommentsRepository commentsRepository;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TasksRepository(DSLContext dslContext, CommentsRepository commentsRepository) {
@@ -65,7 +70,8 @@ public class TasksRepository {
                 .fetchSingleInto(TaskCreatedDto.class);
     }
 
-    public TaskDetailsDto getTaskDetails(int taskID) throws TasksExceptions.TaskDoesNotExistInProject {
+    public TaskDetailsDto getTaskDetails(int taskID, HttpServletRequest request)
+            throws TasksExceptions.TaskDoesNotExistInProject {
         // SELECT Tasks.task_id, Tasks.title, Tasks.description,
         //      Tasks.priority, Tasks.due_date, Columns.columns_id, Columns.column_title,
         //      Columns.column_index, ProjectUsers.user_id, BeaverUsers.username,
@@ -108,7 +114,16 @@ public class TasksRepository {
                 .fetchOneInto(TaskDetailsDto.class);
 
         if (task == null) {
-            throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+            TasksExceptions.TaskDoesNotExistInProject taskDoesNotExistInProject =
+                    new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    taskDoesNotExistInProject);
+
+            throw taskDoesNotExistInProject;
         }
 
         task.setComments(commentsRepository.getCommentsOnTask(taskID));
@@ -116,7 +131,7 @@ public class TasksRepository {
         return task;
     }
 
-    public TasksRecord doesTaskExistInProject(int taskID, int projectID)
+    public TasksRecord doesTaskExistInProject(int taskID, int projectID, HttpServletRequest request)
             throws TasksExceptions.TaskDoesNotExistInProject {
         // SELECT Tasks.task_id
         // FROM Tasks
@@ -129,7 +144,16 @@ public class TasksRepository {
 
 
         if (taskInProject == null) {
-            throw new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+            TasksExceptions.TaskDoesNotExistInProject taskDoesNotExistInProject =
+                    new TasksExceptions.TaskDoesNotExistInProject(ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TASK_NOT_IN_PROJECT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    taskDoesNotExistInProject);
+
+            throw taskDoesNotExistInProject;
         }
         return taskInProject;
     }
@@ -152,7 +176,8 @@ public class TasksRepository {
         return (countOfTasksInProject.value2() == 0);
     }
 
-    public void isTaskAlreadyInColumn(int taskID, int columnID) throws TasksExceptions.TaskAlreadyInColumn {
+    public void isTaskAlreadyInColumn(int taskID, int columnID, HttpServletRequest request)
+            throws TasksExceptions.TaskAlreadyInColumn {
         // SELECT EXISTS (
         //      SELECT Tasks.task_id
         //      FROM Tasks
@@ -166,7 +191,16 @@ public class TasksRepository {
         );
 
         if (isTaskInColumn) {
-            throw new TasksExceptions.TaskAlreadyInColumn(ErrorMessageConstants.TASK_ALREADY_IN_COLUMN.getValue());
+            TasksExceptions.TaskAlreadyInColumn taskAlreadyInColumn =
+                    new TasksExceptions.TaskAlreadyInColumn(ErrorMessageConstants.TASK_ALREADY_IN_COLUMN.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.TASK_ALREADY_IN_COLUMN.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    taskAlreadyInColumn);
+
+            throw taskAlreadyInColumn;
         }
     }
 

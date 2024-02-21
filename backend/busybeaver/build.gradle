@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
     id 'nu.studer.jooq' version '9.0'
+    id 'io.freefair.lombok' version '8.6'
 }
 
 group = 'org.opm'
@@ -28,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -41,6 +43,15 @@ dependencies {
     // Don't need this but removes pesky 'unknown enum constant jakarta.xml.bind.annotation.XmlAccessType.FIELD warning
     // https://github.com/jOOQ/jOOQ/issues/14865
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.slf4j:slf4j-api'
+}
+
+bootJar {
+    archiveFileName = "busybeaver-api.jar"
+    enabled = true
 }
 
 // Referenced jooq plugin - https://github.com/etiennestuder/gradle-jooq-plugin

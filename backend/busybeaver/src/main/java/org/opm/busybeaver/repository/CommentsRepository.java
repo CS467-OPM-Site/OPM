@@ -1,9 +1,13 @@
 package org.opm.busybeaver.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record3;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
@@ -19,16 +23,21 @@ import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
+@Slf4j
 public class CommentsRepository {
 
     private final DSLContext create;
+    private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public CommentsRepository(DSLContext dslContext) {
         this.create = dslContext;
     }
 
-    public CommentInTaskDto addComment(int taskID, NewCommentBodyDto newCommentBodyDto, BeaverusersRecord commenter) {
+    public CommentInTaskDto addComment(
+            int taskID,
+            @NotNull NewCommentBodyDto newCommentBodyDto,
+            BeaverusersRecord commenter) {
         Record3<Integer, String, LocalDateTime> newComment = create.insertInto(COMMENTS, COMMENTS.USER_ID, COMMENTS.TASK_ID, COMMENTS.COMMENT_BODY)
                 .values(commenter.getUserId(), taskID, newCommentBodyDto.commentBody())
                 .returningResult(COMMENTS.COMMENT_ID, COMMENTS.COMMENT_BODY, COMMENTS.COMMENT_CREATED)
@@ -42,7 +51,7 @@ public class CommentsRepository {
                 newComment.getValue(COMMENTS.COMMENT_CREATED));
     }
 
-    public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userID)
+    public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userID, HttpServletRequest request)
             throws CommentsExceptions.CommentDoesNotExistOnTask,
             CommentsExceptions.UserDidNotLeaveThisComment {
         //  SELECT Comments.comment_id
@@ -58,13 +67,31 @@ public class CommentsRepository {
                         .fetchOne();
 
         if (commentOnTask == null) {
-            throw new CommentsExceptions.CommentDoesNotExistOnTask(
-                    ErrorMessageConstants.COMMENT_NOT_FOUND_ON_TASK.getValue());
+            CommentsExceptions.CommentDoesNotExistOnTask commentDoesNotExistOnTask =
+                    new CommentsExceptions.CommentDoesNotExistOnTask(
+                            ErrorMessageConstants.COMMENT_NOT_FOUND_ON_TASK.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.COMMENT_NOT_FOUND_ON_TASK.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    commentDoesNotExistOnTask);
+
+            throw commentDoesNotExistOnTask;
         }
 
         if (commentOnTask.getUserId() != userID) {
-            throw new CommentsExceptions.UserDidNotLeaveThisComment(
-                    ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
+            CommentsExceptions.UserDidNotLeaveThisComment userDidNotLeaveThisComment =
+                    new CommentsExceptions.UserDidNotLeaveThisComment(
+                            ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
+
+            log.error("{}. | RID: {} {}",
+                    ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue(),
+                    request.getAttribute(RID),
+                    System.lineSeparator(),
+                    userDidNotLeaveThisComment);
+
+            throw userDidNotLeaveThisComment;
         }
         return commentOnTask;
     }
@@ -81,7 +108,7 @@ public class CommentsRepository {
                 .execute();
     }
 
-    public void modifyCommentOnTask(int taskID, int commentID, NewCommentBodyDto newCommentBodyDto) {
+    public void modifyCommentOnTask(int taskID, int commentID, @NotNull NewCommentBodyDto newCommentBodyDto) {
         // UPDATE Comments SET Comments.comment_body = newCommentBodyDto.CommentBody()
         // WHERE Comments.task_id = taskID
         // AND Comments.comment_id = commentID;

@@ -10,6 +10,7 @@ const UsernameSetup = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { currentUser } = useAuth(); // Use currentUser from AuthContext
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Access the .env variable
 
   useEffect(() => {
     // Redirect users who are not logged in
@@ -23,7 +24,7 @@ const UsernameSetup = () => {
     if (!currentUser) return; // Early return if no currentUser exists
 
     try {
-      const response = await fetch('https://opm-api.propersi.me/api/v1/users/register', {
+      const response = await fetch(`${API_BASE_URL}/users/register`, { // Use the .env variable
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -184,10 +184,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 > ```json
 > {
 >   "projectName": "New Project Name",
->   "projectID": 1,
 >   "teamName": "team1",
 >   "teamID": 1,
->   "projectLocation": "/api/v1/projects/1"
 > }
 > ```
 

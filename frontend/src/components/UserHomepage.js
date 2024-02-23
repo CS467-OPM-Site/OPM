@@ -15,6 +15,7 @@ const UserHomepage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     fetchTeams();
@@ -27,9 +28,9 @@ const UserHomepage = () => {
   }, [selectedTeam]);
 
   const fetchTeams = async () => {
-    const API_ENDPOINT = 'https://opm-api.propersi.me/api/v1/teams';
+    // const API_ENDPOINT = `${API_BASE_URL}/teams`;
     try {
-      const response = await fetch(API_ENDPOINT, {
+      const response = await fetch(`${API_BASE_URL}/teams`, {
         headers: { 'Authorization': `Bearer ${currentUser.token}` },
       });
       if (!response.ok) throw new Error('Failed to fetch teams');
@@ -45,7 +46,8 @@ const UserHomepage = () => {
     setLoadingMembers(true);
     setMembersError('');
     try {
-      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+      const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
         headers: { 'Authorization': `Bearer ${currentUser.token}` },
       });
       if (!response.ok) throw new Error('Failed to fetch team members');
@@ -68,7 +70,8 @@ const UserHomepage = () => {
     }
   
     try {
-      const response = await fetch('https://opm-api.propersi.me/api/v1/teams', {
+      const response = await fetch(`${API_BASE_URL}/teams`, {
+      // const response = await fetch('https://opm-api.propersi.me/api/v1/teams', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +102,8 @@ const UserHomepage = () => {
     }
 
     try {
-      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+      const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
+      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +126,8 @@ const UserHomepage = () => {
     }
   
     try {
-      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members/${memberID}`, {
+      const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members/${memberID}`, {
+      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members/${memberID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${currentUser.token}`,
@@ -151,7 +156,8 @@ const UserHomepage = () => {
     if (!window.confirm('Are you sure you want to delete this team?')) return;
   
     try {
-      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}`, {
+      const response = await fetch(`${API_BASE_URL}/teams/${teamID}`, {
+      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${currentUser.token}`,
@@ -177,7 +183,8 @@ const UserHomepage = () => {
     }
 
     try {
-      const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${selectedTeam.teamID}/projects`, {
+      const response = await fetch(`${API_BASE_URL}/teams/${selectedTeam.teamID}/projects`, {
+      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${selectedTeam.teamID}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

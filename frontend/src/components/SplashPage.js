@@ -9,10 +9,11 @@ const SplashPage = () => {
   const navigate = useNavigate();
   // useAuth could be used here if you need to set or access authentication state
   const { currentUser } = useAuth(); // Example usage, adjust based on your AuthContext
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Access the .env variable
 
   const authenticateUserWithBackend = async (idToken) => {
     try {
-      const response = await fetch('https://opm-api.propersi.me/api/v1/users/auth', {
+      const response = await fetch(`${API_BASE_URL}/users/auth`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,

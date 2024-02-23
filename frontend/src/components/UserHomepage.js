@@ -183,14 +183,14 @@ const UserHomepage = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/teams/${selectedTeam.teamID}/projects`, {
-      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${selectedTeam.teamID}/projects`, {
+      const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
         headers: {
+          'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${currentUser.token}`,
         },
-        body: JSON.stringify({ name: projectName }),
+        body: JSON.stringify({ projectName: projectName, teamName: selectedTeam.teamName, teamID: selectedTeam.teamID}),
       });
       if (!response.ok) throw new Error('Failed to add project');
       const newProject = await response.json();
@@ -200,6 +200,16 @@ const UserHomepage = () => {
       setError('Failed to add project.');
     }
   };
+
+  const renderProjects = () => {
+    return projects.map((project) => (
+      <div key={project.projectID} className="project-card">
+        <h3>{project.projectName}</h3>
+        {/* Add more project details here */}
+      </div>
+    ));
+  };
+
 
   const handleLogout = () => {
     // Implement logout functionality
@@ -263,6 +273,7 @@ const UserHomepage = () => {
     ));
   };
 
+
   return (
     <div className="user-homepage-container">
       <header className="user-homepage-header">
@@ -289,6 +300,10 @@ const UserHomepage = () => {
           {renderTeams()}
         </aside>
         <main className="project-list">
+          <h2>Projects</h2>
+          <div className="project-list-container">
+            {renderProjects()}
+          </div>
           <form onSubmit={(e) => { e.preventDefault(); handleAddProject(e.target.elements.projectName.value); }}>
             <input
               name="projectName"
@@ -298,6 +313,7 @@ const UserHomepage = () => {
             />
             <button type="submit" className="add-project-button">Add Project</button>
           </form>
+
         </main>
       </div>
     </div>

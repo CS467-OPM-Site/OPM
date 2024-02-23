@@ -11,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,4 +68,12 @@ public class ValidationExceptionHandler {
         return new ResponseEntity<>(null, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> resourceNotFound() {
+        return new ResponseEntity<>(
+                generateExceptionResponse(
+                        ErrorMessageConstants.INVALID_RESOURCE.getValue(),
+                        HttpStatus.NOT_FOUND.value()),
+                HttpStatus.NOT_FOUND);
+    }
 }

@@ -42,20 +42,6 @@ public class TeamsRepository {
                     .returningResult(TEAMS.TEAM_NAME, TEAMS.TEAM_ID, TEAMS.TEAM_CREATOR)
                     .fetchSingleInto(TeamsRecord.class);
 
-//            if (newTeamRecord == null) {
-//                TeamsExceptions.TeamAlreadyExistsForUserException teamAlreadyExistsForUserException =
-//                        new TeamsExceptions.TeamAlreadyExistsForUserException(
-//                                ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue());
-//
-//                log.error("{}. | RID: {} {}",
-//                        ErrorMessageConstants.TEAM_ALREADY_EXISTS_FOR_USER.getValue(),
-//                        request.getAttribute(RID),
-//                        System.lineSeparator(),
-//                        teamAlreadyExistsForUserException);
-//
-//                throw teamAlreadyExistsForUserException;
-//            }
-
             // Trigger option - Add the creator to the TeamUsers table, role of Creator
             create.insertInto(TEAMUSERS, TEAMUSERS.TEAM_ID, TEAMUSERS.USER_ID, TEAMUSERS.USER_TEAM_ROLE)
                     .values(newTeamRecord.getTeamId(), newTeamRecord.getTeamCreator(), DatabaseConstants.TEAMUSERS_CREATOR_ROLE.getValue())

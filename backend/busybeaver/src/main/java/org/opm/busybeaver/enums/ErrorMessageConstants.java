@@ -4,6 +4,7 @@ public enum ErrorMessageConstants {
     ERROR_KEY_VAL("Error"),
     MESSAGE("message"),
     CODE("code"),
+    INVALID_RESOURCE("Resource or URL not found"),
     INVALID_ARGUMENT("Invalid argument"),
     USER_ALREADY_EXISTS("User already exists with those details"),
     USER_DOES_NOT_EXIST("User does not exist"),

@@ -184,7 +184,7 @@ public class TeamsService {
                             ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue());
 
             log.error("{}. | RID: {} {}",
-                    ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED,
+                    ErrorMessageConstants.TEAM_CREATOR_CANNOT_BE_REMOVED.getValue(),
                     request.getAttribute(RID),
                     System.lineSeparator(),
                     teamCreatorCannotBeRemovedException);

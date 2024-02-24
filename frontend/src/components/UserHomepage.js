@@ -273,13 +273,20 @@ const UserHomepage = () => {
     ));
   };
 
+  // New function to navigate to home
+  const navigateToHome = () => {
+    navigate('/home');
+  };
+
 
   return (
     <div className="user-homepage-container">
       <header className="user-homepage-header">
-        <div className="busy-beaver-logo">
+        {/* Updated div to include onClick for navigation */}
+        <div className="busy-beaver-logo" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
           <img src={BusyBeaverNoBG} alt="Busy Beaver" />
         </div>
+        {/* Rest of the component remains the same */}
         <h1>User Homepage</h1>
         <div className="user-homepage-buttons">
           <input
@@ -313,7 +320,6 @@ const UserHomepage = () => {
             />
             <button type="submit" className="add-project-button">Add Project</button>
           </form>
-
         </main>
       </div>
     </div>

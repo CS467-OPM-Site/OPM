@@ -1083,7 +1083,7 @@ To delete the attribute, set the attribute to null in the request payload.
 #### Sprint Management
 
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(gets all sprints associated with a project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/sprints</b></code> <code>(gets all sprints associated with a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1197,7 +1197,7 @@ Sprints are ordered in ascending order by sprint end date.
 </details>
 
 <details>
- <summary><code>GET</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(get all tasks associated with a sprint in a project)</code></summary>
+ <summary><code>GET</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(get all tasks associated with a sprint in a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1278,7 +1278,7 @@ Sprints are ordered in ascending order by sprint end date.
 </details>
 
 <details>
- <summary><code>PUT</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(modifies a sprint in a project)</code></summary>
+ <summary><code>PUT</code> <code><b>/projects/{projectID}/sprints/{sprintID}</b></code> <code>(modifies a sprint in a project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 

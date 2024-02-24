@@ -13,22 +13,25 @@ import Stack from '@mui/material/Stack';
 import { CardActionArea, CardContent } from '@mui/material';
 
 function ProjectPage() {
+  const [columns, setColumns] = useState([
+    { columnID: 1, columnName: 'To-Do' },
+    { columnID: 2, columnName: 'In Process' },
+    { columnID: 3, columnName: 'Done' },
+  ]);
+  const [tasks, setTasks] = useState([
+    { taskID: 1, columnID: 1, taskName: 'Task 1', taskDescription: 'This is me tasking away!', dueDate: '2024-02-23', taskPriority: 'High' },
+    { taskID: 2, columnID: 1, taskName: 'Task 2', taskDescription: 'This is my task! And I will Task!', dueDate: '2024-02-26', taskPriority: 'High' },
+  ]);
+  const [columnName, setColumnName] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [editingThisTask, setEditingTask] = useState(null);
+  const [taskPopup, setTaskPopup] = useState(null);
 
-    // Mock data to show UI filled out task cards and columns
-    const [columns, setColumns] = useState([
-      { columnID: 1, columnName: 'To-Do'},
-      { columnID: 2, columnName: 'In Process'},
-      { columnID: 3, columnName: 'Done'},
-    ]);
-    const [tasks, setTasks] = useState([
-      { taskID: 1, columnID: 1, taskName: 'Task 1', taskDescription: 'This is me tasking away!', dueDate: '2024-02-23', taskPriority: 'High'},
-      { taskID: 2, columnID: 1, taskName: 'Task 2', taskDescription: 'This is my task! And I will Task!', dueDate: '2024-02-26', taskPriority: 'High'},
-      ]);
-    const [columnName, setColumnName] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const [editingThisTask, setEditingTask] = useState(null);
-    const [taskPopup, setTaskPopup] = useState(null);
+  // Logic for navigating to home
+  const handleNavigateToHome = () => {
+    navigate('/home');
+  };
 
     // Logic for signing out the user
     const handleLogout = () => {
@@ -167,7 +170,7 @@ function ProjectPage() {
     return (
       <div className="user-homepage-container">
         <header className="user-homepage-header">
-          <div className="busy-beaver-logo">
+          <div className="busy-beaver-logo" onClick={handleNavigateToHome} style={{ cursor: 'pointer' }}>
             <img src={BusyBeaverNoBG} alt="Busy Beaver" />
           </div>
           <div className="user-homepage-header-card">

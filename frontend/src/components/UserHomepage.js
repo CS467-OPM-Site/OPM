@@ -203,12 +203,18 @@ const UserHomepage = () => {
 
   const renderProjects = () => {
     return projects.map((project) => (
-      <div key={project.projectID} className="project-card">
+      <div
+        key={project.projectID}
+        className="project-card"
+        onClick={() => navigate(`/projects/${project.projectID}`)} // Using template literals to create dynamic path
+        style={{cursor: 'pointer'}} // Optional: Changes the cursor to indicate the card is clickable
+      >
         <h3>{project.projectName}</h3>
         {/* Add more project details here */}
       </div>
     ));
   };
+  
 
 
   const handleLogout = () => {
@@ -236,10 +242,6 @@ const UserHomepage = () => {
     ));
   };
   
-  
-  
-  
-
   const renderTeams = () => {
     return teams.map((team) => (
       <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected' : ''}`}>

@@ -7,6 +7,7 @@ import './styles/App.css';
 import SplashPage from './components/SplashPage';
 import UserHomePage from './components/UserHomepage';
 import UsernameSetup from './components/UsernameSetup';
+import ProjectManagementPage from './components/ProjectManagementPage';
 import ProjectPage from './components/ProjectPage';
 import app from './firebaseConfig';
 
@@ -41,7 +42,9 @@ function App() {
             {/* The path "/username" corresponds to the UsernameSetup */}
             <Route path="/username" element={<UsernameSetup />} />
             {/* The path "/" corresponds to the ProjectPage */}
-            <Route path="/project" element={<ProjectPage />} />
+            <Route path="/projects" element={<ProjectPage />} />
+            {/* The path "/projects/:projectId" corresponds to the ProjectManagementPage */}  
+            <Route path="/projects/:projectId" element={<ProjectManagementPage />} />
           </Routes>
         </AuthProvider>
       </div>

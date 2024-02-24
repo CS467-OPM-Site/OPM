@@ -1,14 +1,19 @@
-// Note - this is Ryu's WIP that James messed around with. It's a WIP. This is a mock-up of the project page.
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddTaskForm from './AddTaskForm';
 import '../styles/UserProjectPage.css';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
-import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
-//import ViewTaskFrom from './ViewTaskForm';
+import Popup from 'reactjs-popup';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import { CardActionArea, CardContent } from '@mui/material';
 
-const ProjectPage = () => {
+function ProjectPage() {
+
     // Mock data to show UI filled out task cards and columns
     const [columns, setColumns] = useState([
       { columnID: 1, columnName: 'To-Do'},
@@ -16,14 +21,14 @@ const ProjectPage = () => {
       { columnID: 3, columnName: 'Done'},
     ]);
     const [tasks, setTasks] = useState([
-      { taskID: 1, columnID: 1, taskName: 'Task 1', taskDescription: 'This is me tasking away!'},
-      { taskID: 2, columnID: 1, taskName: 'Task 2', taskDescription: 'This is my task! And I will Task!'},
+      { taskID: 1, columnID: 1, taskName: 'Task 1', taskDescription: 'This is me tasking away!', dueDate: '2024-02-23', taskPriority: 'High'},
+      { taskID: 2, columnID: 1, taskName: 'Task 2', taskDescription: 'This is my task! And I will Task!', dueDate: '2024-02-26', taskPriority: 'High'},
       ]);
     const [columnName, setColumnName] = useState('');
-    const [taskName, setTaskName] = useState('');
     const [error, setError] = useState('');
-    const [taskDescription, setTaskDescription] = useState('');
     const navigate = useNavigate();
+    const [editingThisTask, setEditingTask] = useState(null);
+    const [taskPopup, setTaskPopup] = useState(null);
 
     // Logic for signing out the user
     const handleLogout = () => {
@@ -34,8 +39,14 @@ const ProjectPage = () => {
       setColumnName(event.target.value);
     };
 
-    const handleTasksNameChange = event => {
-    }
+    const handleEditTask = (editingTask) => {
+      setEditingTask(editingTask);
+    };
+
+    const handleUpdateTask = (updatedTask) => {
+      setTasks(tasks.map(task => task.taskID === updatedTask.taskID ? updatedTask : task));
+      setEditingTask(null); // Reset editing task to null after update
+    };
 
     const handleAddColumn = () => {
       // Return error if user tries to input empty column name
@@ -52,34 +63,16 @@ const ProjectPage = () => {
       setError('');
     };
 
-    const handleAddTask = () => {
-      // Return error if user tries to input empty column name
-      if (!taskName.trim()) {
-        setError('Task name cannot be empty');
-        return;
-      };
-      if (!taskDescription.trim()) {
-        setError('Task description cannot be empty');
-        return;
-      };
-      const newTask = {
-        taskID: tasks.length + 1,
-        taskName: taskName,
-        taskDescription: taskDescription,
-        columnID: 1
-      };
+    const handleAddTask = (newTask, columnID) => {
+      newTask.columnID = columnID;
+      newTask.taskID = tasks.length + 1;
       setTasks(prevTasks => [...prevTasks, newTask]);
-      setTaskName('');
-      setError('');
-      setTaskDescription('');
-      {renderTasks()}
     };
 
-    //create a pop-up in the middle of the screen that shows more detail about the task
-    const handleViewTask = () => {
+    const handleDeleteTask = (taskID) => {
+      setTasks(tasks.filter(task => task.taskID !== taskID));
     }
 
-    // TO DO: NEED TO CREATE OWN CSS STYLE FOR PROJECTS, COLUMNS, AND TASKS
     const renderColumns = () => {
         return (
           <div style={{display:'flex'}}>
@@ -97,14 +90,76 @@ const ProjectPage = () => {
       return (
         <>
         <ul>
-          {tasks.map((task) => {
-            if (task.columnID === columnID) {
-              return <h3 key={task.columnID}>{task.taskName}</h3>;
-            }
-            return null;
-          })}
+          {tasks.filter(task => task.columnID === columnID).map(task => (
+            <Card sx={{ maxWidth: 220 }}>
+            <CardActionArea onClick={() => {setTaskPopup(task.taskID)}}>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {task.taskName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {task.taskDescription}
+                </Typography>
+              </CardContent>
+            <Popup
+              key={task.taskID}
+              modal
+              nested
+              open={taskPopup===task.taskID}
+            >
+              {close => (
+                <Card>
+                    <Stack direction="row" spacing={1}>
+                  {(() => {
+                    switch (task.taskPriority){
+                      case 'High':
+                        return <Chip label="High" color="error" />
+                      case 'Medium': 
+                        return <Chip label="Medium" color="warning" />
+                      case 'Low':
+                        return <Chip label="Low" color="success" />
+                      default:
+                        return null
+                    }
+                  })()}
+                    </Stack>
+                  <Typography gutterBottom variant="h5" component="div" align='center'>
+                    {task.taskName}
+                  </Typography>
+                  <div className="content">
+                    <Typography variant="body2" color="text.secondary">
+                      {task.taskDescription}
+                    </Typography>
+                  </div>
+                  <ButtonGroup variant="filled">
+                    <Button
+                      variant = "contained"
+                      className="popup-button"
+                      onClick={() => {setTaskPopup(null); close(); }}>
+                      Close
+                    </Button>
+                    <Button
+                      className="popup-button"
+                      variant = "contained"
+                      onClick={() => handleDeleteTask(task.taskID)}>
+                      Delete
+                    </Button>
+                    <Button
+                      variant='contained'
+                      className='popup-button'
+                      onClick={() => handleEditTask(task)}>
+                      Edit
+                    </Button>
+                    <AddTaskForm onAddTask={(newTask) => handleUpdateTask(newTask)} columnID={null} editingTask={task}/>
+                  </ButtonGroup>
+                </Card>
+              )}
+            </Popup>
+            </CardActionArea>
+            </Card>
+          ))}
         </ul>
-          <AddTaskForm onAddTask={handleAddTask} />
+          <AddTaskForm onAddTask={(newTask) => handleAddTask(newTask, columnID)} columnID={columnID}/>
         </>
       );
     };

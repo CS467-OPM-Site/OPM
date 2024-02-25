@@ -1,30 +1,23 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AddTaskForm from './AddTaskForm';
-import '../styles/ProjectManagementPage.css';
+import '../styles/ProjectManagementPage.css'; // Ensure this path is correct
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
-import Popup from 'reactjs-popup';
-import { Button, ButtonGroup, Card, Typography, Chip, Stack, CardActionArea, CardContent } from '@mui/material';
+import { Button, Card, Typography, Chip, Stack, CardActionArea, CardContent } from '@mui/material';
 
 const ProjectManagementPage = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // State management
   const [columns, setColumns] = useState([
     { columnID: 1, columnName: 'To-Do' },
     { columnID: 2, columnName: 'In Process' },
     { columnID: 3, columnName: 'Done' },
   ]);
-  const [tasks, setTasks] = useState([
-    // Sample tasks, you might fetch these from a server based on projectId
-  ]);
+  const [tasks, setTasks] = useState([]);
   const [columnName, setColumnName] = useState('');
   const [error, setError] = useState('');
-  const [editingTask, setEditingTask] = useState(null);
-  const [taskPopup, setTaskPopup] = useState(null);
 
-  // Event handlers
   const handleNavigateToHome = () => navigate('/home');
   const handleLogout = () => navigate('/');
   const handleColumnNameChange = (event) => setColumnName(event.target.value);
@@ -43,17 +36,10 @@ const ProjectManagementPage = () => {
     newTask.taskID = tasks.length + 1;
     setTasks(prevTasks => [...prevTasks, newTask]);
   };
-  const handleEditTask = (task) => setEditingTask(task);
-  const handleUpdateTask = (updatedTask) => {
-    setTasks(tasks.map(task => task.taskID === updatedTask.taskID ? updatedTask : task));
-    setEditingTask(null);
-  };
-  const handleDeleteTask = (taskID) => setTasks(tasks.filter(task => task.taskID !== taskID));
 
-  // Rendering functions
   const renderTasks = (columnID) => tasks.filter(task => task.columnID === columnID).map(task => (
-    <Card key={task.taskID} sx={{ maxWidth: 345, margin: 2 }}>
-      <CardActionArea onClick={() => setTaskPopup(task.taskID)}>
+    <Card key={task.taskID} className="task-card">
+      <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {task.taskName}
@@ -61,7 +47,6 @@ const ProjectManagementPage = () => {
           <Typography variant="body2" color="text.secondary">
             {task.taskDescription}
           </Typography>
-          {/* Task priority indicator */}
           <Stack direction="row" spacing={1}>
             <Chip label={task.taskPriority} color={task.taskPriority === 'High' ? 'error' : task.taskPriority === 'Medium' ? 'warning' : 'success'} />
           </Stack>
@@ -71,8 +56,8 @@ const ProjectManagementPage = () => {
   ));
 
   const renderColumns = () => columns.map(column => (
-    <div key={column.columnID} style={{ flex: 1, padding: 8 }}>
-      <Typography variant="h6" gutterBottom component="div">
+    <div key={column.columnID} className="column-card">
+      <Typography variant="h6" gutterBottom component="div" className="column-title">
         {column.columnName}
       </Typography>
       {renderTasks(column.columnID)}
@@ -98,7 +83,7 @@ const ProjectManagementPage = () => {
           {error && <div className="error-message">{error}</div>}
         </div>
       </header>
-      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+      <div className="column-list">
         {renderColumns()}
       </div>
     </div>

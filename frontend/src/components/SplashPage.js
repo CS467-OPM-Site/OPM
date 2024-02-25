@@ -66,9 +66,12 @@ const SplashPage = () => {
 
   return (
     <div className="splash-container">
-      <h1>Welcome to BusyBeaver</h1>
-      <img src={BusyBeaverNoBG} alt="Busy Beaver" />
-      <h4>Let us solve your project management needs.</h4>
+      <div className="centered-content">
+        <h1>Welcome to BusyBeaver.</h1>
+        <img src={BusyBeaverNoBG} alt="Busy Beaver" />
+        <h4>Let us solve your project management needs.</h4>
+      </div>
+     
       <div className="auth-buttons">
         <button className="google-sign-in" onClick={handleGoogleSignIn}>Sign In with Google</button>
         <button className="github-sign-in" onClick={handleGithubSignIn}>Sign In with GitHub</button>

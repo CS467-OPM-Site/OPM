@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from './firebaseConfig';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext'; // Make sure the path matches where your AuthContext.js is located
 import './styles/App.css';
 import SplashPage from './components/SplashPage';
 import UserHomePage from './components/UserHomepage';
 import UsernameSetup from './components/UsernameSetup';
 import ProjectManagementPage from './components/ProjectManagementPage';
-import ProjectPage from './components/ProjectPage';
-import app from './firebaseConfig';
 
 
 
@@ -19,8 +17,7 @@ function App() {
   const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
 
   useEffect(() => {
-    const app = initializeApp(firebaseConfig);
-
+    initializeApp(firebaseConfig);
     setIsFirebaseInitialized(true);
   }, []);
 
@@ -31,7 +28,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <BrowserRouter>
       <div className="App">
         <AuthProvider> {/* Wrap the Routes component with AuthProvider */}
           <Routes>
@@ -41,14 +38,12 @@ function App() {
             <Route path="/home" element={<UserHomePage />} />
             {/* The path "/username" corresponds to the UsernameSetup */}
             <Route path="/username" element={<UsernameSetup />} />
-            {/* The path "/" corresponds to the ProjectPage */}
-            <Route path="/projects" element={<ProjectPage />} />
-            {/* The path "/projects/:projectId" corresponds to the ProjectManagementPage */}  
+            {/* The path "/projects" corresponds to the ProjectPage */}
             <Route path="/projects/:projectId" element={<ProjectManagementPage />} />
           </Routes>
         </AuthProvider>
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 

@@ -206,7 +206,7 @@ const UserHomepage = () => {
       <div
         key={project.projectID}
         className="project-card"
-        onClick={() => navigate(`/projects/${project.projectID}`)} // Using template literals to create dynamic path
+        onClick={() => navigate(`/projects/${project.projectID}`, {state: {projectID: `${project.projectID}`}})} // Using template literals to create dynamic path
         style={{cursor: 'pointer'}} // Optional: Changes the cursor to indicate the card is clickable
       >
         <h3>{project.projectName}</h3>

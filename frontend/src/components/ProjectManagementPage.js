@@ -30,7 +30,6 @@ const ProjectManagementPage = () => {
     console.log(columns);
   }, []);
 
-
   return (
     <div className="user-homepage-container">
       <TopBar />

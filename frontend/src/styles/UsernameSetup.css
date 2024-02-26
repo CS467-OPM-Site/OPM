@@ -1,53 +1,67 @@
-.username-setup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #1b4332; /* Dark green background */
-    color: #ffffff;
-  }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .username-setup-container img {
-    width: 150px;
-    height: auto;
-    margin-right: 0px;
-  }
-  
-  .username-setup-form {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 300px; /* Limit the width of the form */
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #2d6a4f; /* Slightly lighter green for form background */
-    color: white;
-  }
-  
-  .username-setup-form input[type="text"] {
-    padding: 10px;
-    margin-bottom: 20px; /* Space between input and button */
-    border: none;
-    border-radius: 4px;
-  }
-  
-  .username-setup-form button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #81b29a; /* Lighter green for buttons */
-    color: white;
-  }
-  
-  .username-setup-form button:hover {
-    background-color: #679267; /* Slightly darker green on hover */
-  }
-  
-  /* If you have error messages or other elements, style them here */
-  .username-setup-error {
-    color: #e63946; /* Red color for errors */
-    margin-bottom: 10px;
-  }
-  
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1b4332;
+}
+
+.username-setup-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #1b4332;
+  color: white;
+}
+
+.username-setup-container img {
+  width: 200px; /* Adjusted to match SplashPage */
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: -5px; /* Adjust the value [height-of-h4] to match the actual height of the <h4> tag */
+
+}
+
+.username-setup-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 300px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #2d6a4f;
+  color: white;
+}
+
+.username-setup-form input[type="text"], .username-setup-form button {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold; /* Ensure buttons and inputs are bold */
+}
+
+.username-setup-form button:hover {
+  background-color: #679267;
+}
+
+/* Error styling adjusted to be consistent with potential SplashPage styling */
+.error-message {
+  color: #e63946; /* Consistent error color */
+  margin-bottom: 10px;
+}

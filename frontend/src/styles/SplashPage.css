@@ -21,20 +21,22 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw; /* Full viewport width */
-    min-height: 100vh; /* Full viewport height */
-    padding: 50px 20px;
-    box-sizing: border-box; /* Include padding in width/height calculations */
-    background-color: #1b4332; /* Example background color */
-    color: white; /* Example text color */
-}
-
-.splash-container img {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #1b4332;
+    color: white;
+  }
+  
+  .splash-container img {
     width: 200px;
     height: auto;
     max-width: 100%;
-    margin: 20px 0; /* Add some vertical spacing around the image */
-}
+    margin-top: 20px; /* Match this with the margin in UsernameSetup */
+    margin-bottom: 20px; /* Match this with the margin in UsernameSetup */
+  }
+  
 
 /* Adjust the .centered-content to ensure it allows for a column layout within the .splash-container */
 .centered-content {

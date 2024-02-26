@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
-import { getAuth } from "firebase/auth";
 import '../styles/UsernameSetup.css';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
@@ -48,7 +47,8 @@ const UsernameSetup = () => {
 
   return (
     <div className="username-setup-container">
-      <h1>Welcome to BusyBeaver</h1>
+      
+      <h1>Welcome to BusyBeaver.</h1>
       <img src={BusyBeaverNoBG} alt="Busy Beaver" />
       {error && <p className="error-message">{error}</p>}
       <form className="username-setup-form" onSubmit={handleSubmit}>

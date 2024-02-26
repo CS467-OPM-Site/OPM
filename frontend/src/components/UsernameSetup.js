@@ -22,7 +22,7 @@ const UsernameSetup = () => {
     if (!currentUser) return; // Early return if no currentUser exists
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/register`, { // Use the .env variable
+      const response = await fetch(`${API_BASE_URL}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const UsernameSetup = () => {
       <form className="username-setup-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          className="username-input"
+          className={`username-input ${error ? 'input-error' : ''}`}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Username"

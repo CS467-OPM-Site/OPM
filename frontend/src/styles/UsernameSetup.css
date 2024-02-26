@@ -57,3 +57,16 @@ body {
   color: #e63946; /* Consistent error color */
   margin-bottom: 10px;
 }
+
+.input-error {
+  border: 2px solid #e63946; /* Red border to indicate error */
+}
+
+.username-input.input-error, .username-input.input-error:focus {
+  border: 2px solid #e63946; /* Explicit focus styling to ensure visibility */
+}
+
+.username-input.input-error {
+  border: 2px solid #e63946 !important; /* Increase specificity and optionally use !important */
+}
+

@@ -1,79 +1,74 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #1b4332; /* Optional: Set the background color here for consistency */
+}
+
 .splash-container {
-    background-color: #1b4332; /* dark green color */
-    color: white; /* ensures legibility */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A clean, modern font */
-    text-align: center; /* Centers your text */
-    padding: 50px 20px; /* Spacing around the content */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Full view height */
-  }
-
-  .splash-container img {
-    width: 200px; /* Adjust the width as needed */
-    height: auto; /* Maintain aspect ratio */
+    width: 100vw; /* Full viewport width */
+    min-height: 100vh; /* Full viewport height */
+    padding: 50px 20px;
+    box-sizing: border-box; /* Include padding in width/height calculations */
+    background-color: #1b4332; /* Example background color */
+    color: white; /* Example text color */
 }
 
+.splash-container img {
+    width: 200px;
+    height: auto;
+    max-width: 100%;
+    margin: 20px 0; /* Add some vertical spacing around the image */
+}
 
+/* Adjust the .centered-content to ensure it allows for a column layout within the .splash-container */
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Ensure it takes the full width of its parent */
+}
 
-.google-sign-in {
-    background-color: #4285F4; /* Google's brand color */
-    color: white;
-    border: none;
+.auth-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px; /* Adjust or remove as needed to control spacing */
+}
+
+.google-sign-in, .github-sign-in {
     padding: 10px 20px;
     border-radius: 2px;
     font-weight: bold;
     cursor: pointer;
     margin: 5px;
-    /* additional styling */
+    border: none; /* Ensure buttons do not have a border */
+}
+
+.google-sign-in {
+    background-color: #4285F4;
+    color: white;
 }
 
 .github-sign-in {
-    background-color: #333; /* GitHub's brand color */
+    background-color: #333;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 2px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 5px;
-    /* additional styling */
-}
-
-.facebook-sign-in {
-    background-color: #4267B2; /* Facebook's brand color */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 2px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 5px;
-    /* additional styling */
-}
-
-.microsoft-sign-in{
-    background-color: #00A4EF; /* Microsoft's brand color */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 2px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 5px;
-    /* additional styling */
-}
-
-.twitter-sign-in{
-    background-color: #1DA1F2; /* Twitter's brand color */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 2px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 5px;
-    /* additional styling */
 }

@@ -1,0 +1,8 @@
+:
+const getProjectDetails = (userToken) => {
+  try {
+
+  }
+
+
+}

@@ -8,6 +8,8 @@ const MAKE_NEW_COLUMN = "Make a New Column";
 const ADD_COLUMN = "Add Column!";
 const COLUMN_TITLE = "Column Title*";
 const INVALID_TITLE = "Invalid title";
+const CANNOT_BE_EMPTY = "Cannot be empty";
+const TITLE_LENGTH_REQUIREMENT = "Must be 3-50 characters"
 
 const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const [isAddColumnFieldShown, setIsAddColumnFieldShown] = useState(false);
@@ -29,9 +31,9 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   }
 
   const onColumnTitleInputChanged = (e) => {
+    setColumnTitleToAdd(e.target.value);
     if (e.target.value.length === 3) {
       setIsAddColumnButtonEnabled(true);
-      setColumnTitleToAdd(e.target.value);
     } else if (e.target.value.length < 3) {
       setIsAddColumnButtonEnabled(false);
     }
@@ -42,11 +44,20 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
     setAddColumnButtonText(MAKE_NEW_COLUMN);
     setIsAddColumnButtonEnabled(true);
     setIsErrorInAddColumn(false);
-
+    setColumnTitleToAdd(null);
   }
 
   const handleAddingColumn = async () => {
-    console.log("Trying to add a column here!!");
+    if (columnTitleToAdd === null) {
+      setIsErrorInAddColumn(true);
+      setErrorInAddColumnBox(CANNOT_BE_EMPTY);
+      return;
+    } else if (columnTitleToAdd.length < 3 || columnTitleToAdd.length > 50) {
+      setIsErrorInAddColumn(true);
+      setErrorInAddColumnBox(TITLE_LENGTH_REQUIREMENT);
+      return;
+    }
+
     const response = await addColumn(currentUser.token, columnTitleToAdd, projectID);
     switch (response.status) {
       case 201: {
@@ -54,6 +65,11 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
         console.log(newColumn);
         setColumns([...columns, newColumn]);
         break;
+      }
+      case 400: {
+          setIsErrorInAddColumn(true);
+          setErrorInAddColumnBox(CANNOT_BE_EMPTY);
+          break;
       }
       case 409: {
         const error = await response.json();
@@ -107,6 +123,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                     }} 
                     InputLabelProps={{ style: {color: isErrorInAddColumn ? "red" : "black" } }}
                     onChange={onColumnTitleInputChanged}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleAddingColumn();}}
                     >
                   </TextField>
                   <Cancel 

@@ -30,14 +30,13 @@ const ProjectManagementPage = () => {
     };
 
     fetchProjectDetails();
-    console.log(columns);
   }, []);
 
   return (
     <div className="user-homepage-container">
       <TopBar />
-      <ProjectMenuBar projectName={projectName} />
-      <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap' }} className='content-container'>
+      <ProjectMenuBar key={location.state.projectID} projectName={projectName} projectID={location.state.projectID} columns={columns} setColumns={setColumns} />
+      <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
           {columns.map( column => ( 
             <ProjectColumn key={column.columnID} columnTitle={column.columnTitle} columnID={column.columnID}/>
           ))}

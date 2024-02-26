@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { Button, Typography, TextField } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
+import { addColumn } from '../services/columns';
 
 const MAKE_NEW_COLUMN = "Make a New Column";
 const ADD_COLUMN = "Add Column!";
+const COLUMN_TITLE = "Column Title*";
+const INVALID_TITLE = "Invalid title";
 
-const ProjectMenuBar = ({ projectName }) => {
+const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const [isAddColumnFieldShown, setIsAddColumnFieldShown] = useState(false);
   const [isAddColumnButtonEnabled, setIsAddColumnButtonEnabled] = useState(true);
   const [addColumnButtonText, setAddColumnButtonText] = useState(MAKE_NEW_COLUMN);
+  const [columnTitleToAdd, setColumnTitleToAdd] = useState(null);
+  const [isErrorInAddColumn, setIsErrorInAddColumn] = useState(false);
+  const [errorInAddColumn, setErrorInAddColumnBox] = useState("");
+  const { currentUser } = useAuth(); // Use currentUser from AuthContext
 
-  const handleOnAddColumnClick = () => {
+  const handleOnAddColumnClickShowForm = () => {
     if (!isAddColumnFieldShown) {
       setIsAddColumnFieldShown(true);
       setIsAddColumnButtonEnabled(false);
@@ -23,6 +31,7 @@ const ProjectMenuBar = ({ projectName }) => {
   const onColumnTitleInputChanged = (e) => {
     if (e.target.value.length === 3) {
       setIsAddColumnButtonEnabled(true);
+      setColumnTitleToAdd(e.target.value);
     } else if (e.target.value.length < 3) {
       setIsAddColumnButtonEnabled(false);
     }
@@ -32,47 +41,83 @@ const ProjectMenuBar = ({ projectName }) => {
     setIsAddColumnFieldShown(false);
     setAddColumnButtonText(MAKE_NEW_COLUMN);
     setIsAddColumnButtonEnabled(true);
+    setIsErrorInAddColumn(false);
+
   }
 
-  return <div style={{ width: 'inherit', 'height': '8%', 'min-height': '75px', 'overflow': 'hidden' }}>
+  const handleAddingColumn = async () => {
+    console.log("Trying to add a column here!!");
+    const response = await addColumn(currentUser.token, columnTitleToAdd, projectID);
+    switch (response.status) {
+      case 201: {
+        const newColumn = await response.json();
+        console.log(newColumn);
+        setColumns([...columns, newColumn]);
+        break;
+      }
+      case 409: {
+        const error = await response.json();
+        setIsErrorInAddColumn(true);
+        setErrorInAddColumnBox(error.message);
+        break;
+      }
+      case 403:
+      default: {
+        setIsErrorInAddColumn(true);
+        setErrorInAddColumnBox(INVALID_TITLE);
+      }
+    }
+  }
+  
+  return <div style={{ width: 'inherit', height: '11%', minHeight: '105px', overflow: 'hidden' }}>
             <div className="project-page-menu-bar">
               <Button variant="contained" color="success">Back to Projects</Button>
               <Typography variant="h4" component="h1" className="project-page-project-title">
                 {projectName}
               </Typography>
               <div className="project-page-add-column-container">
-                <Button variant="contained" color="success" onClick={handleOnAddColumnClick} disabled={!isAddColumnButtonEnabled}>{addColumnButtonText}</Button>
+                <Button variant="contained" color="success" onClick={isAddColumnFieldShown ? handleAddingColumn : handleOnAddColumnClickShowForm} disabled={!isAddColumnButtonEnabled}>{addColumnButtonText}</Button>
                 {isAddColumnFieldShown && 
                   <>
                   <TextField 
                     autoFocus
+                    error={isErrorInAddColumn}
                     className="addColumnTitleElem"
+                    helperText= {isErrorInAddColumn && errorInAddColumn}
                     id="columnTitle"
                     variant="filled" 
                     size="small" 
-                    label="Column Title*"
+                    label={COLUMN_TITLE}
                     sx={{
                       input: {
                         color: "#000000",
-                        'background': "#81B29A",
-                        'border-radius': '5px'
+                        background: "#81B29A",
+                        borderRadius: '5px'
                       },
                       fieldset: {
-                        'color': '#000000',
-                        'border-radius': '5px'
+                        color: '#000000',
+                        borderRadius: '5px'
                       },
                       label: {
                         color: "#000000"
                       },
                       "& .MuiFilledInput-root::after": {
-                        'border-color': "#2E7D32"
+                        borderColor: "#2E7D32"
                       }
                     }} 
-                    InputLabelProps={{ style: {color: "black" } }}
+                    InputLabelProps={{ style: {color: isErrorInAddColumn ? "red" : "black" } }}
                     onChange={onColumnTitleInputChanged}
                     >
                   </TextField>
-                  <Cancel className="icon" onClick={onCloseAddColumnPressed} sx={{ color: "#FF1D8E" }}></Cancel>
+                  <Cancel 
+                    className="icon" 
+                    onClick={onCloseAddColumnPressed} 
+                    sx={{ 
+                      color: "#FF1D8E",
+                      "&:hover": {
+                        color: "#7A1045" 
+                    }
+                  }}></Cancel>
                   </>
                 }
               </div>

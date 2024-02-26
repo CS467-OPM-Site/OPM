@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Typography } from '@mui/material';
 
-const ProjectColumn = ( {columnTitle, columnID} ) => {
+const ProjectColumn = memo(( { columnTitle, columnID} ) => {
 
-  return <>
-        <div className="column-card" key={columnID}>
+  return <div className="column-card" key={columnID}>
             <Typography variant="h5" component="div" className="column-title {columnTitle}">
               {columnTitle}
             </Typography>
           </div>
-      </>
-}
+});
 
 export default ProjectColumn;

@@ -29,14 +29,6 @@ body {
   color: white;
 }
 
-.username-setup-container img {
-  width: 200px; /* Adjusted to match SplashPage */
-  height: auto;
-  margin-top: 20px;
-  margin-bottom: -5px; /* Adjust the value [height-of-h4] to match the actual height of the <h4> tag */
-
-}
-
 .username-setup-form {
   display: flex;
   flex-direction: column;

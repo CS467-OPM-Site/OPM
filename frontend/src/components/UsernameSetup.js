@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
 import '../styles/UsernameSetup.css';
-import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
 const UsernameSetup = () => {
   const [username, setUsername] = useState('');
@@ -47,9 +46,7 @@ const UsernameSetup = () => {
 
   return (
     <div className="username-setup-container">
-      
-      <h1>Welcome to BusyBeaver.</h1>
-      <img src={BusyBeaverNoBG} alt="Busy Beaver" />
+      <h2 className="username-setup-header">Choose a Username</h2>
       {error && <p className="error-message">{error}</p>}
       <form className="username-setup-form" onSubmit={handleSubmit}>
         <input

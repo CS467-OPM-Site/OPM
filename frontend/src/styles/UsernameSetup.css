@@ -69,4 +69,3 @@ body {
 .username-input.input-error {
   border: 2px solid #e63946 !important; /* Increase specificity and optionally use !important */
 }
-

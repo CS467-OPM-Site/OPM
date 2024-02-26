@@ -1,34 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
-import { getAuth } from "firebase/auth";
 import '../styles/UsernameSetup.css';
-import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 
 const UsernameSetup = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
+  const [isUsernameValid, setIsUsernameValid] = useState(true); // New state variable
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // Use currentUser from AuthContext
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Access the .env variable
+  const { currentUser } = useAuth();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
-    // Redirect users who are not logged in
     if (!currentUser) {
-      navigate('/'); // Adjust this to your login route
+      navigate('/');
     }
   }, [navigate, currentUser]);
 
+  const validateUsername = (username) => {
+    // Username is valid if its length is between 3 and 100 characters
+    return username.length >= 3 && username.length <= 100;
+  };
+
+  // Update setUsername function to include validation
+  const handleUsernameChange = (e) => {
+    const newUsername = e.target.value;
+    setUsername(newUsername);
+    setIsUsernameValid(validateUsername(newUsername)); // Validate on change
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!currentUser) return; // Early return if no currentUser exists
+    if (!currentUser || !isUsernameValid) return; // Also prevent submission if username is invalid
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/register`, { // Use the .env variable
+      const response = await fetch(`${API_BASE_URL}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentUser.token}` // Use token from currentUser
+          'Authorization': `Bearer ${currentUser.token}`
         },
         body: JSON.stringify({ username: username })
       });
@@ -37,7 +47,6 @@ const UsernameSetup = () => {
       if (response.ok) {
         navigate('/home');
       } else {
-        // Set error message from the response
         setError(responseData.message || 'Failed to register. Please try again.');
       }
     } catch (error) {
@@ -48,15 +57,14 @@ const UsernameSetup = () => {
 
   return (
     <div className="username-setup-container">
-      <h1>Welcome to BusyBeaver</h1>
-      <img src={BusyBeaverNoBG} alt="Busy Beaver" />
+      <h2 className="username-setup-header">Choose a Username</h2>
       {error && <p className="error-message">{error}</p>}
       <form className="username-setup-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          className="username-input"
+          className={`username-input ${!isUsernameValid ? 'input-error' : ''}`}
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleUsernameChange}
           placeholder="Username"
           minLength="3"
           maxLength="100"

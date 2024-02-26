@@ -5,7 +5,7 @@ const ProjectColumn = ( {columnTitle, columnID} ) => {
 
   return <>
         <div className="column-card" key={columnID}>
-            <Typography variant="h5" component="div" className={columnTitle}>
+            <Typography variant="h5" component="div" className="column-title {columnTitle}">
               {columnTitle}
             </Typography>
           </div>

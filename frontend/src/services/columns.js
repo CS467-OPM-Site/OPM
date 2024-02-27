@@ -14,3 +14,14 @@ export const addColumn = async(idToken, columnTitle, projectID) => {
   return response;
 }
 
+export const deleteColumn = async(idToken, columnLocation) => {
+  const response = await fetch(`${API_BASE_URL}${columnLocation}`, {
+    method: "DELETE",
+    headers: {
+      'Authorization': `Bearer ${idToken}`,
+    },
+  });
+
+  return response;
+}
+

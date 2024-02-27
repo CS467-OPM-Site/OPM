@@ -1,12 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
 import { Button, Typography } from '@mui/material';
 
 const TopBar = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Destructure logout from useAuth
   const handleNavigateToHome = () => navigate('/home');
-  const handleLogout = () => navigate('/');
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/'); // Redirect to splash page
+    } catch (error) {
+      console.error("Failed to log out", error);
+      // Handle logout error (e.g., show a message to the user)
+    }
+  };
 
   return <>
         <header className="user-homepage-header">

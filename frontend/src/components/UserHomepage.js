@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
-import BusyBeaverNoBG from '../assets/BusyBeaverNoBG.png';
+import TopBar from './TopBar';
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
@@ -13,7 +13,6 @@ const UserHomepage = () => {
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [membersError, setMembersError] = useState('');
   const [error, setError] = useState('');
-  const { logout } = useAuth(); // Destructure logout from useAuth
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -236,15 +235,7 @@ const UserHomepage = () => {
   
 
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/'); // Redirect to splash page
-    } catch (error) {
-      console.error("Failed to log out", error);
-      // Handle logout error (e.g., show a message to the user)
-    }
-  };
+  
 
   const renderTeamMembers = () => {
     if (loadingMembers) return <div>Loading members...</div>;
@@ -299,38 +290,25 @@ const UserHomepage = () => {
     ));
   };
 
-  // New function to navigate to home
-  const navigateToHome = () => {
-    navigate('/home');
-  };
-
-
   return (
     <div className="user-homepage-container">
-      <header className="user-homepage-header">
-        {/* Updated div to include onClick for navigation */}
-        <div className="busy-beaver-logo" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
-          <img src={BusyBeaverNoBG} alt="Busy Beaver" />
-        </div>
-        {/* Rest of the component remains the same */}
-        <h1>User Homepage</h1>
-        <div className="user-homepage-buttons">
-          <input
-            type="text"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Enter new team name"
-            className={error ? "input-error" : ""}
-          />
-          <button onClick={handleAddTeam}>Add Team</button>
-          <button onClick={handleLogout}>Logout</button>
-          {error && <div className="error-message">{error}</div>}
-        </div>
-      </header>
+      <TopBar /> {/* Includes the TopBar component */}
       <div className="content-container">
         <aside className="team-list">
           <h2>Teams</h2>
           {renderTeams()}
+          {/* Add Team Section */}
+          <div className="add-team-section">
+            <input
+              type="text"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              placeholder="Enter new team name"
+              className={error ? "input-error" : ""}
+            />
+            <button onClick={handleAddTeam}>Add Team</button>
+            {error && <div className="error-message">{error}</div>}
+          </div>
         </aside>
         <main className="project-list">
           <h2>Projects</h2>
@@ -351,5 +329,5 @@ const UserHomepage = () => {
     </div>
   );
 };
-
+  
 export default UserHomepage;

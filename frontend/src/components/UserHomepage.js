@@ -29,7 +29,7 @@ const UserHomepage = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, [selectedTeam]);
+  }, []);
 
   const fetchProjects = async () => {
     try {

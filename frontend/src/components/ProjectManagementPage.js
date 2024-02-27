@@ -12,7 +12,7 @@ const ProjectManagementPage = () => {
   const location = useLocation();
 
   const [projectName, setProjectName] = useState("Loading...");
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState(null);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -37,7 +37,7 @@ const ProjectManagementPage = () => {
       <TopBar />
       <ProjectMenuBar key={location.state.projectID} projectName={projectName} projectID={location.state.projectID} columns={columns} setColumns={setColumns} />
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
-          {columns.map( column => ( 
+          {columns && columns.map( column => ( 
             <ProjectColumn 
               key={column.columnID} 
               columnTitle={column.columnTitle} 

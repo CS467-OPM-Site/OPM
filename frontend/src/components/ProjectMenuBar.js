@@ -3,6 +3,7 @@ import { Button, Typography, TextField } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
 import { addColumn } from '../services/columns';
+import { red } from '@mui/material/colors';
 
 const MAKE_NEW_COLUMN = "Make a New Column";
 const ADD_COLUMN = "Add Column!";
@@ -92,7 +93,14 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                 {projectName}
               </Typography>
               <div className="project-page-add-column-container">
-                <Button variant="contained" color="success" onClick={isAddColumnFieldShown ? handleAddingColumn : handleOnAddColumnClickShowForm} disabled={!isAddColumnButtonEnabled}>{addColumnButtonText}</Button>
+                <Button 
+                  variant="contained"
+                  color="success" 
+                  onClick={isAddColumnFieldShown ? handleAddingColumn : handleOnAddColumnClickShowForm} 
+                  disabled={!isAddColumnButtonEnabled}
+                  className={(columns && columns.length === 0) && "no-columns-add-column-button"}
+                  >{addColumnButtonText}
+                </Button>
                 {isAddColumnFieldShown && 
                   <>
                   <TextField 

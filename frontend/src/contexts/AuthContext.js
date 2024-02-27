@@ -1,6 +1,5 @@
-// src/contexts/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -15,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         user.getIdToken().then((token) => {
+          // Optionally store the token in the state if needed
           setCurrentUser({ ...user, token });
         });
       } else {
@@ -26,9 +26,14 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
+  const logout = () => {
+    return signOut(getAuth()); // Use Firebase signOut method
+  };
+
   const value = {
     currentUser,
     isAuthenticated: !!currentUser,
+    logout, // Make the logout function available through the context
   };
 
   return (

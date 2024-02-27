@@ -13,6 +13,7 @@ const UserHomepage = () => {
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [membersError, setMembersError] = useState('');
   const [error, setError] = useState('');
+  const { logout } = useAuth(); // Destructure logout from useAuth
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -235,9 +236,14 @@ const UserHomepage = () => {
   
 
 
-  const handleLogout = () => {
-    // Implement logout functionality
-    navigate('/'); // Redirect to splash page after logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/'); // Redirect to splash page
+    } catch (error) {
+      console.error("Failed to log out", error);
+      // Handle logout error (e.g., show a message to the user)
+    }
   };
 
   const renderTeamMembers = () => {

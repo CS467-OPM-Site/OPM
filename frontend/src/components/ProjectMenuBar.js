@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Typography, TextField } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
-import { useAuth } from '../contexts/AuthContext'; // Adjust the path as necessary
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { addColumn } from '../services/columns';
-import { red } from '@mui/material/colors';
+import { deleteProject } from '../services/projects';
+import { getAuth } from 'firebase/auth';
 
 const MAKE_NEW_COLUMN = "Make a New Column";
 const ADD_COLUMN = "Add Column!";
@@ -19,7 +25,10 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const [columnTitleToAdd, setColumnTitleToAdd] = useState(null);
   const [isErrorInAddColumn, setIsErrorInAddColumn] = useState(false);
   const [errorInAddColumn, setErrorInAddColumnBox] = useState("");
-  const { currentUser } = useAuth(); // Use currentUser from AuthContext
+  const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
+  const [additionalModalDialogText, setAdditionalModalDialogText] = useState(null);
+  const navigate = useNavigate();
+  const handleNavigateToHome = () => navigate('/home');
 
   const handleOnAddColumnClickShowForm = () => {
     if (!isAddColumnFieldShown) {
@@ -59,7 +68,9 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
       return;
     }
 
-    const response = await addColumn(currentUser.token, columnTitleToAdd, projectID);
+    const auth = getAuth();
+    const idToken = await auth.currentUser.getIdToken();
+    const response = await addColumn(idToken, columnTitleToAdd, projectID);
     switch (response.status) {
       case 201: {
         const newColumn = await response.json();
@@ -84,10 +95,75 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
       }
     }
   }
+
+  const handleOnDeleteProjectClicked = () => {
+    setShowDeleteProjectModal(true);
+    setAdditionalModalDialogText(null);
+  }
+
+  const handleDeleteDialogClosed = () => {
+    setShowDeleteProjectModal(false);
+    setAdditionalModalDialogText(null);
+  }
+
+  const handleDeletingProject = async() => {
+    const auth = getAuth();
+    const idToken = await auth.currentUser.getIdToken();
+    const response = await deleteProject(idToken, projectID);
+
+    switch (response.status) {
+      case 200: {
+        setAdditionalModalDialogText("Deleting your project...");
+        setTimeout(() => {
+          handleNavigateToHome();
+        });
+        break;
+      }
+      case 400: {
+        const responseJson = await response.json();
+        setAdditionalModalDialogText(responseJson.message);
+        break;
+      }
+      default: {
+        setAdditionalModalDialogText("Unable to delete this project.");
+        break;
+      }
+    }
+  }
+
   
   return <div style={{ width: 'inherit', height: '11%', minHeight: '105px', overflow: 'hidden' }}>
             <div className="project-page-menu-bar">
-              <Button variant="contained" color="success">Back to Projects</Button>
+              <div className="project-page-project-buttons-container">
+                <Button variant="contained" color="success" onClick={handleNavigateToHome}>Back to Projects</Button>
+                <Button variant="contained" color="error" onClick={handleOnDeleteProjectClicked}>Delete Project</Button>
+                <Dialog
+                  open={showDeleteProjectModal}
+                  onClose={handleDeleteDialogClosed}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle className="alert-delete-project" id="alert-delete-project-dialog-title">
+                    {"Delete this project?"}
+                  </DialogTitle>
+                  <DialogContent className="alert-delete-project" id="alert-delete-project-dialog-content">
+                    <DialogContentText id="alert-dialog-description">
+                      This cannot be undone. Note that this project must have no tasks remaining.
+                    </DialogContentText>
+                  {additionalModalDialogText &&
+                    <DialogContentText id="alert-dialog-confirmation">
+                      {additionalModalDialogText}
+                    </DialogContentText>
+                  }
+                  </DialogContent>
+                  <DialogActions className="alert-delete-project" id="alert-delete-project-dialog-actions">
+                    <Button variant="contained" color="success" onClick={handleDeleteDialogClosed}>Do Not Delete</Button>
+                    <Button variant="contained" color="error" onClick={handleDeletingProject} autoFocus>
+                     Delete 
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </div>
               <Typography variant="h4" component="h1" className="project-page-project-title">
                 {projectName}
               </Typography>

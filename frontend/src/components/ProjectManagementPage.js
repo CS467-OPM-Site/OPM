@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
 import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
 import ProjectColumn from './ProjectColumns';
 import ProjectMenuBar from './ProjectMenuBar';
 
 const ProjectManagementPage = () => {
-  const { currentUser } = useAuth();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const location = useLocation();
 
@@ -17,8 +16,10 @@ const ProjectManagementPage = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
+        const auth = getAuth();
+        const idToken = await auth.currentUser.getIdToken();
         const response = await fetch(`${API_BASE_URL}/projects/${location.state.projectID}`, { 
-          headers: {'Authorization': `Bearer ${currentUser.token}`}});
+          headers: {'Authorization': `Bearer ${idToken}`}});
         const jsonData = await response.json();
         setProjectName(jsonData.projectName);
         console.log(jsonData);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
@@ -33,8 +34,10 @@ const UserHomepage = () => {
 
   const fetchProjects = async () => {
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/projects`, { // Modify this URL to match your API endpoint for fetching projects
-        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+        headers: { 'Authorization': `Bearer ${idToken}` },
       });
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
@@ -46,10 +49,11 @@ const UserHomepage = () => {
   };
 
   const fetchTeams = async () => {
-    // const API_ENDPOINT = `${API_BASE_URL}/teams`;
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams`, {
-        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+        headers: { 'Authorization': `Bearer ${idToken}` },
       });
       if (!response.ok) throw new Error('Failed to fetch teams');
       const data = await response.json();

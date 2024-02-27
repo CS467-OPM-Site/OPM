@@ -3,6 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
+import { FaTrash } from 'react-icons/fa';
 import TopBar from './TopBar';
 
 const UserHomepage = () => {
@@ -270,7 +271,7 @@ const UserHomepage = () => {
           </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
-              Delete Team
+              <FaTrash />
             </button>
           )}
           {selectedTeam?.teamID === team.teamID && (

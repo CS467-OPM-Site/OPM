@@ -122,6 +122,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                       }
                     }} 
                     InputLabelProps={{ style: {color: isErrorInAddColumn ? "red" : "black" } }}
+                    inputProps={{ maxLength: 50 }}
                     onChange={onColumnTitleInputChanged}
                     onKeyDown={(e) => { if (e.key === "Enter") handleAddingColumn();}}
                     >

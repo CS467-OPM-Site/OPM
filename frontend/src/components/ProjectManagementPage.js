@@ -38,7 +38,13 @@ const ProjectManagementPage = () => {
       <ProjectMenuBar key={location.state.projectID} projectName={projectName} projectID={location.state.projectID} columns={columns} setColumns={setColumns} />
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
           {columns.map( column => ( 
-            <ProjectColumn key={column.columnID} columnTitle={column.columnTitle} columnID={column.columnID}/>
+            <ProjectColumn 
+              key={column.columnID} 
+              columnTitle={column.columnTitle} 
+              columnID={column.columnID} 
+              columnLocation={column.columnLocation}
+              columns={columns}
+              setColumns={setColumns}/>
           ))}
       </div>
     </div>

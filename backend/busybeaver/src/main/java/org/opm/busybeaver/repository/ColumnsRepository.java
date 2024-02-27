@@ -183,10 +183,15 @@ public class ColumnsRepository {
         // SELECT MAX(Columns.column_index)
         // FROM Columns
         // WHERE Columns.project_id = projectID
-        int maxColumnIndex = create.select(max(COLUMNS.COLUMN_INDEX))
+        Short maxColumnIndex = create.select(max(COLUMNS.COLUMN_INDEX))
                 .from(COLUMNS)
                 .where(COLUMNS.PROJECT_ID.eq(projectID))
-                .fetchSingle().component1();
+                .fetchOne().component1();
+
+        if (maxColumnIndex == null) {
+                // When project has no columns, start the newest column at index 0
+                maxColumnIndex = -1;
+        }
 
         // Second, insert new column with next column index, making it last in-order column
         // INSERT INTO Columns (column_title, project_id, column_index)

@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button, Typography } from '@mui/material';
 import { DeleteForever, LibraryAdd, Cancel } from '@mui/icons-material';
@@ -8,19 +8,37 @@ import { deleteColumn } from '../services/columns';
 const URL_TRIM = "/api/v1"
 const CANNOT_REMOVE = "Cannot remove column"
 const TASKS_REMAIN = "Remove all tasks before deleting column"
+const FADE_IN = "fade-in-animation";
+const FADE_OUT = "fade-out-animation";
+const COLUMN_CARD = "column-card";
 
 const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, setColumns } ) => {
   const { currentUser } = useAuth();
   const [columnError, setColumnError] = useState(null);
   const [isColumnError, setIsColumnError] = useState(false);
+  const [isColumnNew, setIsColumnNew] = useState(true);
+  const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
+
+  useEffect(() => {
+    const removeOnLoadAnimation = () => {
+      setTimeout(() => {
+        setIsColumnNew(false);
+      }, 300);
+    }
+
+    removeOnLoadAnimation();
+  }, []);
 
   const onDeleteColumnPressed = async() => {
     const response = await deleteColumn(currentUser.token, columnLocation.slice(URL_TRIM.length));
     
     switch (response.status) {
       case 200: {
-        const newColumns = columns.filter((column) => (column.columnID !== columnID));
-        setColumns(newColumns);
+        setIsColumnBeingDeleted(true)
+        setTimeout(() => {
+          const newColumns = columns.filter((column) => (column.columnID !== columnID));
+          setColumns(newColumns);
+        }, 300);
         break;
       }
       case 403: {
@@ -44,7 +62,21 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
     setColumnError(null);
   }
 
-  return <div className="column-card" key={columnID}>
+  const columnClassNameSet = () => {
+    if (!isColumnNew && !isColumnBeingDeleted) {
+      return COLUMN_CARD;
+    }
+
+    if (isColumnNew) {
+      return `${COLUMN_CARD} ${FADE_IN}`
+    }
+
+    if (isColumnBeingDeleted) {
+      return `${COLUMN_CARD} ${FADE_OUT}`
+    }
+  }
+
+  return <div className={columnClassNameSet()} key={columnID}>
             <div className="column-container">
               <div className="column-title-container">
                 <Typography 

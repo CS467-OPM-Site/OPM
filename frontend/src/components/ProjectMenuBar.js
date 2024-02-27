@@ -63,7 +63,6 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
     switch (response.status) {
       case 201: {
         const newColumn = await response.json();
-        console.log(newColumn);
         setColumns([...columns, newColumn]);
         break;
       }

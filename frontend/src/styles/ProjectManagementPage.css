@@ -15,6 +15,32 @@
     max-width: 350px;
     box-sizing: border-box;
   }
+
+  .fade-in-animation {
+    animation: fadeInAnimation 0.3s linear;
+  }
+
+  .fade-out-animation {
+    animation: fadeOutAnimation 0.3s forwards;
+  }
+
+  @keyframes fadeInAnimation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOutAnimation {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
   
   .task-card{
     background-color: #81b29a;

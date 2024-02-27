@@ -27,6 +27,24 @@ const UserHomepage = () => {
     }
   }, [selectedTeam]);
 
+  useEffect(() => {
+    fetchProjects();
+  }, [selectedTeam]);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects`, { // Modify this URL to match your API endpoint for fetching projects
+        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch projects');
+      const data = await response.json();
+      setProjects(data.projects); // Assuming the API returns an object with a projects array
+    } catch (error) {
+      console.error('Fetch Projects Error:', error);
+      setError('Failed to load projects.');
+    }
+  };
+
   const fetchTeams = async () => {
     // const API_ENDPOINT = `${API_BASE_URL}/teams`;
     try {

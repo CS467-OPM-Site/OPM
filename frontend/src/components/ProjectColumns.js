@@ -1,8 +1,8 @@
 import React, { memo, useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { Button, Typography } from '@mui/material';
 import { DeleteForever, LibraryAdd, Cancel } from '@mui/icons-material';
 import { deleteColumn } from '../services/columns';
+import { getAuth } from 'firebase/auth';
 
 
 const URL_TRIM = "/api/v1"
@@ -13,7 +13,6 @@ const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
 const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, setColumns } ) => {
-  const { currentUser } = useAuth();
   const [columnError, setColumnError] = useState(null);
   const [isColumnError, setIsColumnError] = useState(false);
   const [isColumnNew, setIsColumnNew] = useState(true);
@@ -30,7 +29,9 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
   }, []);
 
   const onDeleteColumnPressed = async() => {
-    const response = await deleteColumn(currentUser.token, columnLocation.slice(URL_TRIM.length));
+    const auth = getAuth();
+    const idToken = await auth.currentUser.getIdToken();
+    const response = await deleteColumn(idToken, columnLocation.slice(URL_TRIM.length));
     
     switch (response.status) {
       case 200: {

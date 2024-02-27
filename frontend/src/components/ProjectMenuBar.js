@@ -27,6 +27,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const [errorInAddColumn, setErrorInAddColumnBox] = useState("");
   const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
   const [additionalModalDialogText, setAdditionalModalDialogText] = useState(null);
+  const [enableDeleteProjectButton, setEnableDeleteProjectButton] = useState(true);
   const navigate = useNavigate();
   const handleNavigateToHome = () => navigate('/home');
 
@@ -73,8 +74,10 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
     const response = await addColumn(idToken, columnTitleToAdd, projectID);
     switch (response.status) {
       case 201: {
+        setColumnTitleToAdd('');
         const newColumn = await response.json();
         setColumns([...columns, newColumn]);
+        onCloseAddColumnPressed();
         break;
       }
       case 400: {
@@ -99,11 +102,13 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const handleOnDeleteProjectClicked = () => {
     setShowDeleteProjectModal(true);
     setAdditionalModalDialogText(null);
+    setEnableDeleteProjectButton(true);
   }
 
   const handleDeleteDialogClosed = () => {
     setShowDeleteProjectModal(false);
     setAdditionalModalDialogText(null);
+    setEnableDeleteProjectButton(true);
   }
 
   const handleDeletingProject = async() => {
@@ -122,10 +127,12 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
       case 400: {
         const responseJson = await response.json();
         setAdditionalModalDialogText(responseJson.message);
+        setEnableDeleteProjectButton(false);
         break;
       }
       default: {
         setAdditionalModalDialogText("Unable to delete this project.");
+        setEnableDeleteProjectButton(false);
         break;
       }
     }
@@ -158,7 +165,12 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                   </DialogContent>
                   <DialogActions className="alert-delete-project" id="alert-delete-project-dialog-actions">
                     <Button variant="contained" color="success" onClick={handleDeleteDialogClosed}>Do Not Delete</Button>
-                    <Button variant="contained" color="error" onClick={handleDeletingProject} autoFocus>
+                    <Button 
+                      variant="contained" 
+                      color="error" 
+                      onClick={handleDeletingProject} 
+                      disabled={!enableDeleteProjectButton}
+                      autoFocus>
                      Delete 
                     </Button>
                   </DialogActions>
@@ -207,6 +219,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                     InputLabelProps={{ style: {color: isErrorInAddColumn ? "red" : "black" } }}
                     inputProps={{ maxLength: 50 }}
                     onChange={onColumnTitleInputChanged}
+                    value={columnTitleToAdd}
                     onKeyDown={(e) => { if (e.key === "Enter") handleAddingColumn();}}
                     >
                   </TextField>

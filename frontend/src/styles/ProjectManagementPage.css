@@ -15,6 +15,32 @@
     max-width: 350px;
     box-sizing: border-box;
   }
+
+  .fade-in-animation {
+    animation: fadeInAnimation 0.3s linear;
+  }
+
+  .fade-out-animation {
+    animation: fadeOutAnimation 0.3s forwards;
+  }
+
+  @keyframes fadeInAnimation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOutAnimation {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
   
   .task-card{
     background-color: #81b29a;
@@ -113,6 +139,16 @@
     transform: translateX(-50%);
   }
 
+  .project-page-project-buttons-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    gap: 20px;
+    box-sizing: border-box;
+    align-items: center;
+    height: 100%;
+  }
+
   .project-page-add-column-container {
     display: flex;
     flex-wrap: nowrap;
@@ -123,6 +159,31 @@
     height: 100%;
   }
 
+  .no-columns-add-column-button {
+    box-shadow: 5px 5px 10px 5px rgba(45, 106, 79, 0.8) !important;
+  }
+
   .icon {
     cursor: pointer;
+  }
+
+  .alert-delete-project {
+    background: rgba(198, 128, 63, .7);
+    border-left: 5px solid rgba(229, 90, 60, 0.95);
+    border-right: 5px solid rgba(229, 90, 60, 0.95);
+  }
+
+  #alert-delete-project-dialog-title {
+    border-top: 5px solid rgba(229, 90, 60, 0.95);
+  }
+
+  #alert-delete-project-dialog-actions {
+    border-bottom: 5px solid rgba(229, 90, 60, 0.95);
+  }
+
+  #alert-dialog-confirmation {
+    margin-top: 10px;
+    border-bottom: 5px solid rgba(229, 90, 60, 0.95);
+    border-top: 5px solid rgba(229, 90, 60, 0.95);
+    font-weight: 800!important;
   }

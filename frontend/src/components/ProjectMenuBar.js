@@ -185,7 +185,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                   color="success" 
                   onClick={isAddColumnFieldShown ? handleAddingColumn : handleOnAddColumnClickShowForm} 
                   disabled={!isAddColumnButtonEnabled}
-                  className={(columns && columns.length === 0) && "no-columns-add-column-button"}
+                  className={(columns && columns.length === 0) ? "no-columns-add-column-button" : ""}
                   >{addColumnButtonText}
                 </Button>
                 {isAddColumnFieldShown && 

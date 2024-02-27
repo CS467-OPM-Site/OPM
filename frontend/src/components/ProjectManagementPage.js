@@ -12,6 +12,7 @@ const ProjectManagementPage = () => {
 
   const [projectName, setProjectName] = useState("Loading...");
   const [columns, setColumns] = useState(null);
+  const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -43,9 +44,12 @@ const ProjectManagementPage = () => {
               key={column.columnID} 
               columnTitle={column.columnTitle} 
               columnID={column.columnID} 
+              columnIndex={column.columnIndex}
               columnLocation={column.columnLocation}
               columns={columns}
-              setColumns={setColumns}/>
+              setColumns={setColumns}
+              isColumnBeingMoved={isColumnBeingMoved}
+              setIsColumnBeingMoved={setIsColumnBeingMoved}/>
           ))}
       </div>
     </div>

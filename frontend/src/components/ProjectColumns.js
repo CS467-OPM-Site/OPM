@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
-import { DeleteForever, LibraryAdd, Cancel } from '@mui/icons-material';
+import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows } from '@mui/icons-material';
 import { deleteColumn } from '../services/columns';
 import { getAuth } from 'firebase/auth';
 
@@ -12,11 +12,14 @@ const FADE_IN = "fade-in-animation";
 const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
-const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, setColumns } ) => {
+const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columnIndex, columns, setColumns, isColumnBeingMoved, setIsColumnBeingMoved } ) => {
   const [columnError, setColumnError] = useState(null);
   const [isColumnError, setIsColumnError] = useState(false);
   const [isColumnNew, setIsColumnNew] = useState(true);
+  const [isAddTaskButtonEnabled, setIsAddTaskButtonEnabled] = useState(true);
   const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
+  const [columnInOrderLocation, setColumnInOrderLocation] = useState(columnIndex);
+  const [isWantingToMoveColumn, setIsWantingToMoveColumn] = useState(false);
 
   useEffect(() => {
     const removeOnLoadAnimation = () => {
@@ -77,6 +80,13 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
     }
   }
 
+  const onMoveColumnPressed = () => {
+    setIsColumnBeingMoved(true);
+    setIsAddTaskButtonEnabled(false);
+    setIsWantingToMoveColumn(true);
+    console.log(`Current location: ${columnInOrderLocation}`);
+  }
+
   return <div className={columnClassNameSet()} key={columnID}>
             <div className="column-container">
               <div className="column-title-container">
@@ -98,15 +108,45 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
               </div>
               <div className="task-container"></div>
               <div className="column-bottom-button-container">
-                <Button variant="contained" color="success" size="medium" startIcon={<LibraryAdd />}>Add Task!</Button>
-                <Button 
-                  variant="contained" 
-                  color="error" 
-                  size="small" 
-                  startIcon={<DeleteForever />} 
-                  onClick={onDeleteColumnPressed}>Delete Column</Button>
+                <Button disabled={isColumnBeingMoved} variant="contained" color="success" size="medium" startIcon={<LibraryAdd />}>Add Task!</Button>
+                {!isWantingToMoveColumn ?
+                <div className="delete-reorder-column-button-container">
+                    <Button 
+                      variant="contained" 
+                      color="error" 
+                      size="small" 
+                      disabled={isColumnBeingMoved}
+                      startIcon={<DeleteForever />} 
+                      onClick={onDeleteColumnPressed}>Delete Column</Button>
+
+                    <Button 
+                      variant="contained" 
+                      className={isColumnBeingMoved ? "" : "reorder-columns-buttons"}
+                      size="small" 
+                      disabled={isColumnBeingMoved}
+                      startIcon={<CompareArrows />} 
+                      onClick={onMoveColumnPressed}>Move Column</Button>
+
+                </div>
+                :
+                <div className="delete-reorder-column-button-container">
+                  <Button 
+                    variant="contained" 
+                    className="move-column-pressed"
+                    color="success"
+                    size="small" 
+                    startIcon={<CompareArrows />} 
+                    onClick={onMoveColumnPressed}>Accept Position</Button>
+                </div>
+                }
               </div>
             </div>
+            {isWantingToMoveColumn &&
+            <div className="move-column-icons-container">
+              <KeyboardDoubleArrowLeft className="move-column-left-icon icon move-column-icons"></KeyboardDoubleArrowLeft>
+              <KeyboardDoubleArrowRight className="move-column-right-icon icon move-column-icons"></KeyboardDoubleArrowRight>
+            </div>
+            }
           </div>
 });
 

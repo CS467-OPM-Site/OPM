@@ -77,14 +77,17 @@ body, #root, .App, .user-homepage-container {
   display: flex;
   gap: 20px;
   width: 100%;
+  flex: 1; /* This makes sure your content container can expand */
+  overflow: hidden; /* Prevents overflow from messing layout */
 }
 
 .team-list {
-  flex: 1;
+  flex: 1; /* Allows the team list to grow and fill available space */
   background-color: #2d6a4f;
   padding: 20px;
   border-radius: 8px;
   color: white;
+  overflow-y: auto; /* Keeps vertical scrolling */
 }
 
 .team-card {

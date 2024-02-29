@@ -264,7 +264,7 @@ const UserHomepage = () => {
   
   const renderTeams = () => {
     return teams.map((team) => (
-      <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected' : ''}`}>
+      <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected team-card-selected' : ''}`}>
         <div className="team-header">
           <button onClick={() => setSelectedTeam(team)} className="team-button">
             {team.teamName}
@@ -294,6 +294,7 @@ const UserHomepage = () => {
       </div>
     ));
   };
+  
 
   return (
     <div className="user-homepage-container">

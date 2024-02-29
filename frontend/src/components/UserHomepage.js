@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
 import { FaTrash } from 'react-icons/fa';
 import TopBar from './TopBar';
+import AddTeamModal from './AddTeamModal';
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
@@ -18,6 +19,8 @@ const UserHomepage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
+
 
   useEffect(() => {
     fetchTeams();
@@ -86,7 +89,9 @@ const UserHomepage = () => {
   };
   
 
-  const handleAddTeam = async () => {
+  const handleAddTeam = async (event) => {
+    event.preventDefault();
+    const teamName = event.target.teamName.value;
     if (!teamName.trim()) {
       setError('Team name cannot be empty');
       return;
@@ -114,6 +119,7 @@ const UserHomepage = () => {
       console.error('Add Team Error:', error);
       setError('Failed to add team.');
     }
+    setIsAddTeamModalOpen(false);
   };
   
 
@@ -294,28 +300,32 @@ const UserHomepage = () => {
       </div>
     ));
   };
-  
 
+  
   return (
     <div className="user-homepage-container">
-      <TopBar /> {/* Includes the TopBar component */}
-      <div className="content-container">
-        <aside className="team-list">
+    <TopBar /> {/* Includes the TopBar component */}
+    <div className="content-container">
+      <aside className="team-list">
+        <div className="team-header">
           <h2>Teams</h2>
-          {renderTeams()}
-          {/* Add Team Section */}
-          <div className="add-team-section">
-            <input
-              type="text"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              placeholder="Enter new team name"
-              className={error ? "input-error" : ""}
-            />
-            <button onClick={handleAddTeam}>Add Team</button>
-            {error && <div className="error-message">{error}</div>}
-          </div>
-        </aside>
+          <button onClick={() => setIsAddTeamModalOpen(true)} className="add-team-button">Add Team</button>
+        </div>
+        <AddTeamModal
+          isOpen={isAddTeamModalOpen}
+          onClose={() => setIsAddTeamModalOpen(false)}
+          onSubmit={handleAddTeam}
+        >
+          <input
+            name="teamName"
+            type="text"
+            placeholder="Enter new team name"
+            required
+          />
+        </AddTeamModal>
+        {error && <div className="error-message">{error}</div>}
+        {renderTeams()}
+      </aside>
         <main className="project-list">
           <h2>Projects</h2>
           <div className="project-list-container">

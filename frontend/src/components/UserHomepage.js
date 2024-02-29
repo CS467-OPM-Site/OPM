@@ -6,6 +6,8 @@ import '../styles/UserHomepage.css';
 import { FaTrash } from 'react-icons/fa';
 import TopBar from './TopBar';
 import AddTeamModal from './AddTeamModal';
+import AddProjectModal from './AddProjectModal';
+
 
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
@@ -20,7 +22,7 @@ const UserHomepage = () => {
   const { currentUser } = useAuth();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
-
+  const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
 
   useEffect(() => {
     fetchTeams();
@@ -304,44 +306,47 @@ const UserHomepage = () => {
   
   return (
     <div className="user-homepage-container">
-    <TopBar /> {/* Includes the TopBar component */}
-    <div className="content-container">
-      <aside className="team-list">
-        <div className="team-header">
-          <h2>Teams</h2>
-          <button onClick={() => setIsAddTeamModalOpen(true)} className="add-team-button">Add Team</button>
-        </div>
-        <AddTeamModal
-          isOpen={isAddTeamModalOpen}
-          onClose={() => setIsAddTeamModalOpen(false)}
-          onSubmit={handleAddTeam}
-        >
-          <input
-            name="teamName"
-            type="text"
-            placeholder="Enter new team name"
-            required
-          />
-        </AddTeamModal>
-        {error && <div className="error-message">{error}</div>}
-        {renderTeams()}
-      </aside>
+      <TopBar /> {/* Includes the TopBar component */}
+      <div className="content-container">
+        <aside className="team-list">
+          <div className="team-header">
+            <h2>Teams</h2>
+            <button onClick={() => setIsAddTeamModalOpen(true)} className="add-team-button">Add Team</button>
+          </div>
+          <AddTeamModal
+            isOpen={isAddTeamModalOpen}
+            onClose={() => setIsAddTeamModalOpen(false)}
+            onSubmit={handleAddTeam}
+          >
+            <input
+              name="teamName"
+              type="text"
+              placeholder="Enter new team name"
+              required
+            />
+          </AddTeamModal>
+          {error && <div className="error-message">{error}</div>}
+          {renderTeams()}
+        </aside>
         <main className="project-list">
-          <h2>Projects</h2>
+          <div className="project-header">
+            <h2>Projects</h2>
+            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
+          </div>
+          <AddProjectModal
+            isOpen={isAddProjectModalOpen}
+            onClose={() => setIsAddProjectModalOpen(false)}
+            onSubmit={(projectName) => {
+              handleAddProject(projectName);
+              // Optionally close the modal here or in the handleAddProject method
+            }}
+          />
           <div className="project-list-container">
             {renderProjects()}
           </div>
-          <form onSubmit={(e) => { e.preventDefault(); handleAddProject(e.target.elements.projectName.value); }}>
-            <input
-              name="projectName"
-              type="text"
-              placeholder="Enter project name"
-              required
-            />
-            <button type="submit" className="add-project-button">Add Project</button>
-          </form>
         </main>
       </div>
+      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };

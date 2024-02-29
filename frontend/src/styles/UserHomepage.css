@@ -269,3 +269,6 @@ body, #root, .App, .user-homepage-container {
   background-color: #d62828;
 }
 
+.team-card-selected {
+  background-color: #607D8B; /* blue grey */
+}

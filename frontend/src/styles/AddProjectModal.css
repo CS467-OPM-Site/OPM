@@ -1,0 +1,81 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+  }
+  
+  .modal {
+    background-color: #2d6a4f;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal form > div {
+    margin-bottom: 15px;
+  }
+  
+  .modal form label {
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+  }
+  
+  .modal form input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  
+  .modal form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    width: 100%; /* Ensures button width matches input fields */
+    box-sizing: border-box; /* Ensures padding is included in the width */
+  }
+  
+  .modal form button[type="submit"] {
+    background-color: #81b29a;
+    color: white;
+  }
+  
+  .modal form button[type="submit"]:hover {
+    background-color: #679267;
+  }
+  
+  .modal form button[type="button"] {
+    background-color: #e63946;
+    color: white;
+  }
+  
+  .modal form button[type="button"]:hover {
+    background-color: #d62828;
+  }
+  
+  @media (max-width: 600px) {
+    .modal {
+      width: 80%;
+      padding: 10px;
+    }
+  }
+  

@@ -1,5 +1,4 @@
-// frontend/src/components/AddProjectModal.js
-
+import '../styles/AddProjectModal.css'; 
 import React, { useState } from 'react';
 
 const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {

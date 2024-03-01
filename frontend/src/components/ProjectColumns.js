@@ -1,22 +1,25 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
-import { DeleteForever, LibraryAdd, Cancel } from '@mui/icons-material';
-import { deleteColumn } from '../services/columns';
-import { getAuth } from 'firebase/auth';
+import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows, NotInterested } from '@mui/icons-material';
+import { deleteColumn, moveColumn } from '../services/columns';
 
 
-const URL_TRIM = "/api/v1"
-const CANNOT_REMOVE = "Cannot remove column"
+const CANNOT_REMOVE = "Cannot remove column";
+const COULD_NOT_MOVE = "Could not move column";
+const MOVED_COLUMN = "Moved column!";
 const TASKS_REMAIN = "Remove all tasks before deleting column"
 const FADE_IN = "fade-in-animation";
 const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
-const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, setColumns } ) => {
-  const [columnError, setColumnError] = useState(null);
-  const [isColumnError, setIsColumnError] = useState(false);
+const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
+  const [columnError, setColumnError] = useState('');
+  const [columnSuccess, setColumnSuccess] = useState('');
+  const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
   const [isColumnNew, setIsColumnNew] = useState(true);
   const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
+  const [isWantingToMoveColumn, setIsWantingToMoveColumn] = useState(false);
+  const [originalColumnOrder, setOriginalColumnOrder] = useState(null);
 
   useEffect(() => {
     const removeOnLoadAnimation = () => {
@@ -29,15 +32,14 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
   }, []);
 
   const onDeleteColumnPressed = async() => {
-    const auth = getAuth();
-    const idToken = await auth.currentUser.getIdToken();
-    const response = await deleteColumn(idToken, columnLocation.slice(URL_TRIM.length));
+    const response = await deleteColumn(currentColumn.columnLocation);
     
     switch (response.status) {
       case 200: {
         setIsColumnBeingDeleted(true)
         setTimeout(() => {
-          const newColumns = columns.filter((column) => (column.columnID !== columnID));
+          const newColumns = columns.filter((column) => (column.columnID !== currentColumn.columnID));
+          newColumns.forEach((column, index) => column.columnIndex = index);
           setColumns(newColumns);
         }, 300);
         break;
@@ -46,21 +48,23 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
         const responseJson = await response.json();
         if (responseJson.message.includes("tasks")) {
           setColumnError(TASKS_REMAIN);
-          setIsColumnError(true);
           return
         };
+        break;
       }
       default: {
         setColumnError(CANNOT_REMOVE);
-        setIsColumnError(true);
         return
       }
     }
   }
 
   const onHideColumnError = () => {
-    setIsColumnError(false);
-    setColumnError(null);
+    setColumnError('');
+  }
+
+  const onHideColumnSuccess = () => {
+    setColumnSuccess('');
   }
 
   const columnClassNameSet = () => {
@@ -77,7 +81,80 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
     }
   }
 
-  return <div className={columnClassNameSet()} key={columnID}>
+  const onMoveColumnPressed = () => {
+    setIsOtherColumnBeingMoved(true);
+    setIsWantingToMoveColumn(true);
+    
+    // To safely deep copy
+    setOriginalColumnOrder(JSON.parse(JSON.stringify(columns)));
+  }
+
+  const onMoveCancelPressed = () => {
+    setColumns(originalColumnOrder);
+    setIsWantingToMoveColumn(false)
+    setIsOtherColumnBeingMoved(false);
+  }
+
+  const onAcceptColumnMoved = async () => {
+    const newColumnIndex = currentColumn.columnIndex;
+    const wasValidMove = await sendMoveRequest(newColumnIndex);
+    
+    if (!wasValidMove) { 
+      onMoveCancelPressed();
+      return;
+    }
+
+    setIsOtherColumnBeingMoved(false);
+    setIsWantingToMoveColumn(false);
+    setTimeout(() => {
+      setShouldFadeOutSuccess(true);
+      setTimeout(() => {
+        setColumnSuccess('');
+        setShouldFadeOutSuccess(false)
+      }, 500);
+    }, 800);
+  }
+
+  const onMovePressed = async (isLeftMove) => {
+    // Create a shallow copy of columns in order to replace original
+    const newColumns = [...columns];
+
+    const columnIndexToMove = currentColumn.columnIndex;
+    let newIndex;
+
+    if (isLeftMove) {
+      newIndex = (columnIndexToMove === 0) ? columns.length - 1 : columnIndexToMove - 1;
+    } else {
+      newIndex = (columnIndexToMove === (columns.length - 1)) ? 0 : columnIndexToMove + 1;
+    }
+
+    // Now swap the two using splice, in the shallow copy
+    const movedColumn = newColumns.splice(columnIndexToMove, 1)[0]
+    newColumns.splice(newIndex, 0, movedColumn);
+
+    newColumns.forEach((column, index) => {
+      column.columnIndex = index;
+    });
+    
+    setColumns(newColumns);
+  }
+
+  const sendMoveRequest = async(newIndex) => {
+    const response = await moveColumn(currentColumn.columnLocation, newIndex);
+
+    switch (response.status) {
+      case 200: {
+        setColumnSuccess(MOVED_COLUMN);
+        return true;
+      }
+      default: {
+        setColumnError(COULD_NOT_MOVE);
+        return false;
+      }
+    }
+  }
+
+  return <div className={columnClassNameSet()} key={currentColumn.columnID}>
             <div className="column-container">
               <div className="column-title-container">
                 <Typography 
@@ -87,26 +164,66 @@ const ProjectColumn = memo(( { columnTitle, columnID, columnLocation, columns, s
                   sx={{
                     fontSize: '1.1rem'
                   }}>
-                  {columnTitle}
+                  {currentColumn.columnTitle}
                 </Typography>
-                { isColumnError &&
+                { columnError &&
                   <div className="column-error-container">
                     <Typography className="column-error" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>{columnError}</Typography>
                     <Cancel fontSize="small" color="action" className="icon column-error-close" onClick={onHideColumnError} />
                   </div>
                 }
+                { columnSuccess &&
+                  <div className={shouldFadeOutSuccess ? 'column-success-container hide-column-success' : 'column-success-container'}>
+                    <Typography className="column-success" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>{columnSuccess}</Typography>
+                    <Cancel fontSize="small" color="action" className="icon column-success-close" onClick={onHideColumnSuccess} />
+                  </div>
+                }
               </div>
               <div className="task-container"></div>
               <div className="column-bottom-button-container">
-                <Button variant="contained" color="success" size="medium" startIcon={<LibraryAdd />}>Add Task!</Button>
-                <Button 
-                  variant="contained" 
-                  color="error" 
-                  size="small" 
-                  startIcon={<DeleteForever />} 
-                  onClick={onDeleteColumnPressed}>Delete Column</Button>
+                {isWantingToMoveColumn ?
+                <Button onClick={onMoveCancelPressed} variant="contained" color="error" size="medium" startIcon={<NotInterested />}>Stop Moving</Button>
+                :
+                <Button disabled={isOtherColumnBeingMoved} variant="contained" color="success" size="medium" startIcon={<LibraryAdd />}>Add Task!</Button>
+                }
+                {!isWantingToMoveColumn ?
+                <div className="delete-reorder-column-button-container">
+                    <Button 
+                      variant="contained" 
+                      color="error" 
+                      size="small" 
+                      disabled={isOtherColumnBeingMoved}
+                      startIcon={<DeleteForever />} 
+                      onClick={onDeleteColumnPressed}>Delete Column</Button>
+
+                    <Button 
+                      variant="contained" 
+                      className={isOtherColumnBeingMoved ? "" : "reorder-columns-buttons"}
+                      size="small" 
+                      disabled={isOtherColumnBeingMoved}
+                      startIcon={<CompareArrows />} 
+                      onClick={onMoveColumnPressed}>Move Column</Button>
+
+                </div>
+                :
+                <div className="delete-reorder-column-button-container">
+                  <Button 
+                    variant="contained" 
+                    className="move-column-pressed"
+                    color="success"
+                    size="small" 
+                    startIcon={<CompareArrows />} 
+                    onClick={onAcceptColumnMoved}>Accept Position</Button>
+                </div>
+                }
               </div>
             </div>
+            {isWantingToMoveColumn &&
+            <div className="move-column-icons-container">
+              <KeyboardDoubleArrowLeft onClick={() => onMovePressed(true)} className="move-column-left-icon icon move-column-icons"></KeyboardDoubleArrowLeft>
+              <KeyboardDoubleArrowRight onClick={() => onMovePressed(false)} className="move-column-right-icon icon move-column-icons"></KeyboardDoubleArrowRight>
+            </div>
+            }
           </div>
 });
 

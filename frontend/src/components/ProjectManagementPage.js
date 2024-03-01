@@ -10,7 +10,7 @@ const ProjectManagementPage = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const location = useLocation();
 
-  const [projectName, setProjectName] = useState("Loading...");
+  const [projectName, setProjectName] = useState('');
   const [columns, setColumns] = useState(null);
   const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
 
@@ -39,17 +39,16 @@ const ProjectManagementPage = () => {
       <TopBar />
       <ProjectMenuBar key={location.state.projectID} projectName={projectName} projectID={location.state.projectID} columns={columns} setColumns={setColumns} />
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
-          {columns && columns.map( column => ( 
-            <ProjectColumn 
-              key={column.columnID} 
-              columnTitle={column.columnTitle} 
-              columnID={column.columnID} 
-              columnIndex={column.columnIndex}
-              columnLocation={column.columnLocation}
-              columns={columns}
-              setColumns={setColumns}
-              isColumnBeingMoved={isColumnBeingMoved}
-              setIsColumnBeingMoved={setIsColumnBeingMoved}/>
+          {columns && columns
+            .sort((a, b) => a.columnIndex - b.columnIndex)
+            .map( column => ( 
+              <ProjectColumn 
+                key={column.columnID} 
+                currentColumn={column}
+                columns={columns}
+                setColumns={setColumns}
+                isOtherColumnBeingMoved={isColumnBeingMoved}
+                setIsOtherColumnBeingMoved={setIsColumnBeingMoved}/>
           ))}
       </div>
     </div>

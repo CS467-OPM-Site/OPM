@@ -45,6 +45,10 @@
   .task-card{
     background-color: #81b29a;
   }
+  
+  .hide-column-success {
+    animation: fadeOutAnimation 0.5s forwards;
+  }
 
   .column-container {
     display: flex;
@@ -77,25 +81,33 @@
     width: 100%;
   }
 
-  .column-error-container {
+  .column-error-container, .column-success-container {
     width: 100%;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: rgba(217, 47, 28, 0.3);
     border-radius: 10px;
-    border: 2px red solid;
     padding: 5px;
   }
 
-  .column-error {
+  .column-error-container {
+    background: rgba(217, 47, 28, 0.3);
+    border: 2px red solid;
+  }
+
+  .column-success-container {
+    background: rgba(44, 181, 167, 0.4);
+    border: 2px rgba(8, 33, 30, 0.5) solid;
+  }
+  
+  .column-error, .column-success {
     width: 100%;
     font-weight: 800;
   }
 
-  .column-error-close:hover {
+  .column-error-close:hover, .column-success-close:hover {
     color: black;
   }
 

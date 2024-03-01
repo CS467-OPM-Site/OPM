@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, TextField } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,7 +23,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
   const [isAddColumnFieldShown, setIsAddColumnFieldShown] = useState(false);
   const [isAddColumnButtonEnabled, setIsAddColumnButtonEnabled] = useState(true);
   const [addColumnButtonText, setAddColumnButtonText] = useState(MAKE_NEW_COLUMN);
-  const [columnTitleToAdd, setColumnTitleToAdd] = useState(null);
+  const [columnTitleToAdd, setColumnTitleToAdd] = useState('');
   const [isErrorInAddColumn, setIsErrorInAddColumn] = useState(false);
   const [errorInAddColumn, setErrorInAddColumnBox] = useState("");
   const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
@@ -69,9 +70,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
       return;
     }
 
-    const auth = getAuth();
-    const idToken = await auth.currentUser.getIdToken();
-    const response = await addColumn(idToken, columnTitleToAdd, projectID);
+    const response = await addColumn(columnTitleToAdd, projectID);
     switch (response.status) {
       case 201: {
         setColumnTitleToAdd('');
@@ -176,9 +175,13 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns }) => {
                   </DialogActions>
                 </Dialog>
               </div>
-              <Typography variant="h4" component="h1" className="project-page-project-title">
-                {projectName}
-              </Typography>
+              {projectName ? 
+                <Typography variant="h4" component="h1" className="project-page-project-title">
+                  {projectName}
+                </Typography>
+                :
+                <CircularProgress className="project-page-project-title" color="success"/>
+              }
               <div className="project-page-add-column-container">
                 <Button 
                   variant="contained"

@@ -98,13 +98,14 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
             onClose={handleDeleteTaskDialogClosed}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            className="alert-delete-task-dialog-container"
             >
-            <DialogTitle className="alert-delete-project" id="alert-delete-project-dialog-title">
-              {"Delete this project?"}
+            <DialogTitle className="alert-delete-task" id="alert-delete-task-dialog-title">
+              {"Delete this task?"}
             </DialogTitle>
-            <DialogContent className="alert-delete-project" id="alert-delete-project-dialog-content">
+            <DialogContent className="alert-delete-task" id="alert-delete-task-dialog-content">
               <DialogContentText id="alert-dialog-description">
-                This cannot be undone. Note that this project must have no tasks remaining.
+                Deleting a task cannot be undone.
               </DialogContentText>
             {deleteTaskModalAdditionalText &&
               <DialogContentText id="alert-dialog-confirmation">
@@ -112,7 +113,7 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
               </DialogContentText>
             }
             </DialogContent>
-            <DialogActions className="alert-delete-project" id="alert-delete-project-dialog-actions">
+            <DialogActions className="alert-delete-task" id="alert-delete-task-dialog-actions">
               <Button variant="contained" color="success" onClick={handleDeleteTaskDialogClosed}>Do Not Delete</Button>
               <Button 
                 variant="contained" 

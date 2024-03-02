@@ -95,6 +95,21 @@
 .column-error-container {
   background: rgba(217, 47, 28, 0.3);
   border: 2px red solid;
+  animation: fadeOutColumnError 5s ease-in forwards;
+}
+
+@keyframes fadeOutColumnError {
+  0% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+  }
+  
+  100% {
+    opacity: 0;
+  }
 }
 
 .column-success-container {

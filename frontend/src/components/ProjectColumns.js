@@ -49,12 +49,14 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
         const responseJson = await response.json();
         if (responseJson.message.includes("tasks")) {
           setColumnError(TASKS_REMAIN);
+          setTimeout(() => {setColumnError('')}, 5000);
           return
         };
         break;
       }
       default: {
         setColumnError(CANNOT_REMOVE);
+        setTimeout(() => {setColumnError('')}, 5000);
         return
       }
     }
@@ -150,6 +152,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
       }
       default: {
         setColumnError(COULD_NOT_MOVE);
+        setTimeout(() => {setColumnError('')}, 5000);
         return false;
       }
     }

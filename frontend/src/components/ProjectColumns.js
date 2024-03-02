@@ -21,6 +21,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
   const [isWantingToMoveColumn, setIsWantingToMoveColumn] = useState(false);
   const [originalColumnOrder, setOriginalColumnOrder] = useState(null);
+  const [tasks, setTasks] = useState(currentColumn.tasks);
 
   useEffect(() => {
     const removeOnLoadAnimation = () => {
@@ -163,6 +164,10 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
     return originalColumn.columnIndex;
   }
 
+  const removeTask = (taskID) => {
+    setTasks(tasks.filter(task => task.taskID !== taskID));
+  }
+
   return <div className={columnClassNameSet()} key={currentColumn.columnID}>
             <div className="column-container">
               <div className="column-title-container">
@@ -189,7 +194,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                 }
               </div>
               <div className="task-container">
-              {currentColumn.tasks && currentColumn.tasks.map( task => ( <ProjectTask key={task.taskID} currentTask={task} /> ) )}
+              {tasks && tasks.map( task => ( <ProjectTask key={task.taskID} currentTask={task} removeTask={removeTask} /> ) )}
               
               </div>
               <div className="column-bottom-button-container">

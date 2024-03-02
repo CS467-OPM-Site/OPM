@@ -2,6 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
 import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows, NotInterested } from '@mui/icons-material';
 import { deleteColumn, moveColumn } from '../services/columns';
+import ProjectTask from './ProjectTasks';
 
 
 const CANNOT_REMOVE = "Cannot remove column";
@@ -179,7 +180,10 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                   </div>
                 }
               </div>
-              <div className="task-container"></div>
+              <div className="task-container">
+              {currentColumn.tasks && currentColumn.tasks.map( task => ( <ProjectTask key={task.taskID} currentTask={task} /> ) )}
+              
+              </div>
               <div className="column-bottom-button-container">
                 {isWantingToMoveColumn ?
                 <Button onClick={onMoveCancelPressed} variant="contained" color="error" size="medium" startIcon={<NotInterested />}>Stop Moving</Button>

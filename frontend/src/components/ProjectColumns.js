@@ -13,7 +13,7 @@ const FADE_IN = "fade-in-animation";
 const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
-const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
+const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
   const [columnError, setColumnError] = useState('');
   const [columnSuccess, setColumnSuccess] = useState('');
   const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
@@ -21,7 +21,6 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
   const [isWantingToMoveColumn, setIsWantingToMoveColumn] = useState(false);
   const [originalColumnOrder, setOriginalColumnOrder] = useState(null);
-  const [tasks, setTasks] = useState(currentColumn.tasks);
 
   useEffect(() => {
     const removeOnLoadAnimation = () => {
@@ -34,13 +33,13 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   }, []);
 
   const onDeleteColumnPressed = async() => {
-    const response = await deleteColumn(currentColumn.columnLocation);
+    const response = await deleteColumn(columns[currentColumnIndex].columnLocation);
     
     switch (response.status) {
       case 200: {
         setIsColumnBeingDeleted(true)
         setTimeout(() => {
-          const newColumns = columns.filter((column) => (column.columnID !== currentColumn.columnID));
+          const newColumns = columns.filter((column) => (column.columnID !== columns[currentColumnIndex].columnID));
           newColumns.forEach((column, index) => column.columnIndex = index);
           setColumns(newColumns);
         }, 300);
@@ -100,13 +99,16 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   }
 
   const onAcceptColumnMoved = async () => {
-    const newColumnIndex = currentColumn.columnIndex;
+    const newColumnIndex = columns[currentColumnIndex].columnIndex;
     const wasValidMove = await sendMoveRequest(newColumnIndex);
     
     if (!wasValidMove) { 
       onMoveCancelPressed();
       return;
     }
+
+
+    setOriginalColumnOrder(columns);
 
     setIsOtherColumnBeingMoved(false);
     setIsWantingToMoveColumn(false);
@@ -123,7 +125,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
     // Create a shallow copy of columns in order to replace original
     const newColumns = [...columns];
 
-    const columnIndexToMove = currentColumn.columnIndex;
+    const columnIndexToMove = columns[currentColumnIndex].columnIndex;
     let newIndex;
 
     if (isLeftMove) {
@@ -144,7 +146,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   }
 
   const sendMoveRequest = async(newIndex) => {
-    const response = await moveColumn(currentColumn.columnLocation, newIndex);
+    const response = await moveColumn(columns[currentColumnIndex].columnLocation, newIndex);
 
     switch (response.status) {
       case 200: {
@@ -160,15 +162,40 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
   }
 
   const getOriginalColumnIndex = () => {
-    const originalColumn = originalColumnOrder.find(column => column.columnID === currentColumn.columnID);
+    const originalColumn = originalColumnOrder.find(column => column.columnID === columns[currentColumnIndex].columnID);
     return originalColumn.columnIndex;
   }
 
   const removeTask = (taskID) => {
-    setTasks(tasks.filter(task => task.taskID !== taskID));
+    // Create shallow copy of tasks
+    const newColumns = columns.map(column => ({ ...column, tasks: column.tasks.filter(task => task.taskID !== taskID) }));
+
+    setColumns(newColumns);
   }
 
-  return <div className={columnClassNameSet()} key={currentColumn.columnID}>
+  const onMoveTask = (taskID, isLeftMove) => {
+    // Create new shallow copy of columns and tasks
+    const newColumns = columns.map(column => ({ ...column, tasks: [...column.tasks] }));
+
+    const nextColumnIndex = isLeftMove
+      ? (currentColumnIndex === 0 ? columns.length - 1 : currentColumnIndex - 1)
+      : (currentColumnIndex === columns.length - 1 ? 0 : currentColumnIndex + 1);
+
+    // Guaranteed columnIndex is the in-order location of the column in the array
+    const currentColumnForTask = newColumns[currentColumnIndex];
+    const nextColumnForTask = newColumns[nextColumnIndex];
+
+    // Use task index to remove it from current column, and to copy it over to next column
+    const taskToMoveIndex = currentColumnForTask.tasks.findIndex(task => task.taskID === taskID);
+    const taskToMove = currentColumnForTask.tasks[taskToMoveIndex];
+
+    nextColumnForTask.tasks.push(taskToMove);
+    currentColumnForTask.tasks.splice(taskToMoveIndex, 1);
+
+    setColumns(newColumns);
+  }
+
+  return <div className={columnClassNameSet()} key={columns[currentColumnIndex].columnID}>
             <div className="column-container">
               <div className="column-title-container">
                 <Typography 
@@ -178,7 +205,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                   sx={{
                     fontSize: '1.1rem'
                   }}>
-                  {currentColumn.columnTitle}
+                  {columns[currentColumnIndex].columnTitle}
                 </Typography>
                 { columnError &&
                   <div className="column-error-container">
@@ -194,8 +221,13 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                 }
               </div>
               <div className="task-container">
-              {tasks && tasks.map( task => ( <ProjectTask key={task.taskID} currentTask={task} removeTask={removeTask} /> ) )}
-              
+              {columns[currentColumnIndex].tasks && columns[currentColumnIndex].tasks.map( task => ( 
+                <ProjectTask 
+                  key={task.taskID + columns[currentColumnIndex].columnID} 
+                  currentTask={task} 
+                  removeTask={removeTask} 
+                  moveTask={onMoveTask}/> ) 
+              )}
               </div>
               <div className="column-bottom-button-container">
                 {isWantingToMoveColumn ?
@@ -229,7 +261,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                     className="move-column-pressed"
                     color="success"
                     size="small" 
-                    disabled={getOriginalColumnIndex() === currentColumn.columnIndex}
+                    disabled={getOriginalColumnIndex() === columns[currentColumnIndex].columnIndex}
                     startIcon={<CompareArrows />} 
                     onClick={onAcceptColumnMoved}>Accept Position</Button>
                 </div>

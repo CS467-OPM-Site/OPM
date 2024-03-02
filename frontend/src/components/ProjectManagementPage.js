@@ -43,8 +43,8 @@ const ProjectManagementPage = () => {
             .map( column => ( 
               <ProjectColumn 
                 key={column.columnID} 
-                currentColumn={column}
-                columns={columns}
+                currentColumnIndex={column.columnIndex}
+                columns={columns} // State is truly based on this array, shallow copy and set this array on changes
                 setColumns={setColumns}
                 isOtherColumnBeingMoved={isColumnBeingMoved}
                 setIsOtherColumnBeingMoved={setIsColumnBeingMoved}/>

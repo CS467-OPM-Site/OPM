@@ -119,7 +119,7 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
                 color="error" 
                 onClick={handleDeleteTask} 
                 disabled={(deleteTaskModalAdditionalText !== '')}
-                autoFocus>
+                >
                Delete 
               </Button>
             </DialogActions>

@@ -158,6 +158,11 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
     }
   }
 
+  const getOriginalColumnIndex = () => {
+    const originalColumn = originalColumnOrder.find(column => column.columnID === currentColumn.columnID);
+    return originalColumn.columnIndex;
+  }
+
   return <div className={columnClassNameSet()} key={currentColumn.columnID}>
             <div className="column-container">
               <div className="column-title-container">
@@ -219,6 +224,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                     className="move-column-pressed"
                     color="success"
                     size="small" 
+                    disabled={getOriginalColumnIndex() === currentColumn.columnIndex}
                     startIcon={<CompareArrows />} 
                     onClick={onAcceptColumnMoved}>Accept Position</Button>
                 </div>

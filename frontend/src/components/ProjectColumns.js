@@ -2,6 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { Button, Typography } from '@mui/material';
 import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows, NotInterested } from '@mui/icons-material';
 import { deleteColumn, moveColumn } from '../services/columns';
+import ProjectTask from './ProjectTasks';
 
 
 const CANNOT_REMOVE = "Cannot remove column";
@@ -48,12 +49,14 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
         const responseJson = await response.json();
         if (responseJson.message.includes("tasks")) {
           setColumnError(TASKS_REMAIN);
+          setTimeout(() => {setColumnError('')}, 5000);
           return
         };
         break;
       }
       default: {
         setColumnError(CANNOT_REMOVE);
+        setTimeout(() => {setColumnError('')}, 5000);
         return
       }
     }
@@ -149,9 +152,15 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
       }
       default: {
         setColumnError(COULD_NOT_MOVE);
+        setTimeout(() => {setColumnError('')}, 5000);
         return false;
       }
     }
+  }
+
+  const getOriginalColumnIndex = () => {
+    const originalColumn = originalColumnOrder.find(column => column.columnID === currentColumn.columnID);
+    return originalColumn.columnIndex;
   }
 
   return <div className={columnClassNameSet()} key={currentColumn.columnID}>
@@ -179,7 +188,10 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                   </div>
                 }
               </div>
-              <div className="task-container"></div>
+              <div className="task-container">
+              {currentColumn.tasks && currentColumn.tasks.map( task => ( <ProjectTask key={task.taskID} currentTask={task} /> ) )}
+              
+              </div>
               <div className="column-bottom-button-container">
                 {isWantingToMoveColumn ?
                 <Button onClick={onMoveCancelPressed} variant="contained" color="error" size="medium" startIcon={<NotInterested />}>Stop Moving</Button>
@@ -212,6 +224,7 @@ const ProjectColumn = memo(( { currentColumn, columns, setColumns, isOtherColumn
                     className="move-column-pressed"
                     color="success"
                     size="small" 
+                    disabled={getOriginalColumnIndex() === currentColumn.columnIndex}
                     startIcon={<CompareArrows />} 
                     onClick={onAcceptColumnMoved}>Accept Position</Button>
                 </div>

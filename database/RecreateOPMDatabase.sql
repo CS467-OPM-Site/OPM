@@ -101,7 +101,7 @@ CREATE TABLE Tasks (
     project_id INTEGER REFERENCES Projects(project_id) NOT NULL,
     priority VARCHAR(20) Default 'None' CHECK (priority IN ('None', 'Low', 'Medium', 'High')),
     due_date DATE, -- Tasks can start without a due date by default
-    title VARCHAR(100) NOT NULL,
+    title VARCHAR(50) NOT NULL,
     description VARCHAR(500), -- Enforcing 500 character maximum
     custom_fields JSONB,
     task_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

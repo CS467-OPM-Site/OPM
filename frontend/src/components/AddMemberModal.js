@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+// AddMemberModal.js
 import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
+import React, { useState } from 'react';
 
-const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
-  const [projectName, setProjectName] = useState('');
+const AddMemberModal = ({ isOpen, onClose, onSubmit }) => {
+  const [memberName, setMemberName] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(projectName);
-    setProjectName(''); // Reset the input field
+    onSubmit(memberName);
+    setMemberName(''); // Reset the input field
     onClose(); // Close the modal
   };
 
@@ -18,16 +19,16 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
       <div className="modal">
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="projectName">Project Name:</label>
+            <label htmlFor="memberName">Member Name:</label>
             <input
-              id="projectName"
+              id="memberName"
               type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
+              value={memberName}
+              onChange={(e) => setMemberName(e.target.value)}
               required
             />
           </div>
-          <button type="submit">Add Project</button>
+          <button type="submit">Add Member</button>
           <button type="button" onClick={onClose}>Cancel</button>
         </form>
       </div>
@@ -35,4 +36,4 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddProjectModal;
+export default AddMemberModal;

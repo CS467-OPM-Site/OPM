@@ -7,6 +7,7 @@ import { FaTrash } from 'react-icons/fa';
 import TopBar from './TopBar';
 import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
+import AddMemberModal from './AddMemberModal';
 
 
 const UserHomepage = () => {
@@ -23,6 +24,8 @@ const UserHomepage = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+
 
   useEffect(() => {
     fetchTeams();
@@ -125,13 +128,7 @@ const UserHomepage = () => {
   };
   
 
-  const handleAddMember = async (teamID) => {
-    const memberName = prompt("Enter the new team member's name:");
-    if (!memberName) {
-      alert('Member name cannot be empty.');
-      return;
-    }
-
+  const handleAddMember = async (teamID, memberName) => {
     try {
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
       // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
@@ -308,7 +305,7 @@ const UserHomepage = () => {
               {renderTeamMembers()}
             </div>
             <div className="team-actions">
-              <button onClick={() => handleAddMember(team.teamID)}>Add Member</button>
+              <button onClick={() => setIsAddMemberModalOpen(true)}>Add Member</button>
               {/* Add more team actions if required */}
             </div>
           </div>
@@ -339,6 +336,11 @@ const UserHomepage = () => {
               required
             />
           </AddTeamModal>
+          <AddMemberModal
+            isOpen={isAddMemberModalOpen}
+            onClose={() => setIsAddMemberModalOpen(false)}
+            onSubmit={(memberName) => handleAddMember(selectedTeam.teamID, memberName)}
+          />
           {error && <div className="error-message">{error}</div>}
           {renderTeams()}
         </aside>

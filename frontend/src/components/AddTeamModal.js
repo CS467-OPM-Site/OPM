@@ -1,5 +1,6 @@
-import '../styles/AddTeamModal.css';
 import React, { useState } from 'react';
+import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
+
 
 const AddTeamModal = ({ isOpen, onClose, onSubmit }) => {
   const [teamName, setTeamName] = useState('');
@@ -14,7 +15,7 @@ const AddTeamModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-backdrop"> {/* Updated class name for consistency */}
       <div className="modal">
         <form onSubmit={handleSubmit}>
           <div>
@@ -27,10 +28,8 @@ const AddTeamModal = ({ isOpen, onClose, onSubmit }) => {
               required
             />
           </div>
-          <div className="modal-actions">
-            <button type="submit" className="modal-submit-button">Submit</button>
-            <button type="button" onClick={onClose} className="modal-cancel-button">Cancel</button>
-          </div>
+          <button type="submit">Submit</button> {/* Simplified for CSS consistency */}
+          <button type="button" onClick={onClose}>Cancel</button> {/* Simplified for CSS consistency */}
         </form>
       </div>
     </div>

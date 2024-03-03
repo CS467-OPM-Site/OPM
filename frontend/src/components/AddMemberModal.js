@@ -1,5 +1,5 @@
 // AddMemberModal.js
-import '../styles/AddProjectModal.css'; // Reuse the CSS for consistent styling
+import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
 import React, { useState } from 'react';
 
 const AddMemberModal = ({ isOpen, onClose, onSubmit }) => {

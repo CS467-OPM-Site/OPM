@@ -1,5 +1,5 @@
-import '../styles/AddProjectModal.css'; 
 import React, { useState } from 'react';
+import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
 
 const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   const [projectName, setProjectName] = useState('');

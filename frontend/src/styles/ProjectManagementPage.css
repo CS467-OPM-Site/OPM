@@ -161,20 +161,36 @@
   height: 100%;
 }
 
+.project-page-buttons-loading-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#project-loading-icon {
+  margin-left: 20px;
+}
+
+.project-loading-icon-hide {
+  display: none!important;
+}
+
 .project-page-project-title {
   position: absolute;
-  left: 50%;
+  left: 50%; 
   transform: translateX(-50%);
 }
 
 .project-page-project-buttons-container {
   display: flex;
   flex-wrap: nowrap;
-  flex-direction: row;
+  flex-direction: column;
   gap: 20px;
   box-sizing: border-box;
   align-items: center;
   height: 100%;
+  justify-content: center;
 }
 
 .project-page-add-column-container {

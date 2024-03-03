@@ -16,3 +16,16 @@ export const deleteTask = async(taskLocation) => {
 
   return response;
 }
+
+export const moveTask = async(taskLocation, newColumnID) => {
+  const idToken = await getIdToken();
+  const taskURL = taskLocation.slice(URL_TRIM.length);
+  const response = await fetch(`${API_BASE_URL}${taskURL}/columns/${newColumnID}`, {
+    method: "PUT",
+    headers: {
+      'Authorization': `Bearer ${idToken}`,
+    }
+  });
+
+  return response;
+}

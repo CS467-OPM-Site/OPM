@@ -13,12 +13,10 @@ const SHOW_ICONS = "show-task-summary-icon-container"
 const HIDE_ICONS = "hide-task-summary-icon-container"
 
 
-const ProjectTask = memo(( { currentTask, removeTask }) => {
+const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) => {
   const [shouldPlayHideSlideAnimation, setShouldPlayHideSlideAnimation] = useState(0);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [deleteTaskModalAdditionalText, setDeleteTaskModalAdditionalText] = useState('');
-
-  console.log(currentTask);
 
   const hideIconsAnimation = () => {
     setShouldPlayHideSlideAnimation(2)
@@ -57,16 +55,19 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
   }
 
   const handleDeleteTask = async () => {
+    setIsLoading(true);
     const response = await deleteTask(currentTask.taskLocation);
 
     if (response.status === 200) {
       handleDeleteTaskDialogClosed();
       removeTask(currentTask.taskID);
+      setIsLoading(false);
       return;
     }
 
     const responseJSON = await response.json();
     setDeleteTaskModalAdditionalText(responseJSON.message);
+    setIsLoading(false);
   }
 
   const handleDeleteTaskDialogClosed = () => {
@@ -75,6 +76,9 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
     hideIconsAnimation();
   }
 
+  const handleMoveTask = (isLeftMove) => {
+    moveTask(currentTask.taskID, isLeftMove);
+  }
   
 
   return <>
@@ -87,8 +91,8 @@ const ProjectTask = memo(( { currentTask, removeTask }) => {
       </div>
       <div className={setIconContainerClass()}>
         <div className="task-summary-move-task-icon-container">
-          <KeyboardDoubleArrowLeft className="task-summary-move-icons" />
-          <KeyboardDoubleArrowRight className="task-summary-move-icons" />
+          <KeyboardDoubleArrowLeft className="task-summary-move-icons" onClick={() => handleMoveTask(true)} />
+          <KeyboardDoubleArrowRight className="task-summary-move-icons" onClick={() => handleMoveTask(false)} />
         </div>
         <div className="task-summary-edit-delete-icon-container">
           <DeleteTwoTone className="task-summary-edit-delete-icons" color="warning" onClick={() => setShowDeleteTaskModal(true)} />

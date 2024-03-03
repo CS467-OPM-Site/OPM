@@ -212,7 +212,7 @@ const UserHomepage = () => {
       setError('Please select a team to add projects to.');
       return;
     }
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
@@ -225,12 +225,16 @@ const UserHomepage = () => {
       });
       if (!response.ok) throw new Error('Failed to add project');
       const newProject = await response.json();
-      setProjects(prev => [...prev, newProject]);
+  
+      // Ensure newProject matches the expected structure, especially the team information
+      // Adjust this line if necessary to match your data structure
+      setProjects(prev => [...prev, { ...newProject, team: selectedTeam }]);
     } catch (error) {
       console.error('Add Project Error:', error);
       setError('Failed to add project.');
     }
   };
+  
 
   const renderProjects = () => {
     // Ensure selectedTeam is defined and has a teamID before filtering projects

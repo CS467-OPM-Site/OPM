@@ -13,12 +13,10 @@ const SHOW_ICONS = "show-task-summary-icon-container"
 const HIDE_ICONS = "hide-task-summary-icon-container"
 
 
-const ProjectTask = memo(( { currentTask, removeTask, moveTask }) => {
+const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) => {
   const [shouldPlayHideSlideAnimation, setShouldPlayHideSlideAnimation] = useState(0);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [deleteTaskModalAdditionalText, setDeleteTaskModalAdditionalText] = useState('');
-
-  //console.log(currentTask);
 
   const hideIconsAnimation = () => {
     setShouldPlayHideSlideAnimation(2)
@@ -57,16 +55,19 @@ const ProjectTask = memo(( { currentTask, removeTask, moveTask }) => {
   }
 
   const handleDeleteTask = async () => {
+    setIsLoading(true);
     const response = await deleteTask(currentTask.taskLocation);
 
     if (response.status === 200) {
       handleDeleteTaskDialogClosed();
       removeTask(currentTask.taskID);
+      setIsLoading(false);
       return;
     }
 
     const responseJSON = await response.json();
     setDeleteTaskModalAdditionalText(responseJSON.message);
+    setIsLoading(false);
   }
 
   const handleDeleteTaskDialogClosed = () => {
@@ -78,7 +79,6 @@ const ProjectTask = memo(( { currentTask, removeTask, moveTask }) => {
   const handleMoveTask = (isLeftMove) => {
     moveTask(currentTask.taskID, isLeftMove);
   }
-
   
 
   return <>

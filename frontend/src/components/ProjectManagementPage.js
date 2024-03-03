@@ -12,6 +12,7 @@ const ProjectManagementPage = () => {
   const [columns, setColumns] = useState(null);
   const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
   const [projectID, setProjectID] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -36,7 +37,14 @@ const ProjectManagementPage = () => {
   return (
     <div className="user-homepage-container">
       <TopBar />
-      <ProjectMenuBar key={projectID} projectName={projectName} projectID={projectID} columns={columns} setColumns={setColumns} />
+      <ProjectMenuBar 
+        key={projectID} 
+        projectName={projectName} 
+        projectID={projectID} 
+        columns={columns} 
+        setColumns={setColumns} 
+        isLoading={isLoading}
+        setIsLoading={setIsLoading} />
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
           {columns && columns
             .sort((a, b) => a.columnIndex - b.columnIndex)
@@ -46,6 +54,7 @@ const ProjectManagementPage = () => {
                 currentColumnIndex={column.columnIndex}
                 columns={columns} // State is truly based on this array, shallow copy and set this array on changes
                 setColumns={setColumns}
+                setIsLoading={setIsLoading}
                 isOtherColumnBeingMoved={isColumnBeingMoved}
                 setIsOtherColumnBeingMoved={setIsColumnBeingMoved}/>
           ))}

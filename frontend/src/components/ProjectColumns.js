@@ -3,6 +3,7 @@ import { Button, Typography } from '@mui/material';
 import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows, NotInterested } from '@mui/icons-material';
 import { deleteColumn, moveColumn } from '../services/columns';
 import ProjectTask from './ProjectTasks';
+import { moveTask } from '../services/tasks';
 
 
 const CANNOT_REMOVE = "Cannot remove column";
@@ -13,7 +14,7 @@ const FADE_IN = "fade-in-animation";
 const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
-const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
+const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, setIsLoading, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
   const [columnError, setColumnError] = useState('');
   const [columnSuccess, setColumnSuccess] = useState('');
   const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
@@ -33,6 +34,7 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
   }, []);
 
   const onDeleteColumnPressed = async() => {
+    setIsLoading(true);
     const response = await deleteColumn(columns[currentColumnIndex].columnLocation);
     
     switch (response.status) {
@@ -50,16 +52,15 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
         if (responseJson.message.includes("tasks")) {
           setColumnError(TASKS_REMAIN);
           setTimeout(() => {setColumnError('')}, 5000);
-          return
         };
         break;
       }
       default: {
         setColumnError(CANNOT_REMOVE);
         setTimeout(() => {setColumnError('')}, 5000);
-        return
       }
     }
+    setIsLoading(false);
   }
 
   const onHideColumnError = () => {
@@ -107,7 +108,6 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
       return;
     }
 
-
     setOriginalColumnOrder(columns);
 
     setIsOtherColumnBeingMoved(false);
@@ -122,6 +122,9 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
   }
 
   const onMovePressed = async (isLeftMove) => {
+    // To safely deep copy in case invalid move
+    setOriginalColumnOrder(JSON.parse(JSON.stringify(columns)));
+
     // Create a shallow copy of columns in order to replace original
     const newColumns = [...columns];
 
@@ -146,15 +149,18 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
   }
 
   const sendMoveRequest = async(newIndex) => {
+    setIsLoading(true);
     const response = await moveColumn(columns[currentColumnIndex].columnLocation, newIndex);
 
     switch (response.status) {
       case 200: {
         setColumnSuccess(MOVED_COLUMN);
+        setIsLoading(false);
         return true;
       }
       default: {
         setColumnError(COULD_NOT_MOVE);
+        setIsLoading(false);
         setTimeout(() => {setColumnError('')}, 5000);
         return false;
       }
@@ -168,12 +174,13 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
 
   const removeTask = (taskID) => {
     // Create shallow copy of tasks
-    const newColumns = columns.map(column => ({ ...column, tasks: column.tasks.filter(task => task.taskID !== taskID) }));
+    const newColumns = columns.map(column => ({ 
+      ...column, tasks: column.tasks.filter(task => task.taskID !== taskID) }));
 
     setColumns(newColumns);
   }
 
-  const onMoveTask = (taskID, isLeftMove) => {
+  const onMoveTask = async (taskID, isLeftMove) => {
     // Create new shallow copy of columns and tasks
     const newColumns = columns.map(column => ({ ...column, tasks: [...column.tasks] }));
 
@@ -192,8 +199,32 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
     nextColumnForTask.tasks.push(taskToMove);
     currentColumnForTask.tasks.splice(taskToMoveIndex, 1);
 
-    setColumns(newColumns);
+    const isValidMove = await sendTaskMoveRequest(taskToMove.taskLocation, nextColumnForTask.columnID);
+
+    if (isValidMove) {
+      setColumns(newColumns);
+      return;
+    }
+    
   }
+
+  const sendTaskMoveRequest = async (taskLocation, newColumnID) => {
+    setIsLoading(true)
+    const response = await moveTask(taskLocation, newColumnID);
+
+    if (response.status === 200) {
+      setIsLoading(false)
+      return true;
+    }
+
+    const responseJSON = await response.json();
+
+    setColumnError(responseJSON.message);
+    setIsLoading(false)
+    return false;
+  }
+
+  
 
   return <div className={columnClassNameSet()} key={columns[currentColumnIndex].columnID}>
             <div className="column-container">
@@ -226,7 +257,8 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, isOtherC
                   key={task.taskID + columns[currentColumnIndex].columnID} 
                   currentTask={task} 
                   removeTask={removeTask} 
-                  moveTask={onMoveTask}/> ) 
+                  moveTask={onMoveTask}
+                  setIsLoading={setIsLoading}/> ) 
               )}
               </div>
               <div className="column-bottom-button-container">

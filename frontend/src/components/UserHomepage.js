@@ -233,18 +233,28 @@ const UserHomepage = () => {
   };
 
   const renderProjects = () => {
-    return projects.map((project) => (
+    // Ensure selectedTeam is defined and has a teamID before filtering projects
+    if (!selectedTeam) {
+      return <div>Please select a team to see its projects.</div>;
+    }
+  
+    // Filter projects based on the selected team
+    const filteredProjects = projects.filter(project => project.team && project.team.teamID === selectedTeam.teamID);
+    
+    return filteredProjects.map((project) => (
       <div
         key={project.projectID}
         className="project-card"
-        onClick={() => navigate(`/projects/${project.projectID}`, {state: {projectID: `${project.projectID}`}})} // Using template literals to create dynamic path
-        style={{cursor: 'pointer'}} // Optional: Changes the cursor to indicate the card is clickable
+        onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
+        style={{ cursor: 'pointer' }}
       >
         <h3>{project.projectName}</h3>
         {/* Add more project details here */}
       </div>
     ));
   };
+  
+  
   
 
 

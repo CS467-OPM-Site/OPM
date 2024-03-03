@@ -13,7 +13,6 @@ import AddMemberModal from './AddMemberModal';
 const UserHomepage = () => {
   const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [teamName, setTeamName] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -94,9 +93,7 @@ const UserHomepage = () => {
   };
   
 
-  const handleAddTeam = async (event) => {
-    event.preventDefault();
-    const teamName = event.target.teamName.value;
+  const handleAddTeam = async (teamName) => {
     if (!teamName.trim()) {
       setError('Team name cannot be empty');
       return;
@@ -104,7 +101,6 @@ const UserHomepage = () => {
   
     try {
       const response = await fetch(`${API_BASE_URL}/teams`, {
-      // const response = await fetch('https://opm-api.propersi.me/api/v1/teams', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,11 +110,8 @@ const UserHomepage = () => {
       });
       if (!response.ok) throw new Error('Failed to add team');
       const newTeam = await response.json();
-      
-      // Assuming that the server response includes the isTeamCreator property
-      // and it's set to true for the creator.
+  
       setTeams(prev => [...prev, { ...newTeam, isTeamCreator: true }]);
-      setTeamName('');
       setError('');
     } catch (error) {
       console.error('Add Team Error:', error);
@@ -126,6 +119,7 @@ const UserHomepage = () => {
     }
     setIsAddTeamModalOpen(false);
   };
+  
   
 
   const handleAddMember = async (teamID, memberName) => {
@@ -327,15 +321,8 @@ const UserHomepage = () => {
           <AddTeamModal
             isOpen={isAddTeamModalOpen}
             onClose={() => setIsAddTeamModalOpen(false)}
-            onSubmit={handleAddTeam}
-          >
-            <input
-              name="teamName"
-              type="text"
-              placeholder="Enter new team name"
-              required
-            />
-          </AddTeamModal>
+            onSubmit={(teamName) => handleAddTeam(teamName)} // Updated to pass teamName to handleAddTeam
+          />
           <AddMemberModal
             isOpen={isAddMemberModalOpen}
             onClose={() => setIsAddMemberModalOpen(false)}
@@ -365,6 +352,7 @@ const UserHomepage = () => {
       {error && <div className="error-message">{error}</div>}
     </div>
   );
+  
 };
   
 export default UserHomepage;

@@ -283,16 +283,17 @@ const UserHomepage = () => {
     return teams.map((team) => (
       <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected team-card-selected' : ''}`}>
         <div className="team-header">
-        <button onClick={() => { setSelectedTeam(team); setShowAllProjects(false); }} className="team-button">
-          {team.teamName}
-        </button>
+          {/* When a team is clicked, update both selectedTeam and filterCriteria */}
+          <button onClick={() => handleTeamSelect(team)} className="team-button">
+            {team.teamName}
+          </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
               <FaTrash />
             </button>
           )}
           {selectedTeam?.teamID === team.teamID && (
-            <button onClick={() => setSelectedTeam(null)} className="close-button">
+            <button onClick={() => handleTeamDeselect()} className="close-button">
               X
             </button>
           )}
@@ -311,6 +312,20 @@ const UserHomepage = () => {
       </div>
     ));
   };
+
+  const handleTeamSelect = (team) => {
+    setSelectedTeam(team);
+    setShowAllProjects(false); // No longer necessary if using filterCriteria for all logic
+    // Set filterCriteria to only include the selected team
+    setFilterCriteria({ all: false, teams: { [team.teamID]: true } });
+  };
+
+  const handleTeamDeselect = () => {
+    setSelectedTeam(null);
+    // Optionally reset filter to show all projects
+    setFilterCriteria({ all: true, teams: {} });
+  };
+
 
   
   return (

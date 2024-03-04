@@ -74,7 +74,9 @@ const ProjectManagementPage = () => {
         <AddTaskForm 
             projectID={projectID} 
             columnID={columnIDtoAddTaskTo}
-            setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}/>
+            setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}
+            columns={columns}
+            setColumns={setColumns}/>
       </div>
       }
     </div>

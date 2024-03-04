@@ -14,7 +14,14 @@ const FADE_IN = "fade-in-animation";
 const FADE_OUT = "fade-out-animation";
 const COLUMN_CARD = "column-card";
 
-const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, setIsLoading, isOtherColumnBeingMoved, setIsOtherColumnBeingMoved } ) => {
+const ProjectColumn = memo(( { 
+      currentColumnIndex, 
+      columns, 
+      setColumns, 
+      setIsLoading, 
+      isOtherColumnBeingMoved, 
+      setIsOtherColumnBeingMoved, 
+      setIsAddingTask } ) => {
   const [columnError, setColumnError] = useState('');
   const [columnSuccess, setColumnSuccess] = useState('');
   const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
@@ -224,8 +231,6 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, setIsLoa
     return false;
   }
 
-  
-
   return <div className={columnClassNameSet()} key={columns[currentColumnIndex].columnID}>
             <div className="column-container">
               <div className="column-title-container">
@@ -263,9 +268,20 @@ const ProjectColumn = memo(( { currentColumnIndex, columns, setColumns, setIsLoa
               </div>
               <div className="column-bottom-button-container">
                 {isWantingToMoveColumn ?
-                <Button onClick={onMoveCancelPressed} variant="contained" color="error" size="medium" startIcon={<NotInterested />}>Stop Moving</Button>
+                <Button 
+                  onClick={onMoveCancelPressed} 
+                  variant="contained" 
+                  color="error" 
+                  size="medium" 
+                  startIcon={<NotInterested />}>Stop Moving</Button>
                 :
-                <Button disabled={isOtherColumnBeingMoved} variant="contained" color="success" size="medium" startIcon={<LibraryAdd />}>Add Task!</Button>
+                <Button 
+                  onClick={() => ( setIsAddingTask(columns[currentColumnIndex].columnID))}
+                  disabled={isOtherColumnBeingMoved} 
+                  variant="contained" 
+                  color="success" 
+                  size="medium" 
+                  startIcon={<LibraryAdd />}>Add Task!</Button>
                 }
                 {!isWantingToMoveColumn ?
                 <div className="delete-reorder-column-button-container">

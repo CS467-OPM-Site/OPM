@@ -8,6 +8,7 @@ import TopBar from './TopBar';
 import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
 import AddMemberModal from './AddMemberModal';
+import FilterModal from './FilterModal';
 
 
 const UserHomepage = () => {
@@ -24,6 +25,9 @@ const UserHomepage = () => {
   const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(true);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [filterCriteria, setFilterCriteria] = useState({ all: true, teams: {} });
 
 
   useEffect(() => {
@@ -39,6 +43,7 @@ const UserHomepage = () => {
   useEffect(() => {
     fetchProjects();
   }, []);
+
 
   const fetchProjects = async () => {
     try {
@@ -121,7 +126,6 @@ const UserHomepage = () => {
   };
   
   
-
   const handleAddMember = async (teamID, memberName) => {
     try {
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
@@ -228,14 +232,17 @@ const UserHomepage = () => {
   
 
   const renderProjects = () => {
-    // Ensure selectedTeam is defined and has a teamID before filtering projects
-    if (!selectedTeam) {
-      return <div>Please select a team to see its projects.</div>;
+    let filteredProjects = projects;
+
+    // Apply filter based on filterCriteria
+    if (!filterCriteria.all) {
+      filteredProjects = projects.filter(project => filterCriteria.teams[project.team?.teamID]);
     }
-  
-    // Filter projects based on the selected team
-    const filteredProjects = projects.filter(project => project.team && project.team.teamID === selectedTeam.teamID);
-    
+
+    if (filteredProjects.length === 0) {
+      return <div>No projects to display.</div>;
+    }
+
     return filteredProjects.map((project) => (
       <div
         key={project.projectID}
@@ -244,17 +251,13 @@ const UserHomepage = () => {
         style={{ cursor: 'pointer' }}
       >
         <h3>{project.projectName}</h3>
-        {/* Add more project details here */}
+        {/* Further project details */}
       </div>
     ));
   };
-  
-  
-  
-
 
   
-
+  
   const renderTeamMembers = () => {
     if (loadingMembers) return <div>Loading members...</div>;
     if (membersError) return <div className="error-message">{membersError}</div>;
@@ -279,7 +282,8 @@ const UserHomepage = () => {
     return teams.map((team) => (
       <div key={team.teamID} className={`team-card ${selectedTeam?.teamID === team.teamID ? 'selected team-card-selected' : ''}`}>
         <div className="team-header">
-          <button onClick={() => setSelectedTeam(team)} className="team-button">
+          {/* When a team is clicked, update both selectedTeam and filterCriteria */}
+          <button onClick={() => handleTeamSelect(team)} className="team-button">
             {team.teamName}
           </button>
           {team.isTeamCreator && (
@@ -288,7 +292,7 @@ const UserHomepage = () => {
             </button>
           )}
           {selectedTeam?.teamID === team.teamID && (
-            <button onClick={() => setSelectedTeam(null)} className="close-button">
+            <button onClick={() => handleTeamDeselect()} className="close-button">
               X
             </button>
           )}
@@ -300,7 +304,6 @@ const UserHomepage = () => {
             </div>
             <div className="team-actions">
               <button onClick={() => setIsAddMemberModalOpen(true)}>Add Member</button>
-              {/* Add more team actions if required */}
             </div>
           </div>
         )}
@@ -308,10 +311,24 @@ const UserHomepage = () => {
     ));
   };
 
+  const handleTeamSelect = (team) => {
+    setSelectedTeam(team);
+    setShowAllProjects(false); 
+    // Set filterCriteria to only include the selected team
+    setFilterCriteria({ all: false, teams: { [team.teamID]: true } });
+  };
+
+  const handleTeamDeselect = () => {
+    setSelectedTeam(null);
+    // Optionally reset filter to show all projects
+    setFilterCriteria({ all: true, teams: {} });
+  };
+
+
   
   return (
     <div className="user-homepage-container">
-      <TopBar /> {/* Includes the TopBar component */}
+      <TopBar /> 
       <div className="content-container">
         <aside className="team-list">
           <div className="team-header">
@@ -334,14 +351,22 @@ const UserHomepage = () => {
         <main className="project-list">
           <div className="project-header">
             <h2>Projects</h2>
+            <button onClick={() => setIsFilterModalOpen(true)} className="filter-projects-button">Filter Projects</button>
+            <FilterModal
+              isOpen={isFilterModalOpen}
+              onClose={() => setIsFilterModalOpen(false)}
+              teams={teams}
+              criteria={filterCriteria}
+              setCriteria={setFilterCriteria}
+            />
             <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
           </div>
+
           <AddProjectModal
             isOpen={isAddProjectModalOpen}
             onClose={() => setIsAddProjectModalOpen(false)}
             onSubmit={(projectName) => {
               handleAddProject(projectName);
-              // Optionally close the modal here or in the handleAddProject method
             }}
           />
           <div className="project-list-container">
@@ -352,7 +377,6 @@ const UserHomepage = () => {
       {error && <div className="error-message">{error}</div>}
     </div>
   );
-  
 };
   
 export default UserHomepage;

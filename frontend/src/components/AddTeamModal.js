@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
 
-
 const AddTeamModal = ({ isOpen, onClose, onSubmit }) => {
   const [teamName, setTeamName] = useState('');
 

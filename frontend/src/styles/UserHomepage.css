@@ -21,13 +21,14 @@ body, #root, .App, .user-homepage-container {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  height: 75px;
   background-color: #2d6a4f;
   border-radius: 8px;
   color: white;
 }
 
 .user-homepage-header img {
-  width: 150px;
+  width: 100px;
   height: auto;
   margin-right: 0px;
 }

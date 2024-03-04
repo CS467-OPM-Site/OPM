@@ -353,7 +353,7 @@ const UserHomepage = () => {
             <h2>Projects</h2>
             <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
             <FilterModal
-              isOpen={isFilterModalOpen}å
+              isOpen={isFilterModalOpen}
               onClose={() => setIsFilterModalOpen(false)}
               teams={teams}
               criteria={filterCriteria}
@@ -377,7 +377,6 @@ const UserHomepage = () => {
       {error && <div className="error-message">{error}</div>}
     </div>
   );
-  
 };
   
 export default UserHomepage;

@@ -27,7 +27,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
               required
             />
           </div>
-          <button type="submit">Add Project</button>11
+          <button type="submit">Add Project</button>
           <button type="button" onClick={onClose}>Cancel</button>
         </form>
       </div>
@@ -35,4 +35,4 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default AddProjectModal; 
+export default AddProjectModal;

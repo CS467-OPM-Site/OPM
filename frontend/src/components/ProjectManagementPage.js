@@ -50,7 +50,9 @@ const ProjectManagementPage = () => {
         columns={columns} 
         setColumns={setColumns} 
         isLoading={isLoading}
-        setIsLoading={setIsLoading} />
+        setIsLoading={setIsLoading} 
+        isTaskBeingAdded={(columnIDtoAddTaskTo !== -1)}
+        setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}/>
       {(columnIDtoAddTaskTo === -1) ?
       <div className='project-content-container'>
           {columns && columns
@@ -69,7 +71,10 @@ const ProjectManagementPage = () => {
       </div>
       :
       <div className='add-task-content-container'>
-        <AddTaskForm columnID={columnIDtoAddTaskTo} />
+        <AddTaskForm 
+            projectID={projectID} 
+            columnID={columnIDtoAddTaskTo}
+            setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}/>
       </div>
       }
     </div>

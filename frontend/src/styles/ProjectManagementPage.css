@@ -498,12 +498,105 @@
   text-decoration: underline;
 }
 
-/*
-.add-task-text-field > .MuiInputBase-root {
-  background: #81B29A;
+.add-cancel-task-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
-.add-task-text-field > .MuiInputBase-input:before {
-  background: red!important;
+#add-task-confirm-button {
+  width: 60%;
 }
-*/
+
+#cancel-add-task-confirm-button {
+  width: 35%
+}
+
+.add-task-text-field > .Mui-focused {
+  color: black!important;
+}
+
+.add-task-text-field:hover {
+  background: rgba(129, 178, 154, 1);
+  border-radius: 4px;
+}
+
+#assigned-to-form-container,
+#priority-form-container {
+  background: rgba(129, 178, 154, 0.85);
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+
+#priority-form-container:hover {
+  border-color: rgba(129, 255, 154, 0.6);
+}
+
+#task-assigned-to-radio-buttons-group-label,
+#task-due-date-label,
+#task-priority-radio-buttons-group-label {
+  text-align: left;
+  font-weight: 700;
+  text-decoration: underline;
+  color: black;
+}
+
+#priority-form-container > label {
+  color: black;
+}
+
+#due-date-form-container {
+  background: rgba(129, 178, 154, 0.85);
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+
+.add-task-due-date-calendar {
+  background: #81B29A;
+  color: black;
+  border-radius: 5px;
+  border-width: 8px;
+}
+
+.add-task-radio-group-container {
+  padding-inline: 10px;
+  color: black;
+}
+
+.add-task-due-date-calendar:hover .MuiInputBase-root {
+  border-width: 8px!important;
+  border-color: black!important;
+}
+
+.add-task-due-date-calendar > .Mui-focused > .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(129, 255, 154, 0.6)!important;
+}
+
+#assigned-to-form-container-scrollable {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(42px * 4.5); /* Show only 4.5 usernames max */
+}
+
+#assigned-to-label-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Smaller screen sizes */
+@media (width <= 1250px) {
+  .add-task-form-container {
+    width: 75%;
+  } 
+}

@@ -1,10 +1,8 @@
-/* FilterModal.css */
-
 .hidden {
     display: none !important;
   }
   
-.modal-backdrop {
+  .modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -47,14 +45,17 @@
   .filter-modal-content {
     display: flex;
     flex-direction: column;
+    align-items: flex-start; /* Align items to the start for consistent alignment */
   }
   
   .filter-modal-checkbox {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center the checkbox and label */
     margin: 10px 0;
   }
   
   .filter-modal-checkbox input[type="checkbox"] {
-    margin-right: 10px;
+    margin-right: 10px; /* Consistent spacing between the checkbox and the label */
   }
   
   .filter-modal-actions {

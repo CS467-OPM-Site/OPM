@@ -20,7 +20,7 @@ function FilterModal({ isOpen, onClose, teams, criteria, setCriteria }) {
     <div className={`modal-backdrop ${isOpen ? '' : 'hidden'}`}>
       <div className="filter-modal">
         <div className="filter-modal-header">
-          <h2 className="filter-modal-title">Filter Projects by Team Selection</h2>
+          <h2 className="filter-modal-title">Filter Projects by Team</h2>
           <button onClick={onClose} className="filter-modal-close-btn">X</button>
         </div>
         <div className="filter-modal-content">

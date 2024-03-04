@@ -32,8 +32,11 @@
   }
   
   .filter-modal-title {
-    margin: 0;
+    margin: 0 auto; /* Adds automatic margins to the left and right */
+    display: block; /* Ensure it's a block-level element */
+    width: 80%; /* Example width */
   }
+  
   
   .filter-modal-close-btn {
     background-color: transparent;

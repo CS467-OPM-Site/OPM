@@ -263,19 +263,19 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                 "title": "task1",
 >                 "taskID": 1, 
 >                 "priority": "High",
-                  "dueDate": "2023-11-01", # Or null  
+>                  "dueDate": "2023-11-01", # Or null  
 >                 "comments": 1, # Number of comments on task
-                  "taskIndex": 0, # Used for sorting eventually, default to -1
-                  "assignedTo": {
-                        "username": "username-of-assignee",
-                        "userID": 1
-                   }, # Or null
-                  "sprint": {
-                        "sprintID": 1,
-                        "sprintName": "Sprint Name",
-                        "endDate": "2023-11-01",
-                        "sprintLocation": "/api/v1/projects/1/sprints/1"
-                   }, # Or null
+>                  "taskIndex": 0, # Used for sorting eventually, default to -1
+>                  "assignedTo": {
+>                        "username": "username-of-assignee",
+>                        "userID": 1
+>                   }, # Or null
+>                  "sprint": {
+>                        "sprintID": 1,
+>                        "sprintName": "Sprint Name",
+>                        "endDate": "2023-11-01",
+>                        "sprintLocation": "/api/v1/projects/1/sprints/1"
+>                   }, # Or null
 >                 "taskLocation": "/api/v1/projects/1/tasks/1"
 >            },
 >           ]

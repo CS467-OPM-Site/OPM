@@ -353,10 +353,7 @@ const UserHomepage = () => {
         <main className="project-list">
           <div className="project-header">
             <h2>Projects</h2>
-            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
-          </div>
-
-          <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
+            <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
             <FilterModal
               isOpen={isFilterModalOpen}
               onClose={() => setIsFilterModalOpen(false)}
@@ -364,15 +361,19 @@ const UserHomepage = () => {
               criteria={filterCriteria}
               setCriteria={setFilterCriteria}
             />
+            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
+          </div>
 
-          {/* <div className="filter-options">
-            <button onClick={() => { setShowAllProjects(true); setSelectedTeam(null); }}>Show All Projects</button>
-            {teams.map((team) => (
-              <button key={team.teamID} onClick={() => { setSelectedTeam(team); setShowAllProjects(false); }}>
-                {team.teamName}
-              </button>
-            ))}
-          </div> */}
+          {/* <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
+            <FilterModal
+              isOpen={isFilterModalOpen}
+              onClose={() => setIsFilterModalOpen(false)}
+              teams={teams}
+              criteria={filterCriteria}
+              setCriteria={setFilterCriteria}
+            /> */}
+
+        
           <AddProjectModal
             isOpen={isAddProjectModalOpen}
             onClose={() => setIsAddProjectModalOpen(false)}

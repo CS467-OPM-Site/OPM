@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 function FilterModal({ isOpen, onClose, teams, criteria, setCriteria }) {
     const handleSelectAll = (e) => {
       setCriteria({ all: e.target.checked, teams: {} });

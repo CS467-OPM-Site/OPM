@@ -4,6 +4,7 @@ import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
 import ProjectColumn from './ProjectColumns';
 import ProjectMenuBar from './ProjectMenuBar';
+import AddTaskForm from './AddTaskForm';
 import { fetchProjectDetails } from '../services/projects';
 
 
@@ -13,6 +14,7 @@ const ProjectManagementPage = () => {
   const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
   const [projectID, setProjectID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [columnIDtoAddTaskTo, setColumnIDtoAddTaskTo] = useState(-1);
   const location = useLocation();
 
   useEffect(() => {
@@ -34,6 +36,10 @@ const ProjectManagementPage = () => {
     fetchDetails();
   }, []);
 
+  const handleAddingTask = (columnID) => {
+    setColumnIDtoAddTaskTo(columnID);
+  }
+
   return (
     <div className="user-homepage-container">
       <TopBar />
@@ -44,8 +50,11 @@ const ProjectManagementPage = () => {
         columns={columns} 
         setColumns={setColumns} 
         isLoading={isLoading}
-        setIsLoading={setIsLoading} />
-      <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'nowrap', overflow: 'auto' }} className='content-container'>
+        setIsLoading={setIsLoading} 
+        isTaskBeingAdded={(columnIDtoAddTaskTo !== -1)}
+        setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}/>
+      {(columnIDtoAddTaskTo === -1) ?
+      <div className='project-content-container'>
           {columns && columns
             .sort((a, b) => a.columnIndex - b.columnIndex)
             .map( column => ( 
@@ -56,9 +65,20 @@ const ProjectManagementPage = () => {
                 setColumns={setColumns}
                 setIsLoading={setIsLoading}
                 isOtherColumnBeingMoved={isColumnBeingMoved}
-                setIsOtherColumnBeingMoved={setIsColumnBeingMoved}/>
+                setIsOtherColumnBeingMoved={setIsColumnBeingMoved}
+                setIsAddingTask={handleAddingTask}/>
           ))}
       </div>
+      :
+      <div className='add-task-content-container'>
+        <AddTaskForm 
+            projectID={projectID} 
+            columnID={columnIDtoAddTaskTo}
+            setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}
+            columns={columns}
+            setColumns={setColumns}/>
+      </div>
+      }
     </div>
   );
 };

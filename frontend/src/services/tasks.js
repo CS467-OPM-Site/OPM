@@ -10,7 +10,6 @@ export const deleteTask = async(taskLocation) => {
     method: "DELETE",
     headers: {
       'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
     }
   });
 
@@ -25,6 +24,20 @@ export const moveTask = async(taskLocation, newColumnID) => {
     headers: {
       'Authorization': `Bearer ${idToken}`,
     }
+  });
+
+  return response;
+}
+
+export const addTask = async(projectID, taskDetails) => {
+  const idToken = await getIdToken();
+  const response = await fetch(`${API_BASE_URL}/projects/${projectID}/tasks`, { 
+    method: "POST",
+    headers: {
+      'Authorization': `Bearer ${idToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(taskDetails)
   });
 
   return response;

@@ -1,5 +1,20 @@
-.content-container {
+.project-content-container {
   display: flex;
+  justify-content: left;
+  flex-wrap: nowrap;
+  overflow: auto;
+  gap: 20px;
+  width: 100%;
+  height: -webkit-fill-available;
+  height: fill-available;
+  height: 100%;
+}
+
+.add-task-content-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow: auto;
   gap: 20px;
   width: 100%;
   height: -webkit-fill-available;
@@ -443,3 +458,226 @@
   background: #555;
 }
 
+.add-task-form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  align-content: center;
+  flex-wrap: nowrap;
+  padding: 10px;
+  border: 4px solid;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: 50%;
+  background-color: rgba(34, 38, 41, 0.7);
+  border-color: rgba(36, 170, 126, 1);
+  color: rgba(240, 234, 214, 0.8);
+  max-height: 100%;
+  overflow-y: auto;
+  gap: 20px;
+}
+
+.add-task-form-scrollable-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  border-color: rgba(36, 170, 126, 1);
+  color: rgba(240, 234, 214, 0.8);
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+#back-to-project-link-add-task-form {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+}
+
+#back-to-project-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  color: rgba(240, 234, 214, 0.8);
+}
+
+#back-to-project-container:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.add-cancel-task-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+#add-task-confirm-button {
+  width: 60%;
+}
+
+#cancel-add-task-confirm-button {
+  width: 35%
+}
+
+.add-task-description-field > .Mui-focused,
+.add-task-title-field > .Mui-focused {
+  color: black;
+}
+
+.valid-task-text-entry > .Mui-focused {
+  color: black!important;
+}
+
+.invalid-task-text-entry > .Mui-focused {
+  color: red!important;
+}
+
+.invalid-task-text-entry > .Mui-focused,
+.invalid-task-text-entry > p,
+.invalid-task-text-entry > label {
+  font-weight: 600!important;
+}
+
+.invalid-task-text-entry > .MuiFilledInput-root {
+  font-weight: 200!important;
+  color: black!important;
+}
+
+.invalid-task-text-entry > .Mui-focused input {
+  color: black!important;
+}
+
+.add-task-description-field,
+.add-task-title-field {
+  background: rgba(129, 178, 154, 0.85);
+  border-radius: 4px;
+}
+
+.add-task-description-field:hover,
+.add-task-title-field:hover {
+  background: rgba(129, 178, 154, 1);
+  border-radius: 4px;
+}
+
+#assigned-to-form-container,
+#priority-form-container {
+  background: rgba(129, 178, 154, 0.85);
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+
+#priority-form-container:hover {
+  border-color: rgba(129, 255, 154, 0.6);
+}
+
+#task-assigned-to-radio-buttons-group-label,
+#task-due-date-label,
+#task-priority-radio-buttons-group-label {
+  text-align: left;
+  font-weight: 700;
+  text-decoration: underline;
+  color: black;
+}
+
+#priority-form-container > label {
+  color: black;
+}
+
+#due-date-form-container {
+  background: rgba(129, 178, 154, 0.85);
+  padding: 10px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+
+.add-task-due-date-calendar {
+  background: #81B29A;
+  color: black;
+  border-radius: 5px;
+  border-width: 8px;
+}
+
+.add-task-radio-group-container {
+  padding-inline: 10px;
+  color: black;
+}
+
+.add-task-due-date-calendar:hover .MuiInputBase-root {
+  border-width: 8px!important;
+  border-color: black!important;
+}
+
+.valid-due-date > .Mui-focused > .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(129, 255, 154, 0.6)!important;
+}
+
+.invalid-due-date > .Mui-focused > .MuiOutlinedInput-notchedOutline {
+  border-color: red!important;
+}
+
+#assigned-to-form-container-scrollable {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(42px * 4.5); /* Show only 4.5 usernames max */
+}
+
+#assigned-to-label-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 20px;
+}
+
+#assigned-to-form-container:hover {
+  background: rgba(129, 178, 154, 1);
+}
+
+#add-task-general-error {
+  background: rgba(217, 47, 28, 0.3);
+  border: 2px red solid;
+  border-radius: 5px;
+  animation: fadeOutTaskError 5s ease-in forwards;
+}
+
+#hide-add-task-general-error {
+  display: none;
+}
+
+@keyframes fadeOutTaskError {
+  0% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+  }
+  
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Smaller screen sizes */
+@media (width <= 1250px) {
+  .add-task-form-container {
+    width: 75%;
+  } 
+}

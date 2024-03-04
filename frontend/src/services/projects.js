@@ -25,3 +25,15 @@ export const fetchProjectDetails = async(projectID) => {
       return response;
 }
 
+export const fetchProjectUsers = async(projectID) => {
+      const idToken = await getIdToken();
+      const response = await fetch(`${API_BASE_URL}/projects/${projectID}/users`, { 
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+        },
+      });
+
+      return response;
+}
+

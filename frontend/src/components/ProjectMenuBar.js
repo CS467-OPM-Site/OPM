@@ -19,7 +19,15 @@ const INVALID_TITLE = "Invalid title";
 const CANNOT_BE_EMPTY = "Cannot be empty";
 const TITLE_LENGTH_REQUIREMENT = "Must be 3-50 characters"
 
-const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading, setIsLoading }) => {
+const ProjectMenuBar = ({ 
+    projectName, 
+    projectID, 
+    columns, 
+    setColumns, 
+    isLoading, 
+    setIsLoading, 
+    isTaskBeingAdded,
+    setColumnIDtoAddTaskTo }) => {
   const [isAddColumnFieldShown, setIsAddColumnFieldShown] = useState(false);
   const [isAddColumnButtonEnabled, setIsAddColumnButtonEnabled] = useState(true);
   const [addColumnButtonText, setAddColumnButtonText] = useState(MAKE_NEW_COLUMN);
@@ -31,6 +39,11 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading
   const [enableDeleteProjectButton, setEnableDeleteProjectButton] = useState(true);
   const navigate = useNavigate();
   const handleNavigateToHome = () => navigate('/home');
+
+  const handleNavigateToProject = () => {
+    setColumnIDtoAddTaskTo(-1);
+    navigate(`/projects/${projectID}`, { state: { projectID: `${projectID}` } })
+  }
 
   const handleOnAddColumnClickShowForm = () => {
     if (!isAddColumnFieldShown) {
@@ -144,39 +157,44 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading
             <div className="project-page-menu-bar">
               <div className="project-page-buttons-loading-container">
                 <div className="project-page-project-buttons-container">
-                  <Button variant="contained" color="success" onClick={handleNavigateToHome}>Back to Projects</Button>
-                  <Button variant="contained" color="error" onClick={handleOnDeleteProjectClicked}>Delete Project</Button>
-                  <Dialog
-                    open={showDeleteProjectModal}
-                    onClose={handleDeleteDialogClosed}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle className="alert-delete-project" id="alert-delete-project-dialog-title">
-                      {"Delete this project?"}
-                    </DialogTitle>
-                    <DialogContent className="alert-delete-project" id="alert-delete-project-dialog-content">
-                      <DialogContentText id="alert-dialog-description">
-                        This cannot be undone. Note that this project must have no tasks remaining.
-                      </DialogContentText>
-                    {additionalModalDialogText &&
-                      <DialogContentText id="alert-dialog-confirmation">
-                        {additionalModalDialogText}
-                      </DialogContentText>
-                    }
-                    </DialogContent>
-                    <DialogActions className="alert-delete-project" id="alert-delete-project-dialog-actions">
-                      <Button variant="contained" color="success" onClick={handleDeleteDialogClosed}>Do Not Delete</Button>
-                      <Button 
-                        variant="contained" 
-                        color="error" 
-                        onClick={handleDeletingProject} 
-                        disabled={!enableDeleteProjectButton}
-                        autoFocus>
-                       Delete 
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                  {!isTaskBeingAdded ?
+                    <>
+                    <Button key="navigate-to-projects" variant="contained" color="success" onClick={handleNavigateToHome}>Back to Projects</Button>
+                    <Button variant="contained" color="error" onClick={handleOnDeleteProjectClicked}>Delete Project</Button>
+                    <Dialog
+                      open={showDeleteProjectModal}
+                      onClose={handleDeleteDialogClosed}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description">
+                      <DialogTitle className="alert-delete-project" id="alert-delete-project-dialog-title">
+                        {"Delete this project?"}
+                      </DialogTitle>
+                      <DialogContent className="alert-delete-project" id="alert-delete-project-dialog-content">
+                        <DialogContentText id="alert-dialog-description">
+                          This cannot be undone. Note that this project must have no tasks remaining.
+                        </DialogContentText>
+                      {additionalModalDialogText &&
+                        <DialogContentText id="alert-dialog-confirmation">
+                          {additionalModalDialogText}
+                        </DialogContentText>
+                      }
+                      </DialogContent>
+                      <DialogActions className="alert-delete-project" id="alert-delete-project-dialog-actions">
+                        <Button variant="contained" color="success" onClick={handleDeleteDialogClosed}>Do Not Delete</Button>
+                        <Button 
+                          variant="contained" 
+                          color="error" 
+                          onClick={handleDeletingProject} 
+                          disabled={!enableDeleteProjectButton}
+                          autoFocus>
+                         Delete 
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                    </>
+                  :
+                    <Button key="navigate-to-project" variant="contained" color="success" onClick={handleNavigateToProject}>Back to Project</Button>
+                  }
                 </div>
                 <CircularProgress 
                   className={!isLoading && "project-loading-icon-hide"}
@@ -192,6 +210,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading
                 :
                 <CircularProgress className="project-page-project-title" color="success"/>
               }
+              {!isTaskBeingAdded &&
               <div className="project-page-add-column-container">
                 <Button 
                   variant="contained"
@@ -226,7 +245,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading
                         color: "#000000"
                       },
                       "& .MuiFilledInput-root::after": {
-                        borderColor: "#2E7D32"
+                        borderColor: "rgba(129, 255, 154, 0.6)"
                       }
                     }} 
                     InputLabelProps={{ style: {color: isErrorInAddColumn ? "red" : "black" } }}
@@ -248,6 +267,7 @@ const ProjectMenuBar = ({ projectName, projectID, columns, setColumns, isLoading
                   </>
                 }
               </div>
+              }
             </div>
           </div>
 }

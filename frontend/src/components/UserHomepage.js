@@ -351,7 +351,7 @@ const UserHomepage = () => {
         <main className="project-list">
           <div className="project-header">
             <h2>Projects</h2>
-            <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
+            <button onClick={() => setIsFilterModalOpen(true)} className="filter-projects-button">Filter Projects</button>
             <FilterModal
               isOpen={isFilterModalOpen}
               onClose={() => setIsFilterModalOpen(false)}

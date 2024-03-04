@@ -29,6 +29,7 @@ const UserHomepage = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState({ all: true, teams: {} });
 
+
   useEffect(() => {
     fetchTeams();
   }, []);
@@ -42,6 +43,7 @@ const UserHomepage = () => {
   useEffect(() => {
     fetchProjects();
   }, []);
+
 
   const fetchProjects = async () => {
     try {
@@ -124,7 +126,6 @@ const UserHomepage = () => {
   };
   
   
-
   const handleAddMember = async (teamID, memberName) => {
     try {
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
@@ -230,8 +231,6 @@ const UserHomepage = () => {
   };
   
 
-  // Ensure FilterModal is either imported or defined correctly in this file
-
   const renderProjects = () => {
     let filteredProjects = projects;
 
@@ -305,7 +304,6 @@ const UserHomepage = () => {
             </div>
             <div className="team-actions">
               <button onClick={() => setIsAddMemberModalOpen(true)}>Add Member</button>
-              {/* Add more team actions if required */}
             </div>
           </div>
         )}
@@ -315,7 +313,7 @@ const UserHomepage = () => {
 
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
-    setShowAllProjects(false); // No longer necessary if using filterCriteria for all logic
+    setShowAllProjects(false); 
     // Set filterCriteria to only include the selected team
     setFilterCriteria({ all: false, teams: { [team.teamID]: true } });
   };
@@ -330,7 +328,7 @@ const UserHomepage = () => {
   
   return (
     <div className="user-homepage-container">
-      <TopBar /> {/* Includes the TopBar component */}
+      <TopBar /> 
       <div className="content-container">
         <aside className="team-list">
           <div className="team-header">
@@ -355,7 +353,7 @@ const UserHomepage = () => {
             <h2>Projects</h2>
             <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
             <FilterModal
-              isOpen={isFilterModalOpen}
+              isOpen={isFilterModalOpen}å
               onClose={() => setIsFilterModalOpen(false)}
               teams={teams}
               criteria={filterCriteria}
@@ -364,22 +362,11 @@ const UserHomepage = () => {
             <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
           </div>
 
-          {/* <button onClick={() => setIsFilterModalOpen(true)}>Filter Projects</button>
-            <FilterModal
-              isOpen={isFilterModalOpen}
-              onClose={() => setIsFilterModalOpen(false)}
-              teams={teams}
-              criteria={filterCriteria}
-              setCriteria={setFilterCriteria}
-            /> */}
-
-        
           <AddProjectModal
             isOpen={isAddProjectModalOpen}
             onClose={() => setIsAddProjectModalOpen(false)}
             onSubmit={(projectName) => {
               handleAddProject(projectName);
-              // Optionally close the modal here or in the handleAddProject method
             }}
           />
           <div className="project-list-container">

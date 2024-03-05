@@ -1,8 +1,10 @@
 import React, { useState, memo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 import { DriveFileRenameOutlineTwoTone, DeleteTwoTone, KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight } from "@mui/icons-material";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { deleteTask } from "../services/tasks";
+import  '../styles/TaskSummaryCard.css';
 
 
 const BASE_TASK_CONTAINER_CLASS = "task-summary-container"
@@ -13,10 +15,20 @@ const SHOW_ICONS = "show-task-summary-icon-container"
 const HIDE_ICONS = "hide-task-summary-icon-container"
 
 
-const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) => {
+const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading, setIsTaskBeingShown }) => {
   const [shouldPlayHideSlideAnimation, setShouldPlayHideSlideAnimation] = useState(0);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [deleteTaskModalAdditionalText, setDeleteTaskModalAdditionalText] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigateToTaskDetails = () => {
+    setIsTaskBeingShown(true);
+    navigate(`${location.pathname}/tasks/${currentTask.taskID}`, { 
+      state: { 
+        projectID: `${location.state.projectID}`,
+        taskID: `${currentTask.taskID}`} })
+  }
 
   const hideIconsAnimation = () => {
     setShouldPlayHideSlideAnimation(2)
@@ -96,7 +108,10 @@ const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) 
         </div>
         <div className="task-summary-edit-delete-icon-container">
           <DeleteTwoTone className="task-summary-edit-delete-icons" color="warning" onClick={() => setShowDeleteTaskModal(true)} />
-          <DriveFileRenameOutlineTwoTone className="task-summary-edit-delete-icons" color="secondary" />
+          <DriveFileRenameOutlineTwoTone 
+            className="task-summary-edit-delete-icons" 
+            onClick={handleNavigateToTaskDetails} 
+            color="secondary" />
           <Dialog
             open={showDeleteTaskModal}
             onClose={handleDeleteTaskDialogClosed}

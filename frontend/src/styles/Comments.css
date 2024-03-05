@@ -1,0 +1,45 @@
+.single-comment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 95%;
+  margin-bottom: 5%;
+  border: 2px solid;
+  border-color: rgba(36, 170, 126, 0.4);
+  border-radius: 10px;
+  padding: 2%;
+  background-color: rgba(34, 38, 41, 0.9);
+  font-size: 0.9rem;
+}
+
+.comment-body {
+  display: flex;
+  flex-direction: row;
+  padding-inline: 2%;
+  width: 95%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+.comment-footer,
+.comment-header {
+  display: flex;
+  flex-direction: row;
+  width: 95%;
+  justify-content: space-between;
+}
+
+.comment-footer {
+  font-size: 0.8rem;
+  padding-top: 1%;
+}
+
+.comment-header {
+  padding-bottom: 1%;
+}
+
+.comment-divider {
+  border-width: 1px;
+  border-color: rgba(36, 255, 126, 0.1);
+  width: 100%;
+}

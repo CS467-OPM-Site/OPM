@@ -119,3 +119,21 @@ CREATE TABLE Comments (
 );
 
 
+CREATE OR REPLACE FUNCTION update_last_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.last_updated = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- UPDATING TASKS LAST_UPDATED
+CREATE TRIGGER trigger_update_last_updated
+BEFORE UPDATE ON Tasks
+FOR EACH ROW
+EXECUTE FUNCTION update_last_updated();
+-- UPDATING COMMENTS PROJECTS
+CREATE TRIGGER trigger_update_last_updated
+BEFORE UPDATE ON Projects
+FOR EACH ROW
+EXECUTE FUNCTION update_last_updated();

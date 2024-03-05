@@ -39,7 +39,7 @@ function App() {
             {/* The path "/username" corresponds to the UsernameSetup */}
             <Route path="/username" element={<UsernameSetup />} />
             {/* The path "/projects" corresponds to the ProjectPage */}
-            <Route path="/projects/:projectId/*" element={<ProjectManagementPage />} />
+            <Route path="/projects/:projectId" element={<ProjectManagementPage />} />
           </Routes>
         </AuthProvider>
       </div>

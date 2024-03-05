@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Route, Routes, Outlet } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
+import ProjectColumn from './ProjectColumns';
 import ProjectMenuBar from './ProjectMenuBar';
 import AddTaskForm from './AddTaskForm';
-import TaskDetailPage from './TaskDetailPage';
 import { fetchProjectDetails } from '../services/projects';
-import ProjectColumnsContainer from './ProjectColumnsContainer';
 
 
 const ProjectManagementPage = () => {
   const [projectName, setProjectName] = useState('');
   const [columns, setColumns] = useState(null);
   const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
+  const [projectID, setProjectID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isTaskBeingAdded, setIsTaskBeingAdded] = useState(false);
-  const [isTaskBeingShown, setIsTaskBeingShown] = useState(false);
+  const [columnIDtoAddTaskTo, setColumnIDtoAddTaskTo] = useState(-1);
   const location = useLocation();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const currentProjectID = location.state.projectID;
+        setProjectID(currentProjectID);
         const response = await fetchProjectDetails(currentProjectID);         
         const jsonData = await response.json();
         setProjectName(jsonData.projectName);
@@ -36,53 +36,51 @@ const ProjectManagementPage = () => {
     fetchDetails();
   }, []);
 
-  const setTaskNotBeingAddedOrShown = () => {
-    setIsTaskBeingShown(false);
-    setIsTaskBeingAdded(false);
+  const handleAddingTask = (columnID) => {
+    setColumnIDtoAddTaskTo(columnID);
   }
 
-  const setColumnProps = () => {
-    return {
-      setColumns: setColumns,
-      setIsLoading: setIsLoading,
-      isOtherColumnBeingMoved: isColumnBeingMoved,
-      setIsOtherColumnBeingMoved: setIsColumnBeingMoved,
-      setIsTaskBeingAdded: setIsTaskBeingAdded,
-      setIsTaskBeingShown: setIsTaskBeingShown 
-    }
-  }
-  
   return (
-      <div className="project-management-container">
-        <TopBar />
-        <ProjectMenuBar 
-          key={projectName} 
-          projectName={projectName} 
-          columns={columns} 
-          setColumns={setColumns} 
-          isLoading={isLoading}
-          setIsLoading={setIsLoading} 
-          isTaskBeingAddedOrShown={isTaskBeingAdded || isTaskBeingShown}
-          setTaskNotBeingAddedOrShown={setTaskNotBeingAddedOrShown}/>
-        <Routes>
-          <Route path='' element={<Outlet />}>
-            <Route index element={
-                <ProjectColumnsContainer columns={columns} extraProps={setColumnProps()} />
-            } />
-            <Route path='/tasks' element={
-                <AddTaskForm 
-                    columns={columns}
-                    setColumns={setColumns}
-                    setIsLoading={setIsLoading}/>
-                } />
-            <Route path='/tasks/:taskId' element={
-                <TaskDetailPage />
-                } />
-          </Route>
-        </Routes>
+    <div className="user-homepage-container">
+      <TopBar />
+      <ProjectMenuBar 
+        key={projectID} 
+        projectName={projectName} 
+        projectID={projectID} 
+        columns={columns} 
+        setColumns={setColumns} 
+        isLoading={isLoading}
+        setIsLoading={setIsLoading} 
+        isTaskBeingAdded={(columnIDtoAddTaskTo !== -1)}
+        setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}/>
+      {(columnIDtoAddTaskTo === -1) ?
+      <div className='project-content-container'>
+          {columns && columns
+            .sort((a, b) => a.columnIndex - b.columnIndex)
+            .map( column => ( 
+              <ProjectColumn 
+                key={column.columnID} 
+                currentColumnIndex={column.columnIndex}
+                columns={columns} // State is truly based on this array, shallow copy and set this array on changes
+                setColumns={setColumns}
+                setIsLoading={setIsLoading}
+                isOtherColumnBeingMoved={isColumnBeingMoved}
+                setIsOtherColumnBeingMoved={setIsColumnBeingMoved}
+                setIsAddingTask={handleAddingTask}/>
+          ))}
+      </div>
+      :
+      <div className='add-task-content-container'>
+        <AddTaskForm 
+            projectID={projectID} 
+            columnID={columnIDtoAddTaskTo}
+            setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}
+            columns={columns}
+            setColumns={setColumns}/>
+      </div>
+      }
     </div>
   );
 };
 
 export default ProjectManagementPage;
-

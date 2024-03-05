@@ -96,17 +96,29 @@ body, #root, .App, .user-homepage-container {
 
 /* Hide delete button by default */
 .team-card .delete-button {
+ 
+  right: 10px; /* Adjust as needed to align with the card's edge */
+  top: 10px; /* Adjust as needed for vertical alignment */
   display: none;
-  margin-left: auto; /* Pushes the button to the right */
+  padding: 5px 10px; /* Adjust padding as needed */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #e63946;
+  color: white;
 }
+
 
 /* Show delete button on hover */
 .team-card:hover .delete-button {
-  display: inline-block;
+  display: block;
 }
+
 
 /* Apply similar styles for team-card as project-card */
 .team-card {
+  position: relative;
   background-color: #81b29a; /* Match project card color */
   padding: 15px; /* Match project card padding */
   border-radius: 8px; /* Match project card border-radius */

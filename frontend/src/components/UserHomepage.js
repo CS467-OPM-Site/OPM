@@ -76,18 +76,18 @@ const UserHomepage = () => {
       setError('Failed to load teams.');
     }
   };
-
+  
   const fetchTeamMembers = async (teamID) => {
     setLoadingMembers(true);
     setMembersError('');
     try {
-      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
-        headers: { 'Authorization': `Bearer ${currentUser.token}` },
+        headers: { 'Authorization': `Bearer ${idToken}` },
       });
       if (!response.ok) throw new Error('Failed to fetch team members');
       const data = await response.json();
-      console.log(data.members); // Log to see if member objects have IDs
       setTeamMembers(data.members);
     } catch (error) {
       console.error('Fetch Team Members Error:', error);
@@ -97,7 +97,6 @@ const UserHomepage = () => {
     }
   };
   
-
   const handleAddTeam = async (teamName) => {
     if (!teamName.trim()) {
       setError('Team name cannot be empty');
@@ -105,11 +104,13 @@ const UserHomepage = () => {
     }
   
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentUser.token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({ teamName }),
       });
@@ -124,16 +125,16 @@ const UserHomepage = () => {
     }
     setIsAddTeamModalOpen(false);
   };
-  
-  
+    
   const handleAddMember = async (teamID, memberName) => {
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members`, {
-      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentUser.token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({ username: memberName }),
       });
@@ -144,7 +145,7 @@ const UserHomepage = () => {
       setError('Failed to add team member.');
     }
   };
-
+  
   const handleRemoveMember = async (teamID, memberID) => {
     if (memberID === undefined) {
       console.error('Member ID is undefined');
@@ -152,11 +153,12 @@ const UserHomepage = () => {
     }
   
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}/members/${memberID}`, {
-      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}/members/${memberID}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${currentUser.token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
       });
       if (!response.ok) throw new Error('Failed to remove member');
@@ -167,10 +169,7 @@ const UserHomepage = () => {
     }
   };
   
-  
-
   const handleDeleteTeam = async (teamID) => {
-    // Check if there are members other than the creator.
     const nonCreatorMembers = teamMembers.filter(member => !member.isTeamCreator);
     if (nonCreatorMembers.length > 0) {
       // If there are, alert the user and do not proceed with deletion.
@@ -178,20 +177,20 @@ const UserHomepage = () => {
       return;
     }
   
-    // If it's only the creator, confirm the deletion.
+    
     if (!window.confirm('Are you sure you want to delete this team?')) return;
   
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/teams/${teamID}`, {
-      // const response = await fetch(`https://opm-api.propersi.me/api/v1/teams/${teamID}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${currentUser.token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
       });
       if (!response.ok) throw new Error('Failed to delete team');
-      
-      // Update the UI after successful deletion.
+  
       setTeams(prev => prev.filter(team => team.teamID !== teamID));
       setSelectedTeam(null);
       setTeamMembers([]); // Clear team members state
@@ -201,7 +200,6 @@ const UserHomepage = () => {
     }
   };
   
-
   const handleAddProject = async (projectName) => {
     if (!selectedTeam) {
       setError('Please select a team to add projects to.');
@@ -209,20 +207,19 @@ const UserHomepage = () => {
     }
   
     try {
+      const auth = getAuth();
+      const idToken = await auth.currentUser.getIdToken();
       const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
         headers: {
-          'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentUser.token}`,
+          'Authorization': `Bearer ${idToken}`,
         },
         body: JSON.stringify({ projectName: projectName, teamName: selectedTeam.teamName, teamID: selectedTeam.teamID}),
       });
       if (!response.ok) throw new Error('Failed to add project');
       const newProject = await response.json();
   
-      // Ensure newProject matches the expected structure, especially the team information
-      // Adjust this line if necessary to match your data structure
       setProjects(prev => [...prev, { ...newProject, team: selectedTeam }]);
     } catch (error) {
       console.error('Add Project Error:', error);
@@ -230,7 +227,6 @@ const UserHomepage = () => {
     }
   };
   
-
   const renderProjects = () => {
     let filteredProjects = projects;
 
@@ -256,8 +252,6 @@ const UserHomepage = () => {
     ));
   };
 
-  
-  
   const renderTeamMembers = () => {
     if (loadingMembers) return <div>Loading members...</div>;
     if (membersError) return <div className="error-message">{membersError}</div>;
@@ -321,7 +315,6 @@ const UserHomepage = () => {
     }
   };
   
-
   const handleTeamDeselect = () => {
     setSelectedTeam(null);
     // Optionally reset filter to show all projects
@@ -329,7 +322,6 @@ const UserHomepage = () => {
   };
 
 
-  
   return (
     <div className="user-homepage-container">
       <TopBar /> 

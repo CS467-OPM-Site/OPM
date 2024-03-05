@@ -45,8 +45,7 @@ export const addTask = async(projectID, taskDetails) => {
 
 export const getTask = async(taskLocation) => {
   const idToken = await getIdToken();
-  const taskURL = taskLocation.slice(URL_TRIM.length);
-  const response = await fetch(`${API_BASE_URL}${taskURL}`, { 
+  const response = await fetch(`${API_BASE_URL}${taskLocation}`, { 
     method: "GET",
     headers: {
       'Authorization': `Bearer ${idToken}`,

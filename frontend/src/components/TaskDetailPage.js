@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import '../styles/TaskDetailPage.css';
 import { Divider, Typography, CircularProgress } from '@mui/material';
 import { getTask } from '../services/tasks';
 
-const TaskDetailPage = ( { taskLocation } ) => { 
+const TaskDetailPage = ( {} ) => { 
   const [taskDetails, setTaskDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorLoadingTask, setErrorLoadingTask] = useState('');
-  console.log(taskLocation);
-  console.log(taskDetails);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
         setErrorLoadingTask('');
         setIsLoading(true);
-        const response = await getTask(taskLocation);
+        const response = await getTask(location.pathname);
         const responseJSON = await response.json();
 
         switch (response.status) {
@@ -69,19 +69,19 @@ const TaskDetailPage = ( { taskLocation } ) => {
   return (
   <>
   {!isLoading ?
-    <>
-    <div className="task-details-inner-container">
-        <Typography variant="h4">{taskDetails.title}</Typography>
-        <Typography variant="h5">{outputTaskDescription()}</Typography>
-        <Typography variant="h5">{outputDueDate()}</Typography>
-        <Typography variant="h5">{`Priority: ${taskDetails.priority}`}</Typography>
-        <Typography variant="h5">{outputAssignedTo()}</Typography>
+    <div className="task-details-content-container">
+      <div className="task-details-inner-container">
+          <Typography variant="h4">{taskDetails.title}</Typography>
+          <Typography variant="h5">{outputTaskDescription()}</Typography>
+          <Typography variant="h5">{outputDueDate()}</Typography>
+          <Typography variant="h5">{`Priority: ${taskDetails.priority}`}</Typography>
+          <Typography variant="h5">{outputAssignedTo()}</Typography>
+      </div>
+      <Divider id="task-detail-divider" orientation="vertical" flexItem />
+      <div className="comments-container">
+        <Typography>Here lies my comments</Typography>
+      </div>
     </div>
-    <Divider id="task-detail-divider" orientation="vertical" flexItem />
-    <div className="comments-container">
-      <Typography>Here lies my comments</Typography>
-    </div>
-    </>
   : 
     <div className="task-details-loading-container">
       { (errorLoadingTask === '') ?

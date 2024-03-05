@@ -149,7 +149,7 @@ public class ProjectsRepository {
         return create.select(PROJECTS.PROJECT_NAME, PROJECTS.PROJECT_ID, PROJECTS.LAST_UPDATED, PROJECTS.TEAM_ID, TEAMS.TEAM_NAME)
                 .from(PROJECTS)
                 .join(TEAMS)
-                .on(TEAMS.TEAM_ID.eq(PROJECTS.PROJECT_ID))
+                .on(TEAMS.TEAM_ID.eq(PROJECTS.TEAM_ID))
                 .where(PROJECTS.PROJECT_ID.eq(projectID))
                 .fetchSingleInto(ProjectUserSummaryDto.class);
     }

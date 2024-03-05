@@ -91,6 +91,17 @@ body, #root, .App, .user-homepage-container {
   overflow-y: auto; /* Keeps vertical scrolling */
 }
 
+/* Hide delete button by default */
+.team-card .delete-button {
+  display: none;
+  margin-left: auto; /* Pushes the button to the right */
+}
+
+/* Show delete button on hover */
+.team-card:hover .delete-button {
+  display: inline-block;
+}
+
 .team-card {
   background-color: #2d6a4f;
   padding: 20px;

@@ -272,7 +272,7 @@ const UserHomepage = () => {
       <div key={index} className="team-member">
         {member.username}
         <button onClick={() => confirmAndRemoveMember(member.userID)} className="remove-member-button">
-          Remove Member
+          X
         </button>
       </div>
     ));
@@ -284,18 +284,14 @@ const UserHomepage = () => {
         <div className="team-header">
           {/* When a team is clicked, update both selectedTeam and filterCriteria */}
           <button onClick={() => handleTeamSelect(team)} className="team-button">
-            {team.teamName}
+          <h3>{team.teamName}</h3>
           </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
               <FaTrash />
             </button>
           )}
-          {selectedTeam?.teamID === team.teamID && (
-            <button onClick={() => handleTeamDeselect()} className="close-button">
-              X
-            </button>
-          )}
+          
         </div>
         {selectedTeam?.teamID === team.teamID && (
           <div className="team-details">

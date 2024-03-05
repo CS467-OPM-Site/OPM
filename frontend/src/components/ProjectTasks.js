@@ -13,7 +13,7 @@ const SHOW_ICONS = "show-task-summary-icon-container"
 const HIDE_ICONS = "hide-task-summary-icon-container"
 
 
-const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) => {
+const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading, setTaskIDtoShow }) => {
   const [shouldPlayHideSlideAnimation, setShouldPlayHideSlideAnimation] = useState(0);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [deleteTaskModalAdditionalText, setDeleteTaskModalAdditionalText] = useState('');
@@ -96,7 +96,10 @@ const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading }) 
         </div>
         <div className="task-summary-edit-delete-icon-container">
           <DeleteTwoTone className="task-summary-edit-delete-icons" color="warning" onClick={() => setShowDeleteTaskModal(true)} />
-          <DriveFileRenameOutlineTwoTone className="task-summary-edit-delete-icons" color="secondary" />
+          <DriveFileRenameOutlineTwoTone 
+            className="task-summary-edit-delete-icons" 
+            onClick={() => setTaskIDtoShow(currentTask.taskID)} 
+            color="secondary" />
           <Dialog
             open={showDeleteTaskModal}
             onClose={handleDeleteTaskDialogClosed}

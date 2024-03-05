@@ -26,8 +26,9 @@ const ProjectMenuBar = ({
     setColumns, 
     isLoading, 
     setIsLoading, 
-    isTaskBeingAdded,
-    setColumnIDtoAddTaskTo }) => {
+    isTaskBeingAddedOrShown,
+    setColumnIDtoAddTaskTo,
+    setTaskIDtoShow}) => {
   const [isAddColumnFieldShown, setIsAddColumnFieldShown] = useState(false);
   const [isAddColumnButtonEnabled, setIsAddColumnButtonEnabled] = useState(true);
   const [addColumnButtonText, setAddColumnButtonText] = useState(MAKE_NEW_COLUMN);
@@ -42,6 +43,7 @@ const ProjectMenuBar = ({
 
   const handleNavigateToProject = () => {
     setColumnIDtoAddTaskTo(-1);
+    setTaskIDtoShow(-1);
     navigate(`/projects/${projectID}`, { state: { projectID: `${projectID}` } })
   }
 
@@ -157,7 +159,7 @@ const ProjectMenuBar = ({
             <div className="project-page-menu-bar">
               <div className="project-page-buttons-loading-container">
                 <div className="project-page-project-buttons-container">
-                  {!isTaskBeingAdded ?
+                  {!isTaskBeingAddedOrShown ?
                     <>
                     <Button key="navigate-to-projects" variant="contained" color="success" onClick={handleNavigateToHome}>Back to Projects</Button>
                     <Button variant="contained" color="error" onClick={handleOnDeleteProjectClicked}>Delete Project</Button>
@@ -210,7 +212,7 @@ const ProjectMenuBar = ({
                 :
                 <CircularProgress className="project-page-project-title" color="success"/>
               }
-              {!isTaskBeingAdded &&
+              {!isTaskBeingAddedOrShown &&
               <div className="project-page-add-column-container">
                 <Button 
                   variant="contained"

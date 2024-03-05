@@ -1,6 +1,14 @@
 import React, { memo, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
-import { DeleteForever, LibraryAdd, Cancel, KeyboardDoubleArrowRight, KeyboardDoubleArrowLeft, CompareArrows, NotInterested } from '@mui/icons-material';
+import { 
+  DeleteForever, 
+  LibraryAdd, 
+  Cancel, 
+  KeyboardDoubleArrowRight, 
+  KeyboardDoubleArrowLeft, 
+  CompareArrows, 
+  NotInterested } from '@mui/icons-material';
 import { deleteColumn, moveColumn } from '../services/columns';
 import ProjectTask from './ProjectTasks';
 import { moveTask } from '../services/tasks';
@@ -21,7 +29,8 @@ const ProjectColumn = memo(( {
       setIsLoading, 
       isOtherColumnBeingMoved, 
       setIsOtherColumnBeingMoved, 
-      setIsAddingTask } ) => {
+      setIsTaskBeingAdded,
+      setIsTaskBeingShown} ) => {
   const [columnError, setColumnError] = useState('');
   const [columnSuccess, setColumnSuccess] = useState('');
   const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
@@ -29,6 +38,8 @@ const ProjectColumn = memo(( {
   const [isColumnBeingDeleted, setIsColumnBeingDeleted] = useState(false);
   const [isWantingToMoveColumn, setIsWantingToMoveColumn] = useState(false);
   const [originalColumnOrder, setOriginalColumnOrder] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const removeOnLoadAnimation = () => {
@@ -39,6 +50,14 @@ const ProjectColumn = memo(( {
 
     removeOnLoadAnimation();
   }, []);
+
+  const handleNavigateToAddTask = () => {
+    setIsTaskBeingAdded(true);
+    navigate(`${location.pathname}/tasks`, { 
+        state: { 
+          projectID: location.state.projectID,
+          columnID: columns[currentColumnIndex].columnID} })
+  }
 
   const onDeleteColumnPressed = async() => {
     setIsLoading(true);
@@ -212,7 +231,6 @@ const ProjectColumn = memo(( {
       setColumns(newColumns);
       return;
     }
-    
   }
 
   const sendTaskMoveRequest = async (taskLocation, newColumnID) => {
@@ -231,6 +249,7 @@ const ProjectColumn = memo(( {
     return false;
   }
 
+                  /*onClick={() => ( setIsAddingTask(columns[currentColumnIndex].columnID))}*/
   return <div className={columnClassNameSet()} key={columns[currentColumnIndex].columnID}>
             <div className="column-container">
               <div className="column-title-container">
@@ -263,7 +282,8 @@ const ProjectColumn = memo(( {
                   currentTask={task} 
                   removeTask={removeTask} 
                   moveTask={onMoveTask}
-                  setIsLoading={setIsLoading}/> ) 
+                  setIsLoading={setIsLoading}
+                  setIsTaskBeingShown={setIsTaskBeingShown}/> ) 
               )}
               </div>
               <div className="column-bottom-button-container">
@@ -276,7 +296,7 @@ const ProjectColumn = memo(( {
                   startIcon={<NotInterested />}>Stop Moving</Button>
                 :
                 <Button 
-                  onClick={() => ( setIsAddingTask(columns[currentColumnIndex].columnID))}
+                  onClick={handleNavigateToAddTask}
                   disabled={isOtherColumnBeingMoved} 
                   variant="contained" 
                   color="success" 

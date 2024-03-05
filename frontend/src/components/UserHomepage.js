@@ -272,7 +272,7 @@ const UserHomepage = () => {
       <div key={index} className="team-member">
         {member.username}
         <button onClick={() => confirmAndRemoveMember(member.userID)} className="remove-member-button">
-          Remove Member
+          X
         </button>
       </div>
     ));
@@ -284,18 +284,14 @@ const UserHomepage = () => {
         <div className="team-header">
           {/* When a team is clicked, update both selectedTeam and filterCriteria */}
           <button onClick={() => handleTeamSelect(team)} className="team-button">
-            {team.teamName}
+          <h3>{team.teamName}</h3>
           </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
               <FaTrash />
             </button>
           )}
-          {selectedTeam?.teamID === team.teamID && (
-            <button onClick={() => handleTeamDeselect()} className="close-button">
-              X
-            </button>
-          )}
+          
         </div>
         {selectedTeam?.teamID === team.teamID && (
           <div className="team-details">
@@ -312,11 +308,19 @@ const UserHomepage = () => {
   };
 
   const handleTeamSelect = (team) => {
-    setSelectedTeam(team);
-    setShowAllProjects(false); 
-    // Set filterCriteria to only include the selected team
-    setFilterCriteria({ all: false, teams: { [team.teamID]: true } });
+    if (selectedTeam && selectedTeam.teamID === team.teamID) {
+      // If the clicked team is already selected, deselect it
+      setSelectedTeam(null);
+      setShowAllProjects(true); // Optionally show all projects when no team is selected
+      setFilterCriteria({ all: true, teams: {} }); // Reset filter to show all projects
+    } else {
+      // If the clicked team is not the currently selected team, select it
+      setSelectedTeam(team);
+      setShowAllProjects(false);
+      setFilterCriteria({ all: false, teams: { [team.teamID]: true } }); // Update filter to only include the selected team
+    }
   };
+  
 
   const handleTeamDeselect = () => {
     setSelectedTeam(null);
@@ -350,6 +354,8 @@ const UserHomepage = () => {
         </aside>
         <main className="project-list">
           <div className="project-header">
+            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
+
             <h2>Projects</h2>
             <button onClick={() => setIsFilterModalOpen(true)} className="filter-projects-button">Filter Projects</button>
             <FilterModal
@@ -359,7 +365,6 @@ const UserHomepage = () => {
               criteria={filterCriteria}
               setCriteria={setFilterCriteria}
             />
-            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
           </div>
 
           <AddProjectModal

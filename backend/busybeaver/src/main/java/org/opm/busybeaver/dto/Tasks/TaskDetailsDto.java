@@ -18,11 +18,11 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     @Nullable
     private final String description;
     private final String priority;
-    private final ColumnInTaskDto columnInTaskDto;
+    private final ColumnInTaskDto column;
     @Nullable
     private UserSummaryDto assignedTo;
     @Nullable
-    private SprintSummaryDto sprintSummaryDto;
+    private SprintSummaryDto sprint;
     private List<CommentInTaskDto> comments;
 
     private String taskLocation;
@@ -43,14 +43,14 @@ public final class TaskDetailsDto implements TaskBasicInterface {
         this.priority = priority;
         this.dueDate = dueDate;
 
-        this.columnInTaskDto = new ColumnInTaskDto(columnTitle, columnID, columnIndex);
+        this.column = new ColumnInTaskDto(columnTitle, columnID, columnIndex);
 
         if (userID != null && username != null) {
             this.assignedTo = new UserSummaryDto(username, userID);
         }
 
         if (sprintID != null) {
-            this.sprintSummaryDto = new SprintSummaryDto(sprintID, sprintName, startDate, endDate);
+            this.sprint = new SprintSummaryDto(sprintID, sprintName, startDate, endDate);
         }
     }
 
@@ -65,10 +65,10 @@ public final class TaskDetailsDto implements TaskBasicInterface {
                 BusyBeavPaths.PROJECTS.getValue() +
                 "/" + projectID + BusyBeavPaths.TASKS.getValue() + "/" + getTaskID();
 
-        columnInTaskDto.setColumnLocation(contextPath, projectID);
+        column.setColumnLocation(contextPath, projectID);
 
-        if (sprintSummaryDto != null) {
-            sprintSummaryDto.setSprintLocation(contextPath, projectID);
+        if (sprint != null) {
+            sprint.setSprintLocation(contextPath, projectID);
         }
 
         if (!comments.isEmpty()) {
@@ -100,8 +100,8 @@ public final class TaskDetailsDto implements TaskBasicInterface {
         return dueDate;
     }
 
-    public ColumnInTaskDto getColumnInTaskDto() {
-        return columnInTaskDto;
+    public ColumnInTaskDto getColumn() {
+        return column;
     }
 
     @Nullable
@@ -110,8 +110,8 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     }
 
     @Nullable
-    public SprintSummaryDto getSprintSummaryDto() {
-        return sprintSummaryDto;
+    public SprintSummaryDto getSprint() {
+        return sprint;
     }
 
     public List<CommentInTaskDto> getComments() {

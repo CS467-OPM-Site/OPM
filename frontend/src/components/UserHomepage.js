@@ -358,6 +358,8 @@ const UserHomepage = () => {
         </aside>
         <main className="project-list">
           <div className="project-header">
+            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
+
             <h2>Projects</h2>
             <button onClick={() => setIsFilterModalOpen(true)} className="filter-projects-button">Filter Projects</button>
             <FilterModal
@@ -367,7 +369,6 @@ const UserHomepage = () => {
               criteria={filterCriteria}
               setCriteria={setFilterCriteria}
             />
-            <button onClick={() => setIsAddProjectModalOpen(true)} className="add-project-button">Add Project</button>
           </div>
 
           <AddProjectModal

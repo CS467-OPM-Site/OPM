@@ -7,8 +7,6 @@ import '../styles/Comments.css';
 const TaskComment = ( { comment } ) => {
   const today = dayjs();
   const commentTime = dayjs(comment.commentedAt);
-  console.log(commentTime);
-  console.log(today);
 
   let timeToPrint = commentTime;
   if (commentTime.isBefore(today, 'day')) {
@@ -67,7 +65,6 @@ const TaskComment = ( { comment } ) => {
     }
 
   }
-  console.log(timeToPrint);
 
   return (
   <div key={comment.commentID} className="single-comment">

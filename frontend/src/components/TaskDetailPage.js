@@ -10,7 +10,6 @@ const TaskDetailPage = ({}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorLoadingTask, setErrorLoadingTask] = useState('');
   const location = useLocation();
-  console.log(taskDetails);
 
   useEffect(() => {
     const fetchTaskDetails = async () => {

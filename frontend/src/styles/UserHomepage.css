@@ -137,22 +137,25 @@ body, #root, .App, .user-homepage-container {
 }
 
 .team-button {
-  width: 100%; /* Make the button fill the card */
-  text-align: left; /* Align text to the left */
-  padding: 10px 15px; /* Adjust padding if necessary */
-  padding: 10px 15px;
+  width: 100%; /* Make the button fill the card for easier clicking */
+  text-align: center; /* Center text horizontally */
+  padding: 12px 15px; /* Adjust padding to center text vertically, match project card */
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
-  background-color: #81b29a;
-  color: white;
+  font-weight: bold; /* Match project name style */
+  background-color: #81b29a; /* Match project card background color */
+  color: white; /* Match project name text color */
+  font-size: 1.25rem; /* Adjust font size to match project names */
+  display: block; /* Ensure the button takes the full width */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
+/* Add hover effect to match project cards */
 .team-button:hover {
-  background-color: #679267; /* Slightly darker shade when hovered */
-  /* Rest of the hover styles */
+  background-color: #679267; /* Slightly darker shade for hover effect */
 }
+
 
 .close-button {
   display: none;

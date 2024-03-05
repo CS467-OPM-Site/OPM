@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Route, Routes, Outlet } from 'react-router-dom';
 import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
 import ProjectColumn from './ProjectColumns';
@@ -7,27 +7,24 @@ import ProjectMenuBar from './ProjectMenuBar';
 import AddTaskForm from './AddTaskForm';
 import TaskDetailPage from './TaskDetailPage';
 import { fetchProjectDetails } from '../services/projects';
+import ProjectColumnsContainer from './ProjectColumnsContainer';
 
 
 const ProjectManagementPage = () => {
   const [projectName, setProjectName] = useState('');
-  const [projectLocation, setProjectLocation] = useState('');
   const [columns, setColumns] = useState(null);
   const [isColumnBeingMoved, setIsColumnBeingMoved] = useState(false);
-  const [projectID, setProjectID] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [columnIDtoAddTaskTo, setColumnIDtoAddTaskTo] = useState(-1);
-  const [taskIDtoShow, setTaskIDtoShow] = useState(-1);
+  const [isTaskBeingAdded, setIsTaskBeingAdded] = useState(false);
+  const [isTaskBeingShown, setIsTaskBeingShown] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
         const currentProjectID = location.state.projectID;
-        setProjectID(currentProjectID);
         const response = await fetchProjectDetails(currentProjectID);         
         const jsonData = await response.json();
-        setProjectLocation(jsonData.projectLocation);
         setProjectName(jsonData.projectName);
         console.log(jsonData);
         setColumns(jsonData.columns);
@@ -40,62 +37,53 @@ const ProjectManagementPage = () => {
     fetchDetails();
   }, []);
 
-  const handleAddingTask = (columnID) => {
-    setColumnIDtoAddTaskTo(columnID);
-  }
-  
-  const buildTaskLocation = () => {
-    return `${projectLocation}/tasks/${taskIDtoShow}`;
+  const setTaskNotBeingAddedOrShown = () => {
+    setIsTaskBeingShown(false);
+    setIsTaskBeingAdded(false);
   }
 
+  const setColumnProps = () => {
+    return {
+      setColumns: setColumns,
+      setIsLoading: setIsLoading,
+      isOtherColumnBeingMoved: isColumnBeingMoved,
+      setIsOtherColumnBeingMoved: setIsColumnBeingMoved,
+      setIsTaskBeingAdded: setIsTaskBeingAdded,
+      setIsTaskBeingShown: setIsTaskBeingShown 
+    }
+  }
+  
   return (
-    <div className="user-homepage-container">
-      <TopBar />
-      <ProjectMenuBar 
-        key={projectID} 
-        projectName={projectName} 
-        projectID={projectID} 
-        columns={columns} 
-        setColumns={setColumns} 
-        isLoading={isLoading}
-        setIsLoading={setIsLoading} 
-        isTaskBeingAddedOrShown={(columnIDtoAddTaskTo !== -1 || taskIDtoShow !== -1)}
-        setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}
-        setTaskIDtoShow={setTaskIDtoShow}/>
-      {(columnIDtoAddTaskTo === -1 && taskIDtoShow === -1) ?
-      <div className='project-content-container'>
-          {columns && columns
-            .sort((a, b) => a.columnIndex - b.columnIndex)
-            .map( column => ( 
-              <ProjectColumn 
-                key={column.columnID} 
-                currentColumnIndex={column.columnIndex}
-                columns={columns} // State is truly based on this array, shallow copy and set this array on changes
-                setColumns={setColumns}
-                setIsLoading={setIsLoading}
-                isOtherColumnBeingMoved={isColumnBeingMoved}
-                setIsOtherColumnBeingMoved={setIsColumnBeingMoved}
-                setIsAddingTask={handleAddingTask}
-                setTaskIDtoShow={setTaskIDtoShow}/>
-          ))}
-      </div>
-      : (columnIDtoAddTaskTo === -1 && taskIDtoShow !== -1) ? 
-        <div className='task-details-content-container'>
-            <TaskDetailPage taskLocation={buildTaskLocation()} />
-        </div>
-        :
-        <div className='add-task-content-container'>
-          <AddTaskForm 
-              projectID={projectID} 
-              columnID={columnIDtoAddTaskTo}
-              setColumnIDtoAddTaskTo={setColumnIDtoAddTaskTo}
-              columns={columns}
-              setColumns={setColumns}
-              setIsLoading={setIsLoading}/>
-        </div>
-      }
+      <div className="project-management-container">
+        <TopBar />
+        <ProjectMenuBar 
+          key={projectName} 
+          projectName={projectName} 
+          columns={columns} 
+          setColumns={setColumns} 
+          isLoading={isLoading}
+          setIsLoading={setIsLoading} 
+          isTaskBeingAddedOrShown={isTaskBeingAdded || isTaskBeingShown}
+          setTaskNotBeingAddedOrShown={setTaskNotBeingAddedOrShown}/>
+        <Routes>
+          <Route path='' element={<Outlet />}>
+            <Route index element={
+                <ProjectColumnsContainer columns={columns} extraProps={setColumnProps()} />
+            } />
+            <Route path='/tasks' element={
+                <AddTaskForm 
+                    columns={columns}
+                    setColumns={setColumns}
+                    setIsLoading={setIsLoading}/>
+                } />
+            <Route path='/tasks/:taskId' element={
+                <TaskDetailPage />
+                } />
+          </Route>
+        </Routes>
     </div>
   );
 };
 
 export default ProjectManagementPage;
+

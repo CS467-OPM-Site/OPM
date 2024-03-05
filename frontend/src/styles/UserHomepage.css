@@ -83,6 +83,9 @@ body, #root, .App, .user-homepage-container {
 }
 
 .team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   flex: 1; /* Allows the team list to grow and fill available space */
   background-color: #2d6a4f;
   padding: 20px;
@@ -102,15 +105,22 @@ body, #root, .App, .user-homepage-container {
   display: inline-block;
 }
 
+/* Apply similar styles for team-card as project-card */
 .team-card {
-  background-color: #2d6a4f;
-  padding: 20px;
-  border-radius: 8px;
-  color: white;
-  margin-bottom: 10px;
-  transition: all 0.3s ease;
-  position: relative;
+  background-color: #81b29a; /* Match project card color */
+  padding: 15px; /* Match project card padding */
+  border-radius: 8px; /* Match project card border-radius */
+  margin-bottom: 10px; /* Match project card margin-bottom */
+  transition: all 0.3s ease; /* Keep the transition for hover effect */
+  cursor: pointer; /* Suggest adding a pointer cursor to indicate it's clickable */
 }
+
+/* When hovering over the team card */
+.team-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Match project card hover effect */
+}
+
 
 .team-card.selected .team-details-container {
   display: flex;
@@ -127,6 +137,9 @@ body, #root, .App, .user-homepage-container {
 }
 
 .team-button {
+  width: 100%; /* Make the button fill the card */
+  text-align: left; /* Align text to the left */
+  padding: 10px 15px; /* Adjust padding if necessary */
   padding: 10px 15px;
   border: none;
   border-radius: 4px;
@@ -137,7 +150,8 @@ body, #root, .App, .user-homepage-container {
 }
 
 .team-button:hover {
-  background-color: #679267;
+  background-color: #679267; /* Slightly darker shade when hovered */
+  /* Rest of the hover styles */
 }
 
 .close-button {
@@ -192,6 +206,9 @@ body, #root, .App, .user-homepage-container {
 }
 
 .project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   flex: 3;
   background-color: #2d6a4f;
   padding: 20px;
@@ -234,6 +251,8 @@ body, #root, .App, .user-homepage-container {
   border-radius: 4px;
   color: #333;
 }
+
+
 
 .team-header, .project-header {
   display: flex;

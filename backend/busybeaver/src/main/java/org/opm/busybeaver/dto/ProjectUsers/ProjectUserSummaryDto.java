@@ -16,7 +16,7 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
     private final LocalDateTime lastUpdated;
     private String projectLocation;
     private final TeamSummaryInProjectSummaryDto team;
-    private List<UserSummaryDto> users;
+    private List<ProjectUserShortDto> users;
 
     @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
     public ProjectUserSummaryDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
@@ -26,7 +26,7 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
         this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
     }
 
-    public void setUsers(List<UserSummaryDto> users) {
+    public void setUsers(List<ProjectUserShortDto> users) {
         this.users = users;
     }
 
@@ -66,7 +66,7 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
         return lastUpdated;
     }
 
-    public List<UserSummaryDto> getUsers() {
+    public List<ProjectUserShortDto> getUsers() {
         return users;
     }
 }

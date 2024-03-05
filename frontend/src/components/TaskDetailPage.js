@@ -46,7 +46,7 @@ const TaskDetailPage = ({}) => {
     const isNull = taskDetails.description === null;
     const taskDescription = isNull ? 
         "No description available" :
-        taskDetails.taskDescription;
+        taskDetails.description;
 
     return (
       <Typography className="task-description">

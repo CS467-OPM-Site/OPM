@@ -3,6 +3,7 @@ package org.opm.busybeaver.repository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -42,12 +43,13 @@ public class ProjectUsersRepository {
         // JOIN BeaverUsers
         // ON ProjectUsers.user_id = BeaverUsers.user_id
         // WHERE ProjectUsers.project_id = projectID;
-        List<UserSummaryDto> projectUsers = create.select(BEAVERUSERS.USERNAME, PROJECTUSERS.USER_ID)
-                .from(PROJECTUSERS)
-                .join(BEAVERUSERS)
-                .on(PROJECTUSERS.USER_ID.eq(BEAVERUSERS.USER_ID))
-                .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
-                .fetchInto(UserSummaryDto.class);
+        List<ProjectUserShortDto> projectUsers =
+                create.select(BEAVERUSERS.USERNAME, PROJECTUSERS.USER_ID, PROJECTUSERS.USER_PROJECT_ID)
+                    .from(PROJECTUSERS)
+                    .join(BEAVERUSERS)
+                    .on(PROJECTUSERS.USER_ID.eq(BEAVERUSERS.USER_ID))
+                    .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
+                    .fetchInto(ProjectUserShortDto.class);
 
         projectUserSummaryDto.setUsers(projectUsers);
 

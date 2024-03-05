@@ -276,7 +276,7 @@ const AddTaskForm = ( { columns, setColumns, setIsLoading } ) => {
                 >
               <FormControlLabel key="NoUser" value="None" control={<Radio color="secondary" />} label="None" aria-selected/>
             {projectUsers.map(user => (
-              <FormControlLabel key={user.userID} value={user.userID} control={<Radio color="secondary" />} label={user.username}/>
+              <FormControlLabel key={user.userProjectID} value={user.userProjectID} control={<Radio color="secondary" />} label={user.username}/>
             ))}
             </RadioGroup>
           </div>

@@ -15,7 +15,6 @@ const TopBar = () => {
       navigate('/'); // Redirect to splash page
     } catch (error) {
       console.error("Failed to log out", error);
-      // Handle logout error (e.g., show a message to the user)
     }
   };
 

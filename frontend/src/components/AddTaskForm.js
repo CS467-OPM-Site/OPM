@@ -12,7 +12,7 @@ import { addTask } from '../services/tasks';
 const TITLE_REQUIREMENTS = "Task title must be 3-50 characters";
 const DESCRIPTION_REQUIREMENTS = "Description must be 500 characters or less";
 
-const AddTaskForm = ( { projectID, columnID, setColumnIDtoAddTaskTo, columns, setColumns } ) => {
+const AddTaskForm = ( { projectID, columnID, setColumnIDtoAddTaskTo, columns, setColumns, setIsLoading } ) => {
   const [projectUsers, setProjectUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [taskTitle, setTaskTitle] = useState('');
@@ -87,8 +87,10 @@ const AddTaskForm = ( { projectID, columnID, setColumnIDtoAddTaskTo, columns, se
       priority: taskPriority
     }
 
+    setIsLoading(true);
     const response = await addTask(projectID, newTaskDetails);
     const responseJSON = await response.json();
+    setIsLoading(false);
 
     switch (response.status) {
       case 201: {

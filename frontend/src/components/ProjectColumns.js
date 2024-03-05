@@ -21,7 +21,8 @@ const ProjectColumn = memo(( {
       setIsLoading, 
       isOtherColumnBeingMoved, 
       setIsOtherColumnBeingMoved, 
-      setIsAddingTask } ) => {
+      setIsAddingTask,
+      setTaskIDtoShow} ) => {
   const [columnError, setColumnError] = useState('');
   const [columnSuccess, setColumnSuccess] = useState('');
   const [shouldFadeOutSuccess, setShouldFadeOutSuccess] = useState(false);
@@ -212,7 +213,6 @@ const ProjectColumn = memo(( {
       setColumns(newColumns);
       return;
     }
-    
   }
 
   const sendTaskMoveRequest = async (taskLocation, newColumnID) => {
@@ -263,7 +263,8 @@ const ProjectColumn = memo(( {
                   currentTask={task} 
                   removeTask={removeTask} 
                   moveTask={onMoveTask}
-                  setIsLoading={setIsLoading}/> ) 
+                  setIsLoading={setIsLoading}
+                  setTaskIDtoShow={setTaskIDtoShow}/> ) 
               )}
               </div>
               <div className="column-bottom-button-container">

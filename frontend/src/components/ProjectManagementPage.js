@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, Route, Routes, Outlet } from 'react-router-dom';
 import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
-import ProjectColumn from './ProjectColumns';
 import ProjectMenuBar from './ProjectMenuBar';
 import AddTaskForm from './AddTaskForm';
 import TaskDetailPage from './TaskDetailPage';

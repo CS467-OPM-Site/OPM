@@ -95,6 +95,7 @@ public class TasksRepository {
                 COLUMNS.COLUMN_ID,
                 COLUMNS.COLUMN_TITLE,
                 COLUMNS.COLUMN_INDEX,
+                PROJECTUSERS.USER_PROJECT_ID,
                 PROJECTUSERS.USER_ID,
                 BEAVERUSERS.USERNAME,
                 SPRINTS.SPRINT_ID,

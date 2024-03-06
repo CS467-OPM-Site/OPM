@@ -137,33 +137,44 @@ public class SprintsRepository {
         // First get all tasks in sprint
         // SELECT Tasks.title, Tasks.task_id, Tasks.priority, Tasks.due_date, Tasks.description,
         //          COUNT(Comments.task_id) as comments,
-        //          Tasks.assigned_to,
-        //          (SELECT BeaverUsers.username FROM BeaverUsers WHERE BeaverUsers.user_id = Tasks.assigned_to),
-        //          Tasks.column_id, Columns.column_index, Columns.column_name, Columns.column_id
+        //          Beaverusers.username, ProjectUsers.user_project_id, ProjectUsers.user_id
+        //          Tasks.column_id, Columns.column_index, Columns.column_title, Columns.column_id
         // FROM Tasks
         // LEFT JOIN Comments
         // ON Tasks.task_id = Comments.task_id
         // JOIN Columns
         // ON Tasks.column_id = Columns.column_id
+        // LEFT JOIN ProjectUsers
+        // ON ProjectUsers.user_project_Id = Tasks.assigned_to
+        // LEFT JOIN BeaverUser
+        // ON BeaverUsers.user_id = ProjectUsers.user_id
         // WHERE Tasks.project_id = projectID
-        // GROUP BY Tasks.task_id, Columns.column_index, Columns.column_title, Columns.column_id;
+        // GROUP BY Tasks.task_id, Columns.column_index, Columns.column_title, Columns.column_id
+        //      Beaverusers.username, Projectusers.user_project_id, Projectusers.user_id;
         @Nullable List<TaskBasicInSprintDto> tasksInSprintInProject =
                 create.select(TASKS.TITLE, TASKS.TASK_ID, TASKS.PRIORITY, TASKS.DUE_DATE, TASKS.DESCRIPTION,
                                 count(COMMENTS.TASK_ID).as(COMMENTS.getName()),
-                                TASKS.ASSIGNED_TO,
-                                create.select(BEAVERUSERS.USERNAME)
-                                        .from(BEAVERUSERS)
-                                        .where(BEAVERUSERS.USER_ID.eq(TASKS.ASSIGNED_TO))
-                                        .asField(BEAVERUSERS.USERNAME.getName()),
+                                BEAVERUSERS.USERNAME, PROJECTUSERS.USER_PROJECT_ID, PROJECTUSERS.USER_ID,
                                 COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_ID)
                         .from(TASKS)
                         .leftJoin(COMMENTS)
                         .on(TASKS.TASK_ID.eq(COMMENTS.TASK_ID))
                         .join(COLUMNS)
                         .on(TASKS.COLUMN_ID.eq(COLUMNS.COLUMN_ID))
+                        .leftJoin(PROJECTUSERS)
+                        .on(PROJECTUSERS.USER_PROJECT_ID.eq(TASKS.ASSIGNED_TO))
+                        .leftJoin(BEAVERUSERS)
+                        .on(BEAVERUSERS.USER_ID.eq(PROJECTUSERS.USER_ID))
                         .where(TASKS.PROJECT_ID.eq(projectID))
                         .and(TASKS.SPRINT_ID.eq(sprintID))
-                        .groupBy(TASKS.TASK_ID, COLUMNS.COLUMN_INDEX, COLUMNS.COLUMN_TITLE, COLUMNS.COLUMN_ID)
+                        .groupBy(
+                                TASKS.TASK_ID,
+                                COLUMNS.COLUMN_INDEX,
+                                COLUMNS.COLUMN_TITLE,
+                                COLUMNS.COLUMN_ID,
+                                BEAVERUSERS.USERNAME,
+                                PROJECTUSERS.USER_PROJECT_ID,
+                                PROJECTUSERS.USER_ID)
                         .fetchInto(TaskBasicInSprintDto.class);
 
         // Next, get sprint details

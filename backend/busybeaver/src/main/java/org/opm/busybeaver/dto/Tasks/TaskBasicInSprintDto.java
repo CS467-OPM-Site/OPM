@@ -1,11 +1,8 @@
 package org.opm.busybeaver.dto.Tasks;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.opm.busybeaver.dto.Columns.ColumnDto;
 import org.opm.busybeaver.dto.Columns.ColumnInTaskDto;
 import org.opm.busybeaver.dto.Interfaces.TaskBasicInterface;
-import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
-import org.opm.busybeaver.dto.Users.UserSummaryDto;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import javax.annotation.Nullable;
@@ -22,15 +19,16 @@ public final class TaskBasicInSprintDto implements TaskBasicInterface {
     private final String description;
     private ColumnInTaskDto column;
     @Nullable
-    private UserSummaryDto assignedTo;
+    private ProjectUserShortDto assignedTo;
     private String taskLocation;
 
     @ConstructorProperties({
             "title", "task_id", "priority", "due_date", "description", "comments",
-            "assigned_to", "username", "column_index", "column_title", "column_id"})
+            "username", "user_project_id", "user_id",
+            "column_index", "column_title", "column_id"})
     public TaskBasicInSprintDto(
             String title, int taskID, String priority, @Nullable LocalDate dueDate, String description, int comments,
-            @Nullable Integer assignedToId, @Nullable String username,
+            @Nullable String username, @Nullable Integer userProjectID, @Nullable Integer userID,
             int columnIndex, String columnTitle, int columnID) {
 
         this.title = title;
@@ -42,8 +40,8 @@ public final class TaskBasicInSprintDto implements TaskBasicInterface {
 
         this.column = new ColumnInTaskDto(columnTitle, columnID, columnIndex);
 
-        if (assignedToId != null && username != null) {
-            this.assignedTo = new UserSummaryDto(username, assignedToId);
+        if (username != null && userProjectID != null && userID != null) {
+            this.assignedTo = new ProjectUserShortDto(username, userID, userProjectID);
         }
     }
 
@@ -86,7 +84,7 @@ public final class TaskBasicInSprintDto implements TaskBasicInterface {
     }
 
     @Nullable
-    public UserSummaryDto getAssignedTo() {
+    public ProjectUserShortDto getAssignedTo() {
         return assignedTo;
     }
 

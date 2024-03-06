@@ -100,7 +100,7 @@ body, #root, .App, .user-homepage-container {
   right: 10px; /* Adjust as needed to align with the card's edge */
   top: 10px; /* Adjust as needed for vertical alignment */
   display: none;
-  padding: 1px 1px; /* Adjust padding as needed */
+  padding: 1px 3px; /* Adjust padding as needed */
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -109,21 +109,19 @@ body, #root, .App, .user-homepage-container {
   color: white;
 }
 
-
 /* Show delete button on hover */
 .team-card:hover .delete-button {
   display: block;
 }
 
-
 .team-card {
   background-color: #81b29a; /* Replace with your card's color */
   border-radius: 8px;
-  padding: 10px 15px;
-  margin-bottom: 10px;
+  padding: 0px 0px;
+  margin-bottom: 0px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Adjust for shadow */
-  transition: all 0.3s ease;
-}
+  transition: all 0.3s ease; 
+} 
 
 .team-card:hover {
   transform: translateY(-5px);
@@ -144,6 +142,21 @@ body, #root, .App, .user-homepage-container {
   padding: 0;
   font-size: 1.25rem;
 }
+
+.team-button {
+  background: transparent;
+  border: none;
+  color: white;
+  text-align: center;
+  padding: 10px 15px; /* Adjust padding as needed */
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* New - makes the button take the full height of its container */
+  width: 100%; /* New - makes the button take the full width of its container */
+}
+
 
 .delete-button {
   background-color: #e63946;
@@ -248,7 +261,7 @@ body, #root, .App, .user-homepage-container {
 }
 
 .project-name, .team-name {
-  margin: 0 50px; /* Adds margin to the left and right */
+  margin: 0 30px; /* Adds margin to the left and right */
 }
 
 

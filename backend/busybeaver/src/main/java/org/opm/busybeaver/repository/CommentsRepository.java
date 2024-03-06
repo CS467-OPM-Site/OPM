@@ -7,6 +7,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record3;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
@@ -37,28 +38,28 @@ public class CommentsRepository {
     public CommentInTaskDto addComment(
             int taskID,
             @NotNull NewCommentBodyDto newCommentBodyDto,
-            BeaverusersRecord commenter) {
+            ProjectUserShortDto commenter) {
         Record3<Integer, String, LocalDateTime> newComment = create.insertInto(COMMENTS, COMMENTS.USER_ID, COMMENTS.TASK_ID, COMMENTS.COMMENT_BODY)
-                .values(commenter.getUserId(), taskID, newCommentBodyDto.commentBody())
+                .values(commenter.userProjectID(), taskID, newCommentBodyDto.commentBody())
                 .returningResult(COMMENTS.COMMENT_ID, COMMENTS.COMMENT_BODY, COMMENTS.COMMENT_CREATED)
                 .fetchSingle();
 
         return new CommentInTaskDto(
                 newComment.getValue(COMMENTS.COMMENT_ID),
                 newComment.getValue(COMMENTS.COMMENT_BODY),
-                commenter.getUsername(),
-                commenter.getUserId(),
+                commenter.username(),
+                commenter.userProjectID(),
                 newComment.getValue(COMMENTS.COMMENT_CREATED));
     }
 
-    public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userID, HttpServletRequest request)
+    public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userProjectID, HttpServletRequest request)
             throws CommentsExceptions.CommentDoesNotExistOnTask,
             CommentsExceptions.UserDidNotLeaveThisComment {
         //  SELECT Comments.comment_id
         //  FROM Comments
         //  WHERE Comments.comment_id = commentID
         //  AND Comments.task_id = taskID
-        //  AND Comments.user_id = userID;
+        //  AND Comments.user_id = userProjectID;
 
         CommentsRecord commentOnTask =
                 create.selectFrom(COMMENTS)
@@ -80,7 +81,7 @@ public class CommentsRepository {
             throw commentDoesNotExistOnTask;
         }
 
-        if (commentOnTask.getUserId() != userID) {
+        if (commentOnTask.getUserId() != userProjectID) {
             CommentsExceptions.UserDidNotLeaveThisComment userDidNotLeaveThisComment =
                     new CommentsExceptions.UserDidNotLeaveThisComment(
                             ErrorMessageConstants.USER_DID_NOT_LEAVE_THIS_COMMENT.getValue());
@@ -96,15 +97,15 @@ public class CommentsRepository {
         return commentOnTask;
     }
 
-    public void deleteComment(int taskID, int commentID, int userID) {
+    public void deleteComment(int taskID, int commentID, int userProjectID) {
         // DELETE FROM Comments
         // WHERE Comments.task_id = taskID
         // AND Comments.comment_id = commentID
-        // AND Comments.user_id = userID;
+        // AND Comments.user_id = userProjectID;
         create.deleteFrom(COMMENTS)
                 .where(COMMENTS.TASK_ID.eq(taskID))
                 .and(COMMENTS.COMMENT_ID.eq(commentID))
-                .and(COMMENTS.USER_ID.eq(userID))
+                .and(COMMENTS.USER_ID.eq(userProjectID))
                 .execute();
     }
 

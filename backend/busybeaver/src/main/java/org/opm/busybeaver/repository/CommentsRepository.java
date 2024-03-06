@@ -11,13 +11,12 @@ import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
-import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.CommentsRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.opm.busybeaver.jooq.Tables.*;
@@ -39,7 +38,7 @@ public class CommentsRepository {
             int taskID,
             @NotNull NewCommentBodyDto newCommentBodyDto,
             ProjectUserShortDto commenter) {
-        Record3<Integer, String, LocalDateTime> newComment = create.insertInto(COMMENTS, COMMENTS.USER_ID, COMMENTS.TASK_ID, COMMENTS.COMMENT_BODY)
+        Record3<Integer, String, OffsetDateTime> newComment = create.insertInto(COMMENTS, COMMENTS.USER_ID, COMMENTS.TASK_ID, COMMENTS.COMMENT_BODY)
                 .values(commenter.userProjectID(), taskID, newCommentBodyDto.commentBody())
                 .returningResult(COMMENTS.COMMENT_ID, COMMENTS.COMMENT_BODY, COMMENTS.COMMENT_CREATED)
                 .fetchSingle();

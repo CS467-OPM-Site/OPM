@@ -49,7 +49,7 @@ CREATE TABLE Projects (
     project_name VARCHAR(50) NOT NULL,
     current_sprint_id INTEGER,
     team_id INTEGER NOT NULL REFERENCES Teams(team_id) ON DELETE CASCADE,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     -- Enforce uniqueness of project per team
     CONSTRAINT unique_project_per_team UNIQUE (project_name, team_id)
@@ -104,8 +104,8 @@ CREATE TABLE Tasks (
     title VARCHAR(50) NOT NULL,
     description VARCHAR(500), -- Enforcing 500 character maximum
     custom_fields JSONB,
-    task_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    task_created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     task_index SMALLINT DEFAULT -1
 );
 
@@ -114,7 +114,7 @@ CREATE TABLE Comments (
     comment_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES ProjectUsers(user_project_id) ON DELETE SET NULL,
     task_id INTEGER REFERENCES Tasks(task_id) ON DELETE CASCADE,
-    comment_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    comment_created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     comment_body TEXT
 );
 

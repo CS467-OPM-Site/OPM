@@ -293,6 +293,11 @@ body, #root, .App, .user-homepage-container {
   visibility: hidden; /* To retain matching column alignment*/
 }
 
+/* Override to make the modal h2 visible */
+.filter-modal-title {
+  visibility: visible !important;
+}
+
 
 .add-project-input {
   flex: 1;

@@ -976,7 +976,7 @@ To delete the attribute, set the attribute to null in the request payload.
 
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
-> | `200`         | `application/json`                | `See below.` | **Includes a URI to the comment resource in the Location Header** |
+> | `201`         | `application/json`                | `See below.` | **Includes a URI to the comment resource in the Location Header** |
 > | `400`         | `application/json`                | `{"code":"400","message":"Comment cannot be empty"}` | Comment cannot be empty. |
 > | `403`         | `application/json`                | `{"code":"403","message":"User not in this project, or project does not exist"}` | User not in this project, or project does not exist. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Given task does not exist in this project"}` | Task not found. |

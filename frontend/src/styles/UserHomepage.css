@@ -100,7 +100,6 @@ body, #root, .App, .user-homepage-container {
 
 /* Hide delete button by default */
 .team-card .delete-button {
- 
   right: 10px; /* Adjust as needed to align with the card's edge */
   top: 10px; /* Adjust as needed for vertical alignment */
   display: none;
@@ -109,7 +108,7 @@ body, #root, .App, .user-homepage-container {
   border-radius: 50%;
   cursor: pointer;
   font-weight: bold;
-  background-color: #e63946;
+  background-color: #e63946;;
   color: white;
 }
 
@@ -157,8 +156,9 @@ body, #root, .App, .user-homepage-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* New - makes the button take the full height of its container */
-  width: 100%; /* New - makes the button take the full width of its container */
+  height: 100%; 
+  width: 100%; 
+  cursor: pointer; /* This line changes the cursor to a pointer on hover */
 }
 
 
@@ -353,13 +353,16 @@ body, #root, .App, .user-homepage-container {
 }
 
 .delete-button {
-  background-color: #e63946;
-  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
+
 .delete-button:hover {
-  background-color: #d62828;
+  background-color: #d62828; /* Darker red for hover */
 }
+
 
 .team-member {
   display: flex;

@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
-import { FaTrash } from 'react-icons/fa';
+import { Delete } from '@mui/icons-material'; // Import Delete icon
 import TopBar from './TopBar';
 import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
@@ -284,7 +284,7 @@ const UserHomepage = () => {
           </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
-              <FaTrash />
+              <Delete /> {/* Use Material UI Delete icon */}
             </button>
           )}
           

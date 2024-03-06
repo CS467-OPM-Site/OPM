@@ -38,14 +38,16 @@ public class ProjectUsersRepository {
         // SELECT BeaverUsers.username, Project ProjectUsers.user_id, ProjectUsers.user_project_id
         // FROM ProjectUsers
         // JOIN BeaverUsers
-        // ON ProjectUsers.user_id = user.userID
-        // WHERE ProjectUsers.project_id = projectid;
+        // ON ProjectUsers.user_id = BeaverUsers.userID
+        // WHERE ProjectUsers.project_id = projectid
+        // AND ProjectUsers.user_id = user.user_id;
         ProjectUserShortDto projectUserShortDto =
                 create.select(BEAVERUSERS.USERNAME, PROJECTUSERS.USER_ID, PROJECTUSERS.USER_PROJECT_ID)
                         .from(PROJECTUSERS)
                         .join(BEAVERUSERS)
-                        .on(PROJECTUSERS.USER_ID.eq(user.getUserId()))
+                        .on(PROJECTUSERS.USER_ID.eq(BEAVERUSERS.USER_ID))
                         .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
+                        .and(PROJECTUSERS.USER_ID.eq(user.getUserId()))
                         .fetchOneInto(ProjectUserShortDto.class);
 
         if (projectUserShortDto == null) {

@@ -116,51 +116,53 @@ body, #root, .App, .user-homepage-container {
 }
 
 
-/* Apply similar styles for team-card as project-card */
 .team-card {
-  position: relative;
-  background-color: #81b29a; /* Match project card color */
-  padding: 0px; /* Match project card padding */
-  border-radius: 8px; /* Match project card border-radius */
-  margin-bottom: 2px; /* Match project card margin-bottom */
-  transition: all 0.3s ease; /* Keep the transition for hover effect */
-  cursor: pointer; /* Suggest adding a pointer cursor to indicate it's clickable */
-}
-
-/* When hovering over the team card */
-.team-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Match project card hover effect */
-}
-
-
-.team-card.selected .team-details-container {
-  display: flex;
-}
-
-.team-card .team-details-container {
-  display: none;
-  background-color: #d1d1d1;
-  padding: 10px;
+  background-color: #81b29a; /* Replace with your card's color */
   border-radius: 8px;
-  margin-top: 10px;
-  flex-direction: column;
-  gap: 10px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Adjust for shadow */
+  transition: all 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .team-button {
-  width: 100%; /* Make the button fill the card for easier clicking */
-  text-align: center; /* Center text horizontally */
-  padding: 12px 15px; /* Adjust padding to center text vertically, match project card */
+  background: transparent;
   border: none;
+  color: white;
+  text-align: left;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.delete-button {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+}
+
+.team-details {
+  display: none; /* Hide team details by default */
+}
+
+.team-card.selected .team-details {
+  display: block; /* Show details when team card is selected */
+  background-color: #679267; /* Slightly darker background for contrast */
+  padding: 10px;
+  margin-top: 10px;
   border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold; /* Match project name style */
-  background-color: #81b29a; /* Match project card background color */
-  color: white; /* Match project name text color */
-  font-size: 1.25rem; /* Adjust font size to match project names */
-  display: block; /* Ensure the button takes the full width */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 /* Add hover effect to match project cards */

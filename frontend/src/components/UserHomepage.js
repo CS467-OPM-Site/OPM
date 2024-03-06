@@ -229,16 +229,16 @@ const UserHomepage = () => {
   
   const renderProjects = () => {
     let filteredProjects = projects;
-
+  
     // Apply filter based on filterCriteria
     if (!filterCriteria.all) {
       filteredProjects = projects.filter(project => filterCriteria.teams[project.team?.teamID]);
     }
-
+  
     if (filteredProjects.length === 0) {
       return <div>No projects to display.</div>;
     }
-
+  
     return filteredProjects.map((project) => (
       <div
         key={project.projectID}
@@ -246,11 +246,13 @@ const UserHomepage = () => {
         onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
         style={{ cursor: 'pointer' }}
       >
-        <h3>{project.projectName}</h3>
-        {/* Further project details */}
+        <div className="project-name"><h3>{project.projectName}</h3></div>
+        <div className="team-name"><h3>Team: {project.team?.teamName}</h3></div>
       </div>
     ));
   };
+  
+  
 
   const renderTeamMembers = () => {
     if (loadingMembers) return <div>Loading members...</div>;

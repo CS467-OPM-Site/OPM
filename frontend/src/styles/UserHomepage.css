@@ -235,11 +235,26 @@ body, #root, .App, .user-homepage-container {
 }
 
 .project-card {
+  display: flex;
+  justify-content: space-between; /* Aligns children to each end */
+  align-items: center; /* Centers children vertically */
   background-color: #81b29a;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 10px;
   color: white;
+}
+
+.project-name, .team-name {
+  margin: 0 50px; /* Adds margin to the left and right */
+}
+
+
+.project-name h3, .team-name h3 {
+  margin: 0; /* Removes default margin */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Ensures text does not overflow */
 }
 
 .project-card:hover {

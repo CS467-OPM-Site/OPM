@@ -279,7 +279,7 @@ const ProjectColumn = memo(( {
               {columns[currentColumnIndex].tasks && columns[currentColumnIndex].tasks.map( task => ( 
                 <ProjectTask 
                   key={task.taskID + columns[currentColumnIndex].columnID} 
-                  currentTask={task} 
+                  task={task} 
                   removeTask={removeTask} 
                   moveTask={onMoveTask}
                   setIsLoading={setIsLoading}

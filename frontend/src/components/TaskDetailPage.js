@@ -12,7 +12,7 @@ const SLIDE_OUT_COMMENT_CLASS = "hide-add-comment-field";
 const NEW_COMMENT_ERROR = "Comment must not be empty or only spaces"
 const GENERAL_ERROR = "Unable to add comment";
 
-const TaskDetailPage = ({}) => { 
+const TaskDetailPage = ( { columns, setColumns } ) => { 
   const [taskTitle, setTaskTitle] = useState(null);
   const [taskPriority, setTaskPriority] = useState(null);
   const [taskDescription, setTaskDescription] = useState(null);
@@ -27,8 +27,6 @@ const TaskDetailPage = ({}) => {
   const [newCommentError, setNewCommentError] = useState('');
   const [newComment, setNewComment] = useState('');
   const location = useLocation();
-  console.log(location.state);
-  console.log(location.pathname);
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
@@ -70,7 +68,9 @@ const TaskDetailPage = ({}) => {
     setTaskSprint(taskDetails.sprint);
 
     if (taskDetails.comments.length !== 0) {
-      setTaskComments(taskDetails.comments);
+      const comments = taskDetails.comments.reverse();
+      
+      setTaskComments(comments);
     }
 
   }
@@ -166,7 +166,6 @@ const TaskDetailPage = ({}) => {
 
   const handleOnSubmitComment = async () => {
     if (newComment.trim() === '') {
-      console.log("Tried to submit an empty comment");
       setNewCommentError(NEW_COMMENT_ERROR);
       return;
     }
@@ -181,7 +180,6 @@ const TaskDetailPage = ({}) => {
       case 201: {
         setIsAddingComments(false);
         addNewComment(responseJSON);
-        console.log(responseJSON);
         break;
 
       } 
@@ -200,8 +198,38 @@ const TaskDetailPage = ({}) => {
     // Create a shallow copy of the comments
     const oldComments = [...taskComments];
 
-    oldComments.push(newCommentDetails);
+    oldComments.splice(0, 0, newCommentDetails);
     setTaskComments(oldComments);
+
+    // Create a shallow copy of the columns
+    updateColumnsAfterAddingComment();
+  }
+
+  const updateColumnsAfterAddingComment = () => {
+    // Create a shallow copy of the columns
+    const newColumns = columns.map(column => ({ ...column, tasks: [...column.tasks] }));
+
+    const { columnIndex, taskIndex } = findParentColumnAndIndex();
+    newColumns[columnIndex].tasks[taskIndex].comments += 1;
+
+    setColumns(newColumns);
+  }
+
+  const findParentColumnAndIndex = () => {
+    let columnIndex = -1;
+    let taskIndex = -1;
+
+    columns.some((column, index) => {
+      taskIndex = column.tasks.findIndex(task => task.taskID === location.state.taskID);
+
+      if (taskIndex !== -1) {
+        columnIndex = index;
+        return true;
+      }
+      return false;
+    });
+
+    return { columnIndex, taskIndex };
   }
 
   return (
@@ -247,7 +275,7 @@ const TaskDetailPage = ({}) => {
                     error={newCommentError !== ''}
                     helperText={(newCommentError !== '') && newCommentError}
                     multiline 
-                    rows={3}
+                    rows={4}
                     value={newComment}
                     onChange={(e) => { 
                       setNewComment(e.target.value.trim() === '' ? '' : e.target.value) }

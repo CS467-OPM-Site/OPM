@@ -77,7 +77,7 @@ const ProjectManagementPage = () => {
                     setIsTaskBeingAdded={setIsTaskBeingAdded}/>
                 } />
             <Route path='/tasks/:taskId' element={
-                <TaskDetailPage />
+                <TaskDetailPage columns={columns} setColumns={setColumns} />
                 } />
           </Route>
         </Routes>

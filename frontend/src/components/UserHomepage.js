@@ -3,12 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/UserHomepage.css';
-import { FaTrash } from 'react-icons/fa';
+import { Delete } from '@mui/icons-material'; // Import Delete icon
 import TopBar from './TopBar';
 import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
 import AddMemberModal from './AddMemberModal';
 import FilterModal from './FilterModal';
+import { formatDistanceToNow } from 'date-fns';
 
 
 const UserHomepage = () => {
@@ -229,28 +230,38 @@ const UserHomepage = () => {
   
   const renderProjects = () => {
     let filteredProjects = projects;
-
+  
     // Apply filter based on filterCriteria
     if (!filterCriteria.all) {
       filteredProjects = projects.filter(project => filterCriteria.teams[project.team?.teamID]);
     }
-
+  
     if (filteredProjects.length === 0) {
       return <div>No projects to display.</div>;
     }
-
-    return filteredProjects.map((project) => (
-      <div
-        key={project.projectID}
-        className="project-card"
-        onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
-        style={{ cursor: 'pointer' }}
-      >
-        <h3>{project.projectName}</h3>
-        {/* Further project details */}
-      </div>
-    ));
+  
+    return filteredProjects.map((project) => {
+      // Calculate time since last updated
+      const lastUpdated = formatDistanceToNow(new Date(project.lastUpdated), { addSuffix: true });
+  
+      return (
+        <div
+          key={project.projectID}
+          className="project-card"
+          onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="project-name"><h3>{project.projectName}</h3></div>
+          {/* Display last updated time */}
+          <div className="last-updated">Last Updated: {lastUpdated}</div>
+          <div className="team-name"><h3>Team: {project.team?.teamName}</h3></div>
+        </div>
+      );
+    });
   };
+  
+  
+  
 
   const renderTeamMembers = () => {
     if (loadingMembers) return <div>Loading members...</div>;
@@ -282,7 +293,7 @@ const UserHomepage = () => {
           </button>
           {team.isTeamCreator && (
             <button onClick={() => handleDeleteTeam(team.teamID)} className="delete-button">
-              <FaTrash />
+              <Delete /> {/* Use Material UI Delete icon */}
             </button>
           )}
           

@@ -17,6 +17,7 @@ body, #root, .App, .user-homepage-container {
 }
 
 .user-homepage-header {
+  box-sizing: border-box; /* Include padding in width calculations */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,7 +26,10 @@ body, #root, .App, .user-homepage-container {
   background-color: #2d6a4f;
   border-radius: 8px;
   color: white;
+  padding-left: 40px;
+  padding-right: 40px;
 }
+
 
 .user-homepage-header img {
   width: 100px;
@@ -96,71 +100,86 @@ body, #root, .App, .user-homepage-container {
 
 /* Hide delete button by default */
 .team-card .delete-button {
- 
   right: 10px; /* Adjust as needed to align with the card's edge */
   top: 10px; /* Adjust as needed for vertical alignment */
   display: none;
-  padding: 5px 10px; /* Adjust padding as needed */
+  padding: 1px 3px; /* Adjust padding as needed */
   border: none;
   border-radius: 50%;
   cursor: pointer;
   font-weight: bold;
-  background-color: #e63946;
+  background-color: #e63946;;
   color: white;
 }
-
 
 /* Show delete button on hover */
 .team-card:hover .delete-button {
   display: block;
 }
 
-
-/* Apply similar styles for team-card as project-card */
 .team-card {
-  position: relative;
-  background-color: #81b29a; /* Match project card color */
-  padding: 10px; /* Match project card padding */
-  border-radius: 8px; /* Match project card border-radius */
-  margin-bottom: 2px; /* Match project card margin-bottom */
-  transition: all 0.3s ease; /* Keep the transition for hover effect */
-  cursor: pointer; /* Suggest adding a pointer cursor to indicate it's clickable */
-}
-
-/* When hovering over the team card */
-.team-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Match project card hover effect */
-}
-
-
-.team-card.selected .team-details-container {
-  display: flex;
-}
-
-.team-card .team-details-container {
-  display: none;
-  background-color: #d1d1d1;
-  padding: 10px;
+  background-color: #81b29a; /* Replace with your card's color */
   border-radius: 8px;
-  margin-top: 10px;
-  flex-direction: column;
-  gap: 10px;
+  padding: 0px 0px;
+  margin-bottom: 0px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Adjust for shadow */
+  transition: all 0.3s ease; 
+} 
+
+.team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .team-button {
-  width: 100%; /* Make the button fill the card for easier clicking */
-  text-align: center; /* Center text horizontally */
-  padding: 12px 15px; /* Adjust padding to center text vertically, match project card */
+  background: transparent;
   border: none;
+  color: white;
+  text-align: left;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.team-button {
+  background: transparent;
+  border: none;
+  color: white;
+  text-align: center;
+  padding: 10px 15px; /* Adjust padding as needed */
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; 
+  width: 100%; 
+  cursor: pointer; /* This line changes the cursor to a pointer on hover */
+}
+
+
+.delete-button {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+}
+
+.team-details {
+  display: none; /* Hide team details by default */
+}
+
+.team-card.selected .team-details {
+  display: block; /* Show details when team card is selected */
+  background-color: #313a3d9a; /* edit this*/ 
+  padding: 10px;
+  margin-top: 10px;
   border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold; /* Match project name style */
-  background-color: #81b29a; /* Match project card background color */
-  color: white; /* Match project name text color */
-  font-size: 1.25rem; /* Adjust font size to match project names */
-  display: block; /* Ensure the button takes the full width */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 /* Add hover effect to match project cards */
@@ -202,7 +221,14 @@ body, #root, .App, .user-homepage-container {
   margin-top: 8px;
 }
 
-.team-actions button, .team-button, .delete-button {
+ .team-button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  margin: 2px;
+}
+
+.team-actions button, .delete-button {
   font-size: 1rem;
   font-weight: 600;
   padding: 8px 12px;
@@ -232,14 +258,31 @@ body, #root, .App, .user-homepage-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto; /* Keeps vertical scrolling */
+
 }
 
 .project-card {
+  display: flex;
+  justify-content: space-between; /* Aligns children to each end */
+  align-items: center; /* Centers children vertically */
   background-color: #81b29a;
-  padding: 15px;
+  padding: 40px;
   border-radius: 8px;
   margin-bottom: 10px;
   color: white;
+}
+
+.project-name, .team-name {
+  margin: 0 30px; /* Adds margin to the left and right */
+}
+
+
+.project-name h3, .team-name h3 {
+  margin: 0; /* Removes default margin */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Ensures text does not overflow */
 }
 
 .project-card:hover {
@@ -261,6 +304,11 @@ body, #root, .App, .user-homepage-container {
 
 .project-header h2 {
   visibility: hidden; /* To retain matching column alignment*/
+}
+
+/* Override to make the modal h2 visible */
+.filter-modal-title {
+  visibility: visible !important;
 }
 
 
@@ -307,13 +355,16 @@ body, #root, .App, .user-homepage-container {
 }
 
 .delete-button {
-  background-color: #e63946;
-  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
+
 .delete-button:hover {
-  background-color: #d62828;
+  background-color: #d62828; /* Darker red for hover */
 }
+
 
 .team-member {
   display: flex;
@@ -327,6 +378,7 @@ body, #root, .App, .user-homepage-container {
 }
 
 .remove-member-button {
+  display: none; /* Hide the button by default */
   padding: 5px 10px;
   background-color: #e63946;
   color: white;
@@ -335,10 +387,15 @@ body, #root, .App, .user-homepage-container {
   cursor: pointer;
 }
 
+.team-member:hover .remove-member-button {
+  display: inline-block; /* Or "block", depending on your layout */
+}
+
+
 .remove-member-button:hover {
   background-color: #d62828;
 }
 
 .team-card-selected {
-  background-color: #313a3d9a; /* darker grey */
+  background-color: #313a3d9a; 
 }

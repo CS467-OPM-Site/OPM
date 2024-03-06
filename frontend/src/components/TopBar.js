@@ -20,12 +20,13 @@ const TopBar = () => {
 
   return <>
         <header className="user-homepage-header">
+          
           <div className="busy-beaver-logo" onClick={handleNavigateToHome} style={{ cursor: 'pointer' }}>
             <img src={BusyBeaverNoBG} alt="Busy Beaver Logo" />
           </div>
           <div className="user-homepage-header-card">
-            <Typography variant="h4" component="h1">
-              Project Management
+            <Typography variant="" component="h1">
+              BusyBeaver OPM Site
             </Typography>
           </div>
           <div className="user-homepage-buttons">

@@ -34,7 +34,7 @@ public final class CommentsController implements GetUserFromBearerTokenInterface
     @Autowired
     public CommentsController(CommentsService commentsService) { this.commentsService = commentsService; }
 
-    @PostMapping(PROJECTS_PATH + "/{projectID}" + TASK_PATH + "/{taskID}")
+    @PostMapping(PROJECTS_PATH + "/{projectID}" + TASK_PATH + "/{taskID}" + COMMENT_PATH)
     public @NotNull CommentInTaskDto addCommentToTask(
             @NotNull HttpServletRequest request,
             @Valid @RequestBody NewCommentBodyDto newCommentBodyDto,

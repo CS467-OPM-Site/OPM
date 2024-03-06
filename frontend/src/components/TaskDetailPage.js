@@ -158,6 +158,10 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
 
   const handleCancelCommentClicked = () => {
     setShouldShowCommentField(false);
+    slideUpCommentEntry();
+  }
+
+  const slideUpCommentEntry = () => {
     setTimeout(() => {
       setIsAddingComments(false);
       setNewCommentError('');
@@ -178,10 +182,10 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
 
     switch (response.status) {
       case 201: {
-        setIsAddingComments(false);
         addNewComment(responseJSON);
+        setShouldShowCommentField(false);
+        slideUpCommentEntry();
         break;
-
       } 
       default: {
         if ("message" in responseJSON) {
@@ -201,7 +205,7 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
     oldComments.splice(0, 0, newCommentDetails);
     setTaskComments(oldComments);
 
-    // Create a shallow copy of the columns
+    // Update the columns so comment count properly increases
     updateColumnsAfterAddingComment();
   }
 

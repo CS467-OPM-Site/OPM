@@ -258,6 +258,8 @@ body, #root, .App, .user-homepage-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto; /* Keeps vertical scrolling */
+
 }
 
 .project-card {

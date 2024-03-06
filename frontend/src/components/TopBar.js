@@ -25,8 +25,8 @@ const TopBar = () => {
             <img src={BusyBeaverNoBG} alt="Busy Beaver Logo" />
           </div>
           <div className="user-homepage-header-card">
-            <Typography variant="h4" component="h1">
-              Busy Beaver Project Management
+            <Typography variant="" component="h1">
+              BusyBeaver OPM Site
             </Typography>
           </div>
           <div className="user-homepage-buttons">

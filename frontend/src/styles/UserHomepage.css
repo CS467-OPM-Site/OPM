@@ -376,6 +376,7 @@ body, #root, .App, .user-homepage-container {
 }
 
 .remove-member-button {
+  display: none; /* Hide the button by default */
   padding: 5px 10px;
   background-color: #e63946;
   color: white;
@@ -383,6 +384,11 @@ body, #root, .App, .user-homepage-container {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.team-member:hover .remove-member-button {
+  display: inline-block; /* Or "block", depending on your layout */
+}
+
 
 .remove-member-button:hover {
   background-color: #d62828;

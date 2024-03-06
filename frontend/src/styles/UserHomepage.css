@@ -17,6 +17,7 @@ body, #root, .App, .user-homepage-container {
 }
 
 .user-homepage-header {
+  box-sizing: border-box; /* Include padding in width calculations */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,7 +26,10 @@ body, #root, .App, .user-homepage-container {
   background-color: #2d6a4f;
   border-radius: 8px;
   color: white;
+  padding-left: 40px;
+  padding-right: 40px;
 }
+
 
 .user-homepage-header img {
   width: 100px;
@@ -217,7 +221,14 @@ body, #root, .App, .user-homepage-container {
   margin-top: 8px;
 }
 
-.team-actions button, .team-button, .delete-button {
+ .team-button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  margin: 2px;
+}
+
+.team-actions button, .delete-button {
   font-size: 1rem;
   font-weight: 600;
   padding: 8px 12px;

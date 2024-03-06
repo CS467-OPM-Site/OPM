@@ -4,17 +4,17 @@ import org.opm.busybeaver.dto.Interfaces.ProjectAndTeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public final class ProjectSummaryDto implements ProjectAndTeamInterface {
     private final String projectName;
     private final int projectID;
-    private final LocalDateTime lastUpdated;
+    private final OffsetDateTime lastUpdated;
     private String projectLocation;
     private final TeamSummaryInProjectSummaryDto team;
 
     @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
-    public ProjectSummaryDto(String projectName, int projectID, LocalDateTime lastUpdated, int teamID, String teamName) {
+    public ProjectSummaryDto(String projectName, int projectID, OffsetDateTime lastUpdated, int teamID, String teamName) {
         this.projectName = projectName;
         this.projectID = projectID;
         this.lastUpdated = lastUpdated;
@@ -53,7 +53,7 @@ public final class ProjectSummaryDto implements ProjectAndTeamInterface {
     }
 
     @Override
-    public LocalDateTime getLastUpdated() {
+    public OffsetDateTime getLastUpdated() {
         return lastUpdated;
     }
 }

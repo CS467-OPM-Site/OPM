@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import static org.jooq.impl.DSL.count;
 import static org.opm.busybeaver.jooq.Tables.*;
@@ -229,7 +229,7 @@ public class TasksRepository {
         // AND Tasks.project_id = projectID
         create.update(TASKS)
                 .set(TASKS.COLUMN_ID, columnID)
-                .set(TASKS.LAST_UPDATED, LocalDateTime.now())
+                .set(TASKS.LAST_UPDATED, OffsetDateTime.now())
                 .where(TASKS.TASK_ID.eq(taskID))
                 .and(TASKS.PROJECT_ID.eq(projectID))
                 .execute();

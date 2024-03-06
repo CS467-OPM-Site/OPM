@@ -3,10 +3,9 @@ package org.opm.busybeaver.dto.Projects;
 import org.opm.busybeaver.dto.Columns.ColumnDto;
 import org.opm.busybeaver.dto.Interfaces.ProjectAndTeamInterface;
 import org.opm.busybeaver.enums.BusyBeavPaths;
-import org.springframework.cglib.core.Local;
 
 import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public final class ProjectDetailsDto implements ProjectAndTeamInterface {
@@ -15,10 +14,10 @@ public final class ProjectDetailsDto implements ProjectAndTeamInterface {
     private final TeamSummaryInProjectSummaryDto team;
     private String projectLocation;
     private List<ColumnDto> columns;
-    public final LocalDateTime lastUpdated;
+    public final OffsetDateTime lastUpdated;
 
     @ConstructorProperties({"project_name", "project_id", "team_id", "team_name", "last_updated"})
-    public ProjectDetailsDto(String projectName, int projectID, int teamID, String teamName, LocalDateTime lastUpdated) {
+    public ProjectDetailsDto(String projectName, int projectID, int teamID, String teamName, OffsetDateTime lastUpdated) {
         this.projectName = projectName;
         this.projectID = projectID;
         this.team = new TeamSummaryInProjectSummaryDto(teamName, teamID);
@@ -64,7 +63,7 @@ public final class ProjectDetailsDto implements ProjectAndTeamInterface {
     }
 
     @Override
-    public LocalDateTime getLastUpdated() {
+    public OffsetDateTime getLastUpdated() {
         return lastUpdated;
     }
 

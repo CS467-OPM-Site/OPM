@@ -9,6 +9,7 @@ import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
 import AddMemberModal from './AddMemberModal';
 import FilterModal from './FilterModal';
+import { formatDistanceToNow } from 'date-fns';
 
 
 const UserHomepage = () => {
@@ -239,18 +240,26 @@ const UserHomepage = () => {
       return <div>No projects to display.</div>;
     }
   
-    return filteredProjects.map((project) => (
-      <div
-        key={project.projectID}
-        className="project-card"
-        onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
-        style={{ cursor: 'pointer' }}
-      >
-        <div className="project-name"><h3>{project.projectName}</h3></div>
-        <div className="team-name"><h3>Team: {project.team?.teamName}</h3></div>
-      </div>
-    ));
+    return filteredProjects.map((project) => {
+      // Calculate time since last updated
+      const lastUpdated = formatDistanceToNow(new Date(project.lastUpdated), { addSuffix: true });
+  
+      return (
+        <div
+          key={project.projectID}
+          className="project-card"
+          onClick={() => navigate(`/projects/${project.projectID}`, { state: { projectID: `${project.projectID}` } })}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="project-name"><h3>{project.projectName}</h3></div>
+          {/* Display last updated time */}
+          <div className="last-updated">Last Updated: {lastUpdated}</div>
+          <div className="team-name"><h3>Team: {project.team?.teamName}</h3></div>
+        </div>
+      );
+    });
   };
+  
   
   
 

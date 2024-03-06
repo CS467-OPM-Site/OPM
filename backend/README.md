@@ -268,7 +268,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 >                  "taskIndex": 0, # Used for sorting eventually, default to -1
 >                  "assignedTo": {
 >                        "username": "username-of-assignee",
->                        "userID": 1
+>                        "userID": 1,
+>                        "userProjectID": 1
 >                   }, # Or null
 >                  "sprint": {
 >                        "sprintID": 1,
@@ -717,7 +718,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "title": "Task 1",
 >     "description": "This is another task!", # Optional - a description of only spaces is considered null
 >     "columnID": 1,                          # Optional, defaults to first in-order column if not included
->     "assignedTo": 1,                        # Optional, ID of the user who it is being assigned to, or null
+>     "assignedTo": 1,                        # Optional, userProjectID of the user who it is being assigned to, or null
 >     "dueDate": "2024-11-03",                # Optional, in format "yyyy-MM-dd"
 >     "priority": "High",                     # Optional, must be one of: 'High', 'Medium', 'Low', 'None', defaults to 'None' 
 >     "sprintID": 1,                          # Optional
@@ -799,7 +800,8 @@ All endpoints should use this format as a prefix in their requests. For example,
 >     "description": "This is a task!",
 >     "assignedTo": {               # Or null
 >           "username": "username-of-assignee",
->           "userID": 1
+>           "userID": 1,
+>           "userProjectID": 1
 >      },       
 >     "priority": "High",
 >     "dueDate": "2023-10-31"       # Or null,
@@ -854,7 +856,7 @@ To delete the attribute, set the attribute to null in the request payload.
 > {
 >     "title": "New Title",                     # Optional - note that a title is mandatory for a task, so no possibility of deleting a title
 >     "description": "This is another task!",   # Optional
->     "assignedTo": 1,                          # Optional, ID of the user who it is being assigned to
+>     "assignedTo": 1,                          # Optional, userProjectID of the user who it is being assigned to
 >     "priority": "High",                       # Optional, must be one of 'High', 'Medium', 'Low', 'None'
 >     "sprintID": 1,                            # Optional, ID of sprint to change to
 >     "dueDate": "2024-08-08",                  # Optional, new due date
@@ -1240,7 +1242,8 @@ Sprints are ordered in ascending order by sprint end date.
 >            },
 >           "assignedTo": {
 >                 "username": "username-of-assignee",
->                 "userID": 1
+>                 "userID": 1,
+>                 "userProjectID": 1
 >            } or null,       
 >           "taskLocation": "/api/v1/projects/1/tasks/1",
 >      },
@@ -1259,7 +1262,8 @@ Sprints are ordered in ascending order by sprint end date.
 >            },
 >           "assignedTo": {
 >                 "username": "username-of-assignee",
->                 "userID": 1
+>                 "userID": 1,
+>                 "userProjectID": 1
 >            } or null,       
 >           "taskLocation": "/api/v1/projects/1/tasks/2",
 >      },

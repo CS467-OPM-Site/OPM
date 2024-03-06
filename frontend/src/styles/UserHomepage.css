@@ -172,7 +172,7 @@ body, #root, .App, .user-homepage-container {
 
 .team-card.selected .team-details {
   display: block; /* Show details when team card is selected */
-  background-color: #679267; /* Slightly darker background for contrast */
+  background-color: #313a3d9a; /* edit this*/ 
   padding: 10px;
   margin-top: 10px;
   border-radius: 4px;
@@ -370,5 +370,5 @@ body, #root, .App, .user-homepage-container {
 }
 
 .team-card-selected {
-  background-color: #313a3d9a; /* darker grey */
+  background-color: #313a3d9a; 
 }

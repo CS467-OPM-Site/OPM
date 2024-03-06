@@ -13,7 +13,7 @@ import '../styles/AddTaskForm.css';
 const TITLE_REQUIREMENTS = "Task title must be 3-50 characters";
 const DESCRIPTION_REQUIREMENTS = "Description must be 500 characters or less";
 
-const AddTaskForm = ( { columns, setColumns, setIsLoading } ) => {
+const AddTaskForm = ( { columns, setColumns, setIsLoading, setIsTaskBeingAdded } ) => {
   const [projectUsers, setProjectUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [taskTitle, setTaskTitle] = useState('');
@@ -44,6 +44,7 @@ const AddTaskForm = ( { columns, setColumns, setIsLoading } ) => {
   }, []);
 
   const returnToProjectPage = () => {
+    setIsTaskBeingAdded(false);
     navigate(`/projects/${location.state.projectID}`, { state: { projectID: `${location.state.projectID}` } })
   }
 
@@ -96,6 +97,7 @@ const AddTaskForm = ( { columns, setColumns, setIsLoading } ) => {
     switch (response.status) {
       case 201: {
         addTaskToColumn(responseJSON);
+        setIsTaskBeingAdded(false);
         navigate(`/projects/${location.state.projectID}`, { state: { projectID: location.state.projectID } });
         return;
       }

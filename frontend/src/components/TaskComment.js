@@ -49,6 +49,11 @@ const TaskComment = ( { comment } ) => {
     } else {
       // Less than an hour ago
       const minutesDiff = today.diff(commentTime, 'minute');
+      const secondsDiff = today.diff(commentTime, 'second');
+      console.log(today);
+      console.log(commentTime);
+      console.log(`Minutes diff: ${minutesDiff}`)
+      console.log(`Seconds diff: ${secondsDiff}`)
       switch (minutesDiff) {
         case (minutesDiff < 1): {
           timeToPrint = "Less than a minute ago";

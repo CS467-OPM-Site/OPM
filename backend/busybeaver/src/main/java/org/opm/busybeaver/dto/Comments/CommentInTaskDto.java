@@ -10,16 +10,20 @@ public final class CommentInTaskDto {
     private final String commentBody;
     private final String commenterUsername;
     private final int commenterID;
+    private final boolean isCommenter;
     private final OffsetDateTime commentedAt;
     private String commentLocation;
 
-    @ConstructorProperties({"comment_id", "comment_body", "username", "user_id", "comment_created"})
-    public CommentInTaskDto(int commentID, String commentBody, String commenter, int commenterID, OffsetDateTime commentedAt) {
+    @ConstructorProperties({"comment_id", "comment_body", "username", "user_id", "comment_created", "is_commenter"})
+    public CommentInTaskDto(
+            int commentID, String commentBody, String commenter,
+            int commenterID, OffsetDateTime commentedAt, boolean isCommenter) {
         this.commentID = commentID;
         this.commentBody = commentBody;
         this.commenterUsername = commenter;
         this.commenterID  = commenterID;
         this.commentedAt = commentedAt;
+        this.isCommenter = isCommenter;
     }
 
     public void setCommentLocation(String contextPath, int projectID, int taskID) {
@@ -45,6 +49,10 @@ public final class CommentInTaskDto {
 
     public int getCommenterID() {
         return commenterID;
+    }
+
+    public boolean getIsCommenter() {
+        return isCommenter;
     }
 
     public OffsetDateTime getCommentedAt() {

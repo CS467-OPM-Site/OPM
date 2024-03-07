@@ -7,8 +7,7 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 - **Project Management:** CRUD functionality for Teams, Projects, Columns, Sprints, and Tasks.
 - **Task Tracking:** Track the progress of tasks by assigning them to sprints, columns, and deadlines.
 - **Team Collaboration:** Create a team with other users to organize and manage a project together.
-- **Sort Tasks:** The user can sort tasks by sprint, project, and teams.
-- **Customizable Task Field:** Through the power of JSONB, the user can have custom fields for their tasks.
+- **Filter Projects:** The user can filter projects by team.
 - **Security:** Users can create an account through their Gmail or Github account.
 
 ## Built With / Technologies Used
@@ -33,26 +32,23 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 1. **Sign Up or Log In:** Begin by creating an account using your Gmail or GitHub credentials. If you already have an account, log in to access your dashboard.
 
 ### Setting Up Teams
-2. **Create a Team:** Before starting a project, you need to set up a team. Navigate to the 'Teams' section and click on 'Add Team.' Provide a name for your team and optionally add a description.
+2. **Create a Team:** Before starting a project, you need to set up a team. Navigate to the 'Teams' section and click on 'Add Team.' Enter a name for your team.
 
-3. **Inviting Team Members:** After creating your team, you can invite members by selecting 'Add Member' within the team's options. Enter the email address or username of the people you wish to add.
+3. **Adding Team Members:** After creating your team, you can add members by selecting 'Add Member' within the team's options. Enter the username of the person you wish to add.
 
 ### Managing Projects
-4. **Create a Project:** With a team in place, go to the 'Projects' section and click on 'Add Project.' You must select a team for this project. Fill out the project details such as name and description.
+4. **Create a Project:** With a team in place, go to the 'Projects' section and click on 'Add Project.' You must select a team for this project. Fill out the project name form.
 
 ### Task Management
 5. **Adding Tasks:** Within your project, add tasks by clicking on 'Add Task.' Specify the task's details, including title, description, deadlines, and assignees.
    
 6. **Organizing Tasks:** Organize tasks by creating columns or sprints to monitor their progress. Customize your workflow with columns like 'To Do,' 'In Progress,' and 'Done.'
 
-### Utilizing Filters
-7. **Filtering by Teams:** To streamline the view of your projects and tasks, you can filter them by teams. This feature allows you to focus on specific team activities and manage tasks more efficiently.
-
-### Customization
-8. **Custom Fields for Tasks:** Use the JSONB functionality to introduce custom fields for your tasks. This feature enables you to customize task management to suit the unique requirements of your projects.
+### Filtering
+7. **Filtering by Teams:** To streamline the view of your projects, you can filter projects by teams. This feature allows you to focus on specific team activities and manage projects more efficiently.
 
 ### Tracking Progress
-9. **Monitor Progress:** Keep track of your projects and tasks using the dashboard. Utilize the sorting feature to view tasks by team, making it easier to follow deadlines and ensure timely completion of projects.
+8. **Monitor Progress:** Keep track of your projects and tasks using the dashboard. Utilize the filter feature to view projects by team, making it easier to follow deadlines and ensure timely completion of projects.
 
 ### Tips for Effective Use
 - **Regularly Update Tasks:** Ensure tasks are updated with their current status and any changes in deadlines or assignees to maintain an accurate project timeline.
@@ -61,6 +57,7 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 Remember, Busy Beaver aims to simplify project and task management for teams. Explore the features and customize your workflow to best fit your team's needs.
 
 ## Screenshot or Video Recording
+WIP
 Gives a little demo or visual representation of the project
 ![](my_video.mov)
 

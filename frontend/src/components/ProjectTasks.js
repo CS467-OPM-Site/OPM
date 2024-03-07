@@ -15,10 +15,11 @@ const SHOW_ICONS = "show-task-summary-icon-container"
 const HIDE_ICONS = "hide-task-summary-icon-container"
 
 
-const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading, setIsTaskBeingShown }) => {
+const ProjectTask = memo(( { task, removeTask, moveTask, setIsLoading, setIsTaskBeingShown }) => {
   const [shouldPlayHideSlideAnimation, setShouldPlayHideSlideAnimation] = useState(0);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [deleteTaskModalAdditionalText, setDeleteTaskModalAdditionalText] = useState('');
+  const [currentTask, setCurrentTask] = useState(task);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,8 +27,8 @@ const ProjectTask = memo(( { currentTask, removeTask, moveTask, setIsLoading, se
     setIsTaskBeingShown(true);
     navigate(`${location.pathname}/tasks/${currentTask.taskID}`, { 
       state: { 
-        projectID: `${location.state.projectID}`,
-        taskID: `${currentTask.taskID}`} })
+        projectID: location.state.projectID,
+        taskID: currentTask.taskID} })
   }
 
   const hideIconsAnimation = () => {

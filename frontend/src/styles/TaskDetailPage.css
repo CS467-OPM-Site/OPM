@@ -22,6 +22,8 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-inline: 1%;
+  gap: 5px;
+  overflow-y: auto;
 }
 
 .task-details-loading-container {
@@ -104,26 +106,99 @@
   margin-inline: 1%;
 }
 
+.comments-and-add-comment-field-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 90%;
+  justify-content: flex-start;
+  align-items: center;
+}
+
 .inner-comments-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: auto;
+  overflow-x: hidden;
+  align-items: center;
   width: 100%;
   padding-top: 3%;
   height: 100%;
 }
 
-.add-comment-container {
+.add-comment-button-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
-  height: 5%;
+  height: 3%;
   justify-content: center;
   align-items: center;
   padding-top: 2%;
+  gap: 10px;
 }
 
 .add-comment-button {
   width: 75%;
+}
+
+.add-comment-field-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.add-comment-field {
+  background: rgba(129, 178, 154, 0.85);
+  border-radius: 4px;
+  width: 100%;
+  display: none;
+}
+
+.add-comment-field:hover {
+  background: rgba(129, 178, 154, 1);
+  border-radius: 4px;
+}
+
+.add-comment-field > .Mui-focused {
+  color: black!important;
+}
+
+.show-add-comment-field {
+  display: flex!important;
+  animation: slideInCommentAnimation ease-out 0.4s forwards;
+}
+
+@keyframes slideInCommentAnimation {
+  from {
+    top: var(++h);
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    height: 100%;
+    opacity: 1;
+  }
+}
+
+.hide-add-comment-field {
+  display: flex!important;
+  animation: slideOutCommentAnimation 0.4s ease-in forwards;
+}
+
+@keyframes slideOutCommentAnimation {
+  from {
+    top: 0;
+    height: 100%;
+    opacity: 1;
+  }
+  to {
+    top: var(++h);
+    height: 0;
+    opacity: 0;
+  }
 }

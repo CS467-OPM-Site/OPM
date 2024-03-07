@@ -73,10 +73,11 @@ const ProjectManagementPage = () => {
                 <AddTaskForm 
                     columns={columns}
                     setColumns={setColumns}
-                    setIsLoading={setIsLoading}/>
+                    setIsLoading={setIsLoading}
+                    setIsTaskBeingAdded={setIsTaskBeingAdded}/>
                 } />
             <Route path='/tasks/:taskId' element={
-                <TaskDetailPage />
+                <TaskDetailPage columns={columns} setColumns={setColumns} />
                 } />
           </Route>
         </Routes>

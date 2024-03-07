@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static org.jooq.impl.DSL.when;
 import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
@@ -48,7 +49,8 @@ public class CommentsRepository {
                 newComment.getValue(COMMENTS.COMMENT_BODY),
                 commenter.username(),
                 commenter.userProjectID(),
-                newComment.getValue(COMMENTS.COMMENT_CREATED));
+                newComment.getValue(COMMENTS.COMMENT_CREATED),
+                true); // This user is the commenter, return true
     }
 
     public CommentsRecord doesCommentExistOnTask(int taskID, int commentID, int userProjectID, HttpServletRequest request)
@@ -119,9 +121,11 @@ public class CommentsRepository {
                 .execute();
     }
 
-    public List<CommentInTaskDto> getCommentsOnTask(int taskID) {
+    public List<CommentInTaskDto> getCommentsOnTask(int taskID, int userProjectID) {
         // SELECT Comments.comment_id, Comments.comment_body, BeaverUsers.username,
         //          Comments.user_id, Comments.commented_created
+        //          CASE WHEN Comments.user_id = userProjectID THEN true
+        //          ELSE false AS is_commenter
         // FROM Comments
         // JOIN ProjectUsers
         // ON Comments.user_id = ProjectUsers.user_project_id
@@ -133,7 +137,10 @@ public class CommentsRepository {
                         COMMENTS.COMMENT_BODY,
                         BEAVERUSERS.USERNAME,
                         COMMENTS.USER_ID,
-                        COMMENTS.COMMENT_CREATED)
+                        COMMENTS.COMMENT_CREATED,
+                        when(COMMENTS.USER_ID.eq(userProjectID), true)
+                                .otherwise(false)
+                                .as("is_commenter"))
                 .from(COMMENTS)
                 .join(PROJECTUSERS)
                 .on(COMMENTS.USER_ID.eq(PROJECTUSERS.USER_PROJECT_ID))

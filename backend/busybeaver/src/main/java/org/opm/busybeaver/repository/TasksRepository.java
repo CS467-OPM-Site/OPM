@@ -70,7 +70,7 @@ public class TasksRepository {
                 .fetchSingleInto(TaskCreatedDto.class);
     }
 
-    public TaskDetailsDto getTaskDetails(int taskID, HttpServletRequest request)
+    public TaskDetailsDto getTaskDetails(int taskID, int userProjectID, HttpServletRequest request)
             throws TasksExceptions.TaskDoesNotExistInProject {
         // SELECT Tasks.task_id, Tasks.title, Tasks.description,
         //      Tasks.priority, Tasks.due_date, Columns.columns_id, Columns.column_title,
@@ -127,7 +127,7 @@ public class TasksRepository {
             throw taskDoesNotExistInProject;
         }
 
-        task.setComments(commentsRepository.getCommentsOnTask(taskID));
+        task.setComments(commentsRepository.getCommentsOnTask(taskID, userProjectID));
 
         return task;
     }

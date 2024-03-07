@@ -3,6 +3,7 @@ package org.opm.busybeaver.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.Tasks.NewTaskDtoExtended;
 import org.opm.busybeaver.dto.Tasks.TaskCreatedDto;
 import org.opm.busybeaver.dto.Tasks.TaskDetailsDto;
@@ -97,9 +98,9 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
     public TaskDetailsDto getTaskDetails(UserDto userDto, int projectID, int taskID, HttpServletRequest request) {
         // Validate user, and user in valid project
-        validateUserValidAndInsideValidProject(userDto, projectID, request);
+        ProjectUserShortDto projectUser = validateProjectUserValidAndInsideValidProject(userDto, projectID, request);
 
-        TaskDetailsDto taskDetailsDto = tasksRepository.getTaskDetails(taskID, request);
+        TaskDetailsDto taskDetailsDto = tasksRepository.getTaskDetails(taskID, projectUser.userProjectID(), request);
         taskDetailsDto.setTaskLocation(request.getContextPath(), projectID);
 
         return taskDetailsDto;
@@ -420,5 +421,15 @@ public class TasksService implements ValidateUserAndProjectInterface {
         projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
 
         return beaverusersRecord;
+    }
+
+    private ProjectUserShortDto validateProjectUserValidAndInsideValidProject(
+            UserDto userDto,
+            int projectID,
+            HttpServletRequest request) {
+        BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
+
+        // Validate user in project and project exists
+        return projectUsersRepository.getUserInProject(projectID, beaverusersRecord, request);
     }
 }

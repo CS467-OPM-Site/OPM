@@ -3,8 +3,8 @@ package org.opm.busybeaver.dto.Tasks;
 import org.opm.busybeaver.dto.Columns.ColumnInTaskDto;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Interfaces.TaskBasicInterface;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.Sprints.SprintSummaryDto;
-import org.opm.busybeaver.dto.Users.UserSummaryDto;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     private final String priority;
     private final ColumnInTaskDto column;
     @Nullable
-    private UserSummaryDto assignedTo;
+    private ProjectUserShortDto assignedTo;
     @Nullable
     private SprintSummaryDto sprint;
     private List<CommentInTaskDto> comments;
@@ -31,11 +31,11 @@ public final class TaskDetailsDto implements TaskBasicInterface {
 
     @ConstructorProperties({"task_id", "title", "description", "priority", "due_date",
                             "column_id", "column_title", "column_index",
-                            "user_id", "username",
+                            "user_project_id", "user_id", "username",
                             "sprint_id", "begin_date", "end_date", "sprint_name"})
     public TaskDetailsDto(int taskID, String title, @Nullable String description, String priority, LocalDate dueDate,
                           int columnID, String columnTitle, int columnIndex,
-                          Integer userID, String username,
+                          Integer userProjectID, Integer userID, String username,
                           Integer sprintID, LocalDate startDate, LocalDate endDate, String sprintName) {
         this.taskID = taskID;
         this.title = title;
@@ -46,7 +46,7 @@ public final class TaskDetailsDto implements TaskBasicInterface {
         this.column = new ColumnInTaskDto(columnTitle, columnID, columnIndex);
 
         if (userID != null && username != null) {
-            this.assignedTo = new UserSummaryDto(username, userID);
+            this.assignedTo = new ProjectUserShortDto(username, userID, userProjectID);
         }
 
         if (sprintID != null) {
@@ -105,7 +105,7 @@ public final class TaskDetailsDto implements TaskBasicInterface {
     }
 
     @Nullable
-    public UserSummaryDto getAssignedTo() {
+    public ProjectUserShortDto getAssignedTo() {
         return assignedTo;
     }
 

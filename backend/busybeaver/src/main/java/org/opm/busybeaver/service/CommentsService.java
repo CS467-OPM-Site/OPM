@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Comments.CommentInTaskDto;
 import org.opm.busybeaver.dto.Comments.NewCommentBodyDto;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
@@ -12,13 +13,12 @@ import org.opm.busybeaver.exceptions.Comments.CommentsExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.CommentsRecord;
 import org.opm.busybeaver.repository.*;
-import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class CommentsService implements ValidateUserAndProjectInterface {
+public class CommentsService {
     private final UsersRepository usersRepository;
     private final CommentsRepository commentsRepository;
     private final TasksRepository tasksRepository;
@@ -47,7 +47,7 @@ public class CommentsService implements ValidateUserAndProjectInterface {
             int taskID,
             NewCommentBodyDto newCommentBodyDto,
             HttpServletRequest request) {
-        BeaverusersRecord commenter = validateUserValidAndInsideValidProject(userDto, projectID, request);
+        ProjectUserShortDto commenter = validateProjectUserValidAndInsideValidProject(userDto, projectID, request);
 
         tasksRepository.doesTaskExistInProject(taskID, projectID, request);
         CommentInTaskDto commentInTaskDto = commentsRepository.addComment(taskID, newCommentBodyDto, commenter);
@@ -65,7 +65,7 @@ public class CommentsService implements ValidateUserAndProjectInterface {
             int commentID,
             @NotNull NewCommentBodyDto newCommentBodyDto,
             HttpServletRequest request) throws CommentsExceptions.CommentBodyIdenticalNotModified {
-        BeaverusersRecord commenter = validateUserValidAndInsideValidProject(userDto, projectID, request);
+        ProjectUserShortDto commenter = validateProjectUserValidAndInsideValidProject(userDto, projectID, request);
 
         tasksRepository.doesTaskExistInProject(taskID, projectID, request);
 
@@ -73,7 +73,7 @@ public class CommentsService implements ValidateUserAndProjectInterface {
         CommentsRecord comment = commentsRepository.doesCommentExistOnTask(
                 taskID,
                 commentID,
-                commenter.getUserId(),
+                commenter.userProjectID(),
                 request);
 
         // Check if comment bodies are identical
@@ -102,28 +102,25 @@ public class CommentsService implements ValidateUserAndProjectInterface {
             int taskID,
             int commentID,
             HttpServletRequest request) {
-        BeaverusersRecord commenter = validateUserValidAndInsideValidProject(userDto, projectID, request);
+        ProjectUserShortDto commenter = validateProjectUserValidAndInsideValidProject(userDto, projectID, request);
 
         tasksRepository.doesTaskExistInProject(taskID, projectID, request);
 
         // Ensure this user commented, and that this comment exists on the specified task
-        commentsRepository.doesCommentExistOnTask(taskID, commentID, commenter.getUserId(), request);
+        commentsRepository.doesCommentExistOnTask(taskID, commentID, commenter.userProjectID(), request);
 
-        commentsRepository.deleteComment(taskID, commentID, commenter.getUserId());
+        commentsRepository.deleteComment(taskID, commentID, commenter.userProjectID());
 
         projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
-    @Override
-    public BeaverusersRecord validateUserValidAndInsideValidProject(
+    private ProjectUserShortDto validateProjectUserValidAndInsideValidProject(
             UserDto userDto,
             int projectID,
             HttpServletRequest request) {
         BeaverusersRecord beaverusersRecord = usersRepository.getUserByEmailAndId(userDto, request);
 
         // Validate user in project and project exists
-        projectUsersRepository.isUserInProjectAndDoesProjectExist(beaverusersRecord.getUserId(), projectID, request);
-
-        return beaverusersRecord;
+        return projectUsersRepository.getUserInProject(projectID, beaverusersRecord, request);
     }
 }

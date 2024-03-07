@@ -3,18 +3,18 @@ package org.opm.busybeaver.dto.Comments;
 import org.opm.busybeaver.enums.BusyBeavPaths;
 
 import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public final class CommentInTaskDto {
     private final int commentID;
     private final String commentBody;
     private final String commenterUsername;
     private final int commenterID;
-    private final LocalDateTime commentedAt;
+    private final OffsetDateTime commentedAt;
     private String commentLocation;
 
     @ConstructorProperties({"comment_id", "comment_body", "username", "user_id", "comment_created"})
-    public CommentInTaskDto(int commentID, String commentBody, String commenter, int commenterID, LocalDateTime commentedAt) {
+    public CommentInTaskDto(int commentID, String commentBody, String commenter, int commenterID, OffsetDateTime commentedAt) {
         this.commentID = commentID;
         this.commentBody = commentBody;
         this.commenterUsername = commenter;
@@ -47,7 +47,7 @@ public final class CommentInTaskDto {
         return commenterID;
     }
 
-    public LocalDateTime getCommentedAt() {
+    public OffsetDateTime getCommentedAt() {
         return commentedAt;
     }
 

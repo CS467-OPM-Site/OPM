@@ -9,7 +9,7 @@ import AddTeamModal from './AddTeamModal';
 import AddProjectModal from './AddProjectModal';
 import AddMemberModal from './AddMemberModal';
 import FilterModal from './FilterModal';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 
 const UserHomepage = () => {
@@ -221,10 +221,29 @@ const UserHomepage = () => {
       if (!response.ok) throw new Error('Failed to add project');
       const newProject = await response.json();
   
-      setProjects(prev => [...prev, { ...newProject, team: selectedTeam }]);
+      // Set the lastUpdated property to the current date-time in ISO 8601 format
+      const newProjectWithDate = { ...newProject, lastUpdated: new Date().toISOString() };
+  
+      setProjects(prev => [...prev, { ...newProjectWithDate, team: selectedTeam }]);
+      setError('');
     } catch (error) {
       console.error('Add Project Error:', error);
       setError('Failed to add project.');
+    }
+  };
+  
+
+  const formatLastUpdated = (dateString) => {
+    try {
+      // parseISO handles strings in ISO 8601 format
+      const date = parseISO(dateString);
+      // Check if date is valid
+      if (isNaN(date)) throw new Error('Invalid date');
+      return formatDistanceToNow(date) + ' ago';
+    } catch (error) {
+      console.error('Invalid date passed to formatLastUpdated:', dateString);
+      // Return a default message or leave it empty
+      return 'Unknown';
     }
   };
   

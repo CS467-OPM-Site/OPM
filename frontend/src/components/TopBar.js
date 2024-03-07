@@ -26,7 +26,7 @@ const TopBar = () => {
           </div>
           <div className="user-homepage-header-card">
             <Typography variant="" component="h1">
-              BusyBeaver OPM Site
+              Busy Beaver
             </Typography>
           </div>
           <div className="user-homepage-buttons">

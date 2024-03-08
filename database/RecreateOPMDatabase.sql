@@ -49,7 +49,7 @@ CREATE TABLE Projects (
     project_name VARCHAR(50) NOT NULL,
     current_sprint_id INTEGER,
     team_id INTEGER NOT NULL REFERENCES Teams(team_id) ON DELETE CASCADE,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     -- Enforce uniqueness of project per team
     CONSTRAINT unique_project_per_team UNIQUE (project_name, team_id)
@@ -104,8 +104,8 @@ CREATE TABLE Tasks (
     title VARCHAR(50) NOT NULL,
     description VARCHAR(500), -- Enforcing 500 character maximum
     custom_fields JSONB,
-    task_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    task_created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_updated TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     task_index SMALLINT DEFAULT -1
 );
 
@@ -114,7 +114,7 @@ CREATE TABLE Comments (
     comment_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES ProjectUsers(user_project_id) ON DELETE SET NULL,
     task_id INTEGER REFERENCES Tasks(task_id) ON DELETE CASCADE,
-    comment_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    comment_created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     comment_body TEXT
 );
 
@@ -165,45 +165,45 @@ $$ LANGUAGE plpgsql;
 -- TASKS
 -- Updating Task's last_updated along with Task's associated Projects last_updated when task is CRUD
 CREATE TRIGGER trigger_update_task_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Tasks
+BEFORE INSERT OR UPDATE ON Tasks
 FOR EACH ROW
 EXECUTE FUNCTION update_last_updated();
 
 CREATE TRIGGER trigger_update_tasks_project_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Tasks
+BEFORE INSERT OR UPDATE ON Tasks
 FOR EACH ROW 
 EXECUTE FUNCTION update_project_last_updated();
 
 -- PROJECTS
 -- Updating Project's last_updated when Project is CRUD
 CREATE TRIGGER trigger_update_project_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Projects
+BEFORE INSERT OR UPDATE ON Projects
 FOR EACH ROW
 EXECUTE FUNCTION update_last_updated();
 
 -- COLUMNS
 -- Updating Projects last_updated when Columns is CRUD
 CREATE TRIGGER trigger_update_columns_project_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Columns
+BEFORE INSERT OR UPDATE ON Columns
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();
 
 -- SPRINTS
 -- Updating Projects last_updated when Sprints is CRUD
 CREATE TRIGGER trigger_update_sprints_project_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Sprints
+BEFORE INSERT OR UPDATE ON Sprints
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();
 
 -- COMMENTS
 -- Updating Tasks and Projects last_updated when Comments is CRUD
 CREATE TRIGGER trigger_update_comments_project_task_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON Comments
+BEFORE INSERT OR UPDATE ON Comments
 FOR EACH ROW
 EXECUTE FUNCTION update_comments_task_project_updated();
 
 -- USERS
 CREATE TRIGGER trigger_update_user_last_updated
-BEFORE INSERT OR UPDATE OR DELETE ON ProjectUsers
+BEFORE INSERT OR UPDATE ON ProjectUsers
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();

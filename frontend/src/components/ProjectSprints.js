@@ -5,7 +5,7 @@ import { Button, Typography } from '@mui/material';
 import { DriveFileRenameOutlineTwoTone, DeleteTwoTone, Cancel, CheckCircleRounded } from "@mui/icons-material";
 
 const ProjectSprints = () => {
-  const [sprints, setSprints] = useState(null);
+  const [sprints, setSprints] = useState([]);
   const [sprintToShowIconsFor, setSprintToShowIconsFor] = useState(null)
   const params = useParams();
 
@@ -52,7 +52,7 @@ const ProjectSprints = () => {
           <Typography className="sprints-title">Sprints</Typography>
         </div>
         <div className="sprints-inner-container">
-          {sprints === null ?
+          {sprints.length === 0 ?
             <div>No sprints available</div>
           :
             <>

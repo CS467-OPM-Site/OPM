@@ -34,7 +34,7 @@ export const addTask = async(projectID, taskDetails) => {
   const response = await fetch(`${API_BASE_URL}/projects/${projectID}/tasks`, { 
     method: "POST",
     headers: {
-      'Authorization': `Bearer ${idToken}`,
+      'Authorization': `Bearer ${idToken}`, 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(taskDetails)

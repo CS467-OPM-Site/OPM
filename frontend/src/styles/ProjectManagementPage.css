@@ -28,6 +28,7 @@
 /**
  * Alert styles for deleting a project, or task, or column
  **/
+.alert-delete-comment,
 .alert-delete-task,
 .alert-delete-project {
   background: rgba(198, 128, 63, .7);
@@ -43,6 +44,7 @@
   width: 100%;
 }
 
+#alert-delete-comment-dialog-title,
 #alert-delete-task-dialog-title,
 #alert-delete-project-dialog-title {
   border-top: 5px solid rgba(229, 90, 60, 0.95);

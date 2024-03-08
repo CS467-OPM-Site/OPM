@@ -16,6 +16,7 @@ const TaskComment = ( { comment, removeComment } ) => {
   const [isModifyingComment, setIsModifyingComment] = useState(false);
   const [commentBody, setCommentBody] = useState(comment.commentBody);
   const [modifyCommentError, setModifyCommentError] = useState('');
+  const [originalCommentBody, setOriginalCommentBody] = useState('');
 
   const timeToPrint = calculateTimeSinceComment(comment.commentedAt);
 
@@ -41,21 +42,23 @@ const TaskComment = ( { comment, removeComment } ) => {
 
   const openModifyCommentTextfield = () => {
     setIsModifyingComment(true);
+    setOriginalCommentBody(JSON.parse(JSON.stringify(commentBody)));
   }
 
   const closeModifyCommentTextfield = () => {
     setIsModifyingComment(false);
-    setCommentBody(comment.commentBody);
+    //setCommentBody(JSON.parse(JSON.stringify(originalCommentBody)));
+    setModifyCommentError('');
   }
 
   const handleOnModifyComment = async () => {
-    if (commentBody.trim() === '') {
+    if (originalCommentBody.trim() === '') {
       setModifyCommentError(MODIFY_COMMENT_ERROR);
       return;
     }
     setModifyCommentError('');
 
-    const modifyCommentDetails = { commentBody: commentBody };
+    const modifyCommentDetails = { commentBody: originalCommentBody };
 
     const response = await modifyComment(comment.commentLocation, modifyCommentDetails);
     const responseJSON = await response.json();
@@ -63,6 +66,7 @@ const TaskComment = ( { comment, removeComment } ) => {
     switch (response.status) {
       case 200: {
         setIsModifyingComment(false);
+        setCommentBody(JSON.parse(JSON.stringify(originalCommentBody)));
         break;
       } 
       default: {
@@ -94,9 +98,9 @@ const TaskComment = ( { comment, removeComment } ) => {
               helperText={(modifyCommentError !== '') && modifyCommentError}
               multiline 
               rows={4}
-              value={commentBody}
+              value={originalCommentBody}
               onChange={(e) => { 
-                setCommentBody(e.target.value.trim() === '' ? '' : e.target.value) }
+                setOriginalCommentBody(e.target.value.trim() === '' ? '' : e.target.value) }
               }
               sx={{
                 label: { color: "#000000" },

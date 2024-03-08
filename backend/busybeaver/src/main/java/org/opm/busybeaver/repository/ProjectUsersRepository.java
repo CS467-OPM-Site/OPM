@@ -13,11 +13,12 @@ import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.opm.busybeaver.jooq.Tables.BEAVERUSERS;
-import static org.opm.busybeaver.jooq.Tables.PROJECTUSERS;
+import static org.jooq.impl.DSL.val;
+import static org.opm.busybeaver.jooq.Tables.*;
 
 @Repository
 @Component
@@ -172,5 +173,19 @@ public class ProjectUsersRepository {
 
             throw assignedToUserNotInProjectOrNonexistent;
         }
+    }
+
+    @Transactional
+    public void addUserToAllProjectsOfTeam(int userID, int teamID) {
+        // INSERT INTO ProjectUsers (user_id, project_id)
+        //  SELECT userID AS user_id, project_id
+        //  FROM Projects
+        //  WHERE team_id = teamID:
+        create.insertInto(PROJECTUSERS, PROJECTUSERS.USER_ID, PROJECTUSERS.PROJECT_ID)
+                .select(
+                        create.select(val(userID).as(PROJECTUSERS.USER_ID), PROJECTS.PROJECT_ID)
+                                .from(PROJECTS)
+                                .where(PROJECTS.TEAM_ID.eq(teamID))
+                ).execute();
     }
 }

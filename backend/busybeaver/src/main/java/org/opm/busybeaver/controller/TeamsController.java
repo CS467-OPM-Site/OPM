@@ -119,7 +119,7 @@ public final class TeamsController implements GetUserFromBearerTokenInterface {
                 newUserInTeamLocation
                 );
 
-        log.info("Added a member to a team. | RID: {}", request.getAttribute(RID));
+        log.info("Added a member to a team, and all associated projects. | RID: {}", request.getAttribute(RID));
 
         return new SmallJsonResponse(
                 HttpStatus.OK.value(),

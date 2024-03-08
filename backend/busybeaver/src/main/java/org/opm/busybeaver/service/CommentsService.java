@@ -23,7 +23,6 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
     private final TasksRepository tasksRepository;
     private final ProjectUsersRepository projectUsersRepository;
-    private final ProjectsRepository projectsRepository;
     private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
@@ -31,14 +30,12 @@ public class CommentsService {
             UsersRepository usersRepository,
             CommentsRepository commentsRepository,
             TasksRepository tasksRepository,
-            ProjectUsersRepository projectUsersRepository,
-            ProjectsRepository projectsRepository
+            ProjectUsersRepository projectUsersRepository
     ) {
         this.usersRepository = usersRepository;
         this.commentsRepository = commentsRepository;
         this.tasksRepository = tasksRepository;
         this.projectUsersRepository = projectUsersRepository;
-        this.projectsRepository = projectsRepository;
     }
 
     public CommentInTaskDto addCommentToTask(
@@ -52,8 +49,6 @@ public class CommentsService {
         tasksRepository.doesTaskExistInProject(taskID, projectID, request);
         CommentInTaskDto commentInTaskDto = commentsRepository.addComment(taskID, newCommentBodyDto, commenter);
         commentInTaskDto.setCommentLocation(request.getContextPath(), projectID, taskID);
-
-        projectsRepository.updateLastUpdatedForProject(projectID);
 
         return commentInTaskDto;
     }
@@ -92,8 +87,6 @@ public class CommentsService {
         }
 
         commentsRepository.modifyCommentOnTask(taskID, commentID, newCommentBodyDto);
-
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     public void removeCommentFromTask(
@@ -110,8 +103,6 @@ public class CommentsService {
         commentsRepository.doesCommentExistOnTask(taskID, commentID, commenter.userProjectID(), request);
 
         commentsRepository.deleteComment(taskID, commentID, commenter.userProjectID());
-
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     private ProjectUserShortDto validateProjectUserValidAndInsideValidProject(

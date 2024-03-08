@@ -31,7 +31,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class TasksService implements ValidateUserAndProjectInterface {
-    private final ProjectsRepository projectsRepository;
     private final UsersRepository usersRepository;
     private final TasksRepository tasksRepository;
     private final ColumnsRepository columnsRepository;
@@ -41,14 +40,12 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
     @Autowired
     public TasksService(
-            ProjectsRepository projectsRepository,
             UsersRepository usersRepository,
             TasksRepository tasksRepository,
             ColumnsRepository columnsRepository,
             SprintsRepository sprintsRepository,
             ProjectUsersRepository projectUsersRepository
     ) {
-        this.projectsRepository = projectsRepository;
         this.usersRepository = usersRepository;
         this.tasksRepository = tasksRepository;
         this.columnsRepository = columnsRepository;
@@ -91,8 +88,6 @@ public class TasksService implements ValidateUserAndProjectInterface {
         TaskCreatedDto taskCreatedDto = tasksRepository.addTask(newTaskDto, projectID);
         taskCreatedDto.setTaskLocation(request.getContextPath(), projectID);
 
-        // Update project last updated time
-        projectsRepository.updateLastUpdatedForProject(projectID);
         return taskCreatedDto;
     }
 
@@ -121,9 +116,6 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
         // Move task over to the other column
         tasksRepository.moveTaskToAnotherColumn(taskID, projectID, columnID);
-
-        // Update project last updated time
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     public boolean modifyTask(
@@ -163,7 +155,6 @@ public class TasksService implements ValidateUserAndProjectInterface {
         boolean taskUpdated = taskToEdit.changed();
         if (taskUpdated) {
             taskToEdit.update();
-            projectsRepository.updateLastUpdatedForProject(projectID);
         }
 
         return taskUpdated;
@@ -178,9 +169,6 @@ public class TasksService implements ValidateUserAndProjectInterface {
 
         // Delete task from project
         tasksRepository.deleteTask(taskID);
-
-        // Update project last updated time
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     private void modifyTaskPriority(

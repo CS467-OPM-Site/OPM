@@ -121,7 +121,6 @@ public final class ProjectsService implements ValidateUserAndProjectInterface {
         validateUserValidAndInsideValidProject(userDto, projectID, request);
         String newProjectName = newProjectNameDto.projectName();
         projectsRepository.modifyProjectName(projectID, newProjectName, request);
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     @Override

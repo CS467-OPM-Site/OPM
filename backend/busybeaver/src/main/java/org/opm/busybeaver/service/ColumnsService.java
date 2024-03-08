@@ -1,7 +1,6 @@
 package org.opm.busybeaver.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jdk.jfr.Frequency;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ColumnsService implements ValidateUserAndProjectInterface {
-    private final ProjectsRepository projectsRepository;
     private final UsersRepository usersRepository;
     private final ColumnsRepository columnsRepository;
     private final TasksRepository tasksRepository;
@@ -29,13 +27,11 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
 
     @Autowired
     public ColumnsService(
-            ProjectsRepository projectsRepository,
             UsersRepository usersRepository,
             ColumnsRepository columnsRepository,
             TasksRepository tasksRepository,
             ProjectUsersRepository projectUsersRepository
     ) {
-        this.projectsRepository = projectsRepository;
         this.usersRepository = usersRepository;
         this.columnsRepository = columnsRepository;
         this.tasksRepository = tasksRepository;
@@ -53,9 +49,6 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
         // Create column, add to project after validating for duplicate, move to end
         NewColumnDto newColumn = columnsRepository.addNewColumnToProject(newColumnDto, projectID, request);
         newColumn.setColumnLocation(request.getContextPath(), projectID);
-
-        // Update last updated time for project
-        projectsRepository.updateLastUpdatedForProject(projectID);
 
         return newColumn;
     }
@@ -84,9 +77,6 @@ public class ColumnsService implements ValidateUserAndProjectInterface {
 
         // Remove column, shift column indexes of other columns
         columnsRepository.removeColumnAndShiftOtherColumns(projectID, columnID);
-
-        // Update last updated time for project
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     public NewColumnDto moveColumn(UserDto userDto,

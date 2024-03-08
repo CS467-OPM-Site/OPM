@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.exception.NoDataFoundException;
 import org.opm.busybeaver.dto.Columns.NewColumnDto;
 import org.opm.busybeaver.enums.BusyBeavConstants;
@@ -183,14 +184,14 @@ public class ColumnsRepository {
         // SELECT MAX(Columns.column_index)
         // FROM Columns
         // WHERE Columns.project_id = projectID
-        Short maxColumnIndex = create.select(max(COLUMNS.COLUMN_INDEX))
+        Record1<Short> maxColumnIndexRecord = create.select(max(COLUMNS.COLUMN_INDEX))
                 .from(COLUMNS)
                 .where(COLUMNS.PROJECT_ID.eq(projectID))
-                .fetchOne().component1();
+                .fetchOne();
 
-        if (maxColumnIndex == null) {
-                // When project has no columns, start the newest column at index 0
-                maxColumnIndex = -1;
+        Short maxColumnIndex = -1;
+        if (maxColumnIndexRecord != null) {
+            maxColumnIndex = maxColumnIndexRecord.component1();
         }
 
         // Second, insert new column with next column index, making it last in-order column

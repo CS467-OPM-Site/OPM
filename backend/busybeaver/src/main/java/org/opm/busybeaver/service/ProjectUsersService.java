@@ -10,7 +10,6 @@ import org.opm.busybeaver.enums.BusyBeavConstants;
 import org.opm.busybeaver.enums.ErrorMessageConstants;
 import org.opm.busybeaver.exceptions.ProjectUsers.ProjectUsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
-import org.opm.busybeaver.repository.ProjectsRepository;
 import org.opm.busybeaver.repository.ProjectUsersRepository;
 import org.opm.busybeaver.repository.UsersRepository;
 import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
@@ -20,18 +19,15 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public final class ProjectUsersService implements ValidateUserAndProjectInterface {
-    private final ProjectsRepository projectsRepository;
     private final ProjectUsersRepository projectUsersRepository;
     private final UsersRepository usersRepository;
     private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public ProjectUsersService(
-            ProjectsRepository projectsRepository,
             ProjectUsersRepository projectUsersRepository,
             UsersRepository usersRepository
     ) {
-        this.projectsRepository = projectsRepository;
         this.projectUsersRepository = projectUsersRepository;
         this.usersRepository = usersRepository;
     }
@@ -75,9 +71,6 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
 
         // Add user to project
         projectUsersRepository.addUserToProject(projectID, userToAdd.getUserId());
-
-        // Update last updated for project
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     public void removeUserFromProject(
@@ -115,8 +108,6 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
         // Remove user from project
         projectUsersRepository.removeUserFromProject(projectID, userToRemove.getUserId());
 
-        // Update last updated for project
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     @Override

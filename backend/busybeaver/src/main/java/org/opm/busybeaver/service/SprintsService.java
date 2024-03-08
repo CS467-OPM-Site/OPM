@@ -23,20 +23,17 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
     private final UsersRepository usersRepository;
     private final SprintsRepository sprintsRepository;
     private final ProjectUsersRepository projectUsersRepository;
-    private final ProjectsRepository projectsRepository;
     private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public SprintsService(
             UsersRepository usersRepository,
             ProjectUsersRepository projectUsersRepository,
-            SprintsRepository sprintsRepository,
-            ProjectsRepository projectsRepository
+            SprintsRepository sprintsRepository
     ) {
         this.usersRepository = usersRepository;
         this.projectUsersRepository = projectUsersRepository;
         this.sprintsRepository = sprintsRepository;
-        this.projectsRepository = projectsRepository;
     }
 
     public @NotNull SprintSummaryDto addSprint(
@@ -52,8 +49,6 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
 
         newSprint.setSprintLocation(request.getContextPath(), projectID);
 
-        projectsRepository.updateLastUpdatedForProject(projectID);
-
         return newSprint;
     }
 
@@ -63,8 +58,6 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         sprintsRepository.doesSprintExistInProject(sprintID, projectID, request);
 
         sprintsRepository.removeSprintFromProject(sprintID, projectID);
-
-        projectsRepository.updateLastUpdatedForProject(projectID);
     }
 
     public @NotNull SprintsInProjectDto getAllSprintsForProject(UserDto userDto, int projectID, HttpServletRequest request) {
@@ -109,7 +102,6 @@ public final class SprintsService implements ValidateUserAndProjectInterface {
         boolean isSprintUpdated = sprintToEdit.changed();
         if (isSprintUpdated) {
             sprintToEdit.update();
-            projectsRepository.updateLastUpdatedForProject(projectID);
         }
 
         return isSprintUpdated;

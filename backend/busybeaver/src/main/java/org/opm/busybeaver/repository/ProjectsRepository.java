@@ -72,16 +72,6 @@ public class ProjectsRepository {
         }
     }
 
-    public void updateLastUpdatedForProject(int projectID) {
-        // UPDATE Projects
-        // SET last_updated = CURRENT_TIMESTAMP
-        // WHERE project_id = projectID
-        create.update(PROJECTS)
-                .set(PROJECTS.LAST_UPDATED, OffsetDateTime.now())
-                .where(PROJECTS.PROJECT_ID.eq(projectID))
-                .execute();
-    }
-
     @Transactional
     public ProjectsRecord makeNewProject(String projectName, int teamID, HttpServletRequest request)
         throws ProjectsExceptions.ProjectAlreadyExistsForTeamException {

@@ -1,6 +1,5 @@
 package org.opm.busybeaver.service;
 
-import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,6 @@ import org.opm.busybeaver.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpRequest;
 import java.util.List;
 
 

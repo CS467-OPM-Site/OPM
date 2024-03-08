@@ -137,7 +137,11 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
   }
 
   const buildComments = () => {
-    return taskComments.map(comment => <TaskComment key={comment.commentID} comment={comment} />);
+    return taskComments.map(comment => 
+      <TaskComment 
+        key={comment.commentID} 
+        comment={comment} 
+        removeComment={removeComment}/>);
   }
 
   const commentFieldClassName = () => {
@@ -234,6 +238,18 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
     });
 
     return { columnIndex, taskIndex };
+  }
+
+  const removeComment = (commentID) => {
+    let comments = taskComments.filter(comment => comment.commentID !== commentID);
+    setTaskComments(comments);
+
+    const newColumns = columns.map(column => ({ ...column, tasks: [...column.tasks] }));
+
+    const { columnIndex, taskIndex } = findParentColumnAndIndex();
+    newColumns[columnIndex].tasks[taskIndex].comments -= 1;
+
+    setColumns(newColumns);
   }
 
   return (

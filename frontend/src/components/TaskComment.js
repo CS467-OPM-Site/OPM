@@ -1,64 +1,39 @@
-import { Typography, Divider } from '@mui/material';
-import React from 'react';
-import dayjs from 'dayjs';
+import { Typography, Divider, Button } from '@mui/material';
+import React, { useState } from 'react';
 import '../styles/Comments.css';
+import { calculateTimeSinceComment, deleteComment } from '../services/comments';
+import { DriveFileRenameOutlineTwoTone, DeleteTwoTone } from "@mui/icons-material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+
+const COULD_NOT_DELETE = "Could not delete comment"
 
 
-const TaskComment = ( { comment } ) => {
-  const today = dayjs();
-  const commentTime = dayjs(comment.commentedAt);
 
-  let timeToPrint = commentTime;
-  if (commentTime.isBefore(today, 'day')) {
-    const daysDiff = today.diff(commentTime, 'day');
+const TaskComment = ( { comment, removeComment } ) => {
+  const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
+  const [deleteCommentModalAdditionalText, setDeleteCommentModalAdditionalText] = useState('');
+  const timeToPrint = calculateTimeSinceComment(comment.commentedAt);
 
-    if (daysDiff > 7) {
-      // Last week
-      const monthsDiff = today.diff(commentTime, 'month');
-
-      if (monthsDiff >= 1) {
-        // Some months ago
-
-        if (monthsDiff >= 12) {
-          // 1 year or more ago
-          const yearsDiff = today.diff(commentTime, 'year');
-          timeToPrint = yearsDiff === 1 ? `${yearsDiff} years ago` : `${yearsDiff} year ago` ;
-        } else {
-          // Within the last year
-          timeToPrint = monthsDiff === 1 ? `${monthsDiff} month ago` : `${monthsDiff} months ago`;
-        }
-
-      } else {
-        // 1-4 weeks ago
-        const weeksDiff = today.diff(commentTime, 'week');
-        timeToPrint = weeksDiff === 1 ? `${weeksDiff} week ago` : `${weeksDiff} weeks ago`;
-      }
-
-    } else {
-      // 1-7 days ago
-      timeToPrint = daysDiff === 1 ? `${daysDiff} day ago` : `${daysDiff} days ago`;
-
-    }
-  } else {
-    // Within 24 hours
-    const hoursDiff = today.diff(commentTime, 'hour');
-    if (hoursDiff >= 1) {
-      // 1 or more hours ago
-      timeToPrint = hoursDiff === 1 ? `${hoursDiff} hour ago` : `${hoursDiff} hours ago`;
-
-    } else {
-      // Less than an hour ago
-      const minutesDiff = today.diff(commentTime, 'minute');
-      const secondsDiff = today.diff(commentTime, 'second');
-      if (minutesDiff > 1) {
-          timeToPrint = `${minutesDiff} minutes ago`;
-      } else if (minutesDiff === 1) {
-          timeToPrint = "1 minute ago";
-      } else {
-          timeToPrint = "Less than a minute ago";
-      }
-    }
+  const openDeleteCommentDialog = () => {
+    setShowDeleteCommentModal(true);
   }
+
+  const handleDeleteComment = async () => {
+    const response = await deleteComment(comment.commentLocation);
+
+    if (response.status !== 200) {
+      setDeleteCommentModalAdditionalText(COULD_NOT_DELETE);
+      return;
+    }
+    setDeleteCommentModalAdditionalText('');
+    removeComment(comment.commentID);
+    setShowDeleteCommentModal(false);
+  }
+
+  const handleDeleteCommentDialogClosed = () => {
+    setShowDeleteCommentModal(false);
+  }
+
 
   return (
   <div key={comment.commentID} className="single-comment">
@@ -72,7 +47,47 @@ const TaskComment = ( { comment } ) => {
       <Divider className="comment-divider" orientation="horizontal" flexItem />
       <div className="comment-footer">
         <Typography className="italic">{timeToPrint}</Typography>
+        {comment.isCommenter &&
+          <div className="comment-owner-button-container">
+          <DeleteTwoTone className="comment-edit-delete-icons" color="warning" onClick={openDeleteCommentDialog} />
+          <DriveFileRenameOutlineTwoTone 
+            className="comment-edit-delete-icons" 
+            onClick={() => {}} 
+            color="secondary" />
+          </div>
+        }
       </div>
+      <Dialog
+        open={showDeleteCommentModal}
+        onClose={handleDeleteCommentDialogClosed}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        className="alert-delete-comment-dialog-container"
+        >
+        <DialogTitle className="alert-delete-comment" id="alert-delete-comment-dialog-title">
+          {"Delete this comment?"}
+        </DialogTitle>
+        <DialogContent className="alert-delete-comment" id="alert-delete-comment-dialog-content">
+          <DialogContentText id="alert-dialog-description">
+            Deleting a comment cannot be undone.
+          </DialogContentText>
+          {deleteCommentModalAdditionalText &&
+            <DialogContentText id="alert-dialog-confirmation">
+              {deleteCommentModalAdditionalText}
+            </DialogContentText>
+          }
+        </DialogContent>
+        <DialogActions className="alert-delete-comment" id="alert-delete-comment-dialog-actions">
+          <Button variant="contained" color="success" onClick={handleDeleteCommentDialogClosed}>Do Not Delete</Button>
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={handleDeleteComment} 
+            >
+           Delete 
+          </Button>
+        </DialogActions>
+      </Dialog>
   </div>
   )
 };

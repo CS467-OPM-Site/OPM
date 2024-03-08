@@ -1397,13 +1397,13 @@ No fields can be deleted, or have just empty spaces.
 >           "teamID": 1,
 >           "teamName": "Team Name 1",
 >           "teamLocation": "/api/v1/teams/1",
-            "isTeamCreator": false
+>           "isTeamCreator": false
 >      },
 >      {
 >           "teamID": 2,
 >           "teamName": "Team Name 2",
 >           "teamLocation": "/api/v1/teams/2",
-            "isTeamCreator": true
+>           "isTeamCreator": true
 >      },
 >     ]
 > }
@@ -1484,7 +1484,7 @@ No fields can be deleted, or have just empty spaces.
 > {
 >     "teamID": 1,
 >     "teamName": "Team Name 1",
-      "teamLocation": "/api/v1/teams/1
+>     "teamLocation": "/api/v1/teams/1
 >     "projects": [
 >       {
 >           "projectName": "project1",
@@ -1569,15 +1569,15 @@ No fields can be deleted, or have just empty spaces.
 >       {
 >           "username": "user1",
 >           "userID": 1,
-            "isTeamCreator": true
+>           "isTeamCreator": true
 >       },
 >       {
 >           "username": "user2",
 >           "userID": 2,
-            "isTeamCreator": false 
+>           "isTeamCreator": false 
 >       } 
 >     ],
-      "teamLocation": "/api/v1/teams/1"
+>     "teamLocation": "/api/v1/teams/1"
 > }
 > ```
 

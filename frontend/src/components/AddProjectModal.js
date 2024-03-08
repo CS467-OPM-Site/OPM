@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { getAuth } from 'firebase/auth'; 
-import '../styles/UserHomepageModalStyles.css'; // Reuse the CSS for consistent styling
 
 const AddProjectModal = ({ isOpen, onClose, teams, updateProjectsList }) => {
   const [projectName, setProjectName] = useState('');

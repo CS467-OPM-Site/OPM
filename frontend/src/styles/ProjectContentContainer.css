@@ -1,0 +1,108 @@
+.project-content-container {
+  display: flex;
+  justify-content: left;
+  flex-wrap: nowrap;
+  width: 100%;
+  height: -webkit-fill-available;
+  height: fill-available;
+  height: 100%;
+}
+
+.columns-container {
+  display: flex;
+  justify-content: left;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 20px;
+  width: 100%;
+  height: -webkit-fill-available;
+  height: fill-available;
+  height: 100%;
+  margin-top: 5px;
+}
+
+.sprint-member-container {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+  min-width: 400px;
+  height: 100%;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding-left: 5px;
+  border-left: 4px rgba(34, 38, 41, 1) solid;
+}
+
+.columns-error-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.columns-loading-error {
+  border: 2px red solid;
+  border-radius: 10px;
+  padding: 10px;
+  width: 30%;
+  background: rgba(234, 238, 241, 0.5);
+}
+
+/**
+ * Members + Sprints CSS
+ **/
+
+.members-container,
+.sprints-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 50%;
+  /* Subtract padding-left from parent, border, and inline padding */
+  width: calc(100% - 4px - 5px - 10px - 4px); 
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: 2px rgba(36, 170, 126, 0.5) solid;
+  border-radius: 8px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: rgba(34, 38, 41, 0.4);
+  padding-inline: 5px;
+}
+
+.members-container-title,
+.sprints-container-title {
+  background: rgba(34, 38, 41, 0.7);
+  padding: 5px;
+  border-radius: 10px;
+  width: 95%;
+}
+
+.members-title,
+.sprints-title {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+.sprints-inner-container,
+.members-inner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 80%;
+  width: 95%;
+  overflow-y: auto;
+  border: 2px rgba(43, 79, 66, 1) solid;
+  background: rgba(43, 79, 66, 0.8);
+  border-radius: 8px;
+}
+
+/**
+ * Members CSS, including animations
+ **/
+
+
+

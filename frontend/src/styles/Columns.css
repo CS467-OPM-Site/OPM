@@ -1,15 +1,3 @@
-.project-content-container {
-  display: flex;
-  justify-content: left;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 20px;
-  width: 100%;
-  height: -webkit-fill-available;
-  height: fill-available;
-  height: 100%;
-}
-
 /**
  * Column CSS, including animations
  **/

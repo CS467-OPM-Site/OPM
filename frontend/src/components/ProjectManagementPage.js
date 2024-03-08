@@ -6,8 +6,9 @@ import ProjectMenuBar from './ProjectMenuBar';
 import AddTaskForm from './AddTaskForm';
 import TaskDetailPage from './TaskDetailPage';
 import { fetchProjectDetails } from '../services/projects';
-import ProjectColumnsContainer from './ProjectColumnsContainer';
+import ProjectContentContainer from './ProjectContentContainer';
 
+const UNABLE_TO_LOAD_PROJECT = "Unable to load given project."
 
 const ProjectManagementPage = () => {
   const [projectName, setProjectName] = useState('');
@@ -16,15 +17,27 @@ const ProjectManagementPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTaskBeingAdded, setIsTaskBeingAdded] = useState(false);
   const [isTaskBeingShown, setIsTaskBeingShown] = useState(false);
+  const [cannotLoadProjectError, setCannotLoadProjectError] = useState('');
+  const [projectLocation, setProjectLocation] = useState('');
   const location = useLocation();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const currentProjectID = location.state.projectID;
+        const parsedPath = location.pathname.split("/");
+        const currentProjectID = parsedPath[parsedPath.length - 1];
         const response = await fetchProjectDetails(currentProjectID);         
         const jsonData = await response.json();
+
+        if (response.status !== 200) {
+          setProjectName("N/A");
+          setIsLoading(false);
+          setCannotLoadProjectError(UNABLE_TO_LOAD_PROJECT);
+          return;
+        }
+        setCannotLoadProjectError('');
         setProjectName(jsonData.projectName);
+        setProjectLocation(jsonData.projectLocation);
         console.log(jsonData);
         setColumns(jsonData.columns);
 
@@ -48,7 +61,8 @@ const ProjectManagementPage = () => {
       isOtherColumnBeingMoved: isColumnBeingMoved,
       setIsOtherColumnBeingMoved: setIsColumnBeingMoved,
       setIsTaskBeingAdded: setIsTaskBeingAdded,
-      setIsTaskBeingShown: setIsTaskBeingShown 
+      setIsTaskBeingShown: setIsTaskBeingShown,
+      cannotLoadProjectError: cannotLoadProjectError
     }
   }
   
@@ -67,7 +81,7 @@ const ProjectManagementPage = () => {
         <Routes>
           <Route path='' element={<Outlet />}>
             <Route index element={
-                <ProjectColumnsContainer columns={columns} extraProps={setColumnProps()} />
+                <ProjectContentContainer columns={columns} extraProps={setColumnProps()} />
             } />
             <Route path='/tasks' element={
                 <AddTaskForm 

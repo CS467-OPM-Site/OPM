@@ -12,6 +12,7 @@ import {
 import { deleteColumn, moveColumn } from '../services/columns';
 import ProjectTask from './ProjectTasks';
 import { moveTask } from '../services/tasks';
+import '../styles/Columns.css';
 
 
 const CANNOT_REMOVE = "Cannot remove column";

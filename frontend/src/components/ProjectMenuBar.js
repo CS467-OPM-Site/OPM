@@ -154,6 +154,13 @@ const ProjectMenuBar = ({
     }
   }
 
+  const generateProjectTitleClass = () => {
+    let baseClass = "project-page-project-title";
+    if (projectName.length > 24) {
+      baseClass += " decrease-step-1";
+    }
+    return baseClass;
+  }
   
   return (
   <div className="project-page-menu-bar-container">
@@ -205,11 +212,11 @@ const ProjectMenuBar = ({
             color="info"/>
         </div>
         {projectName ? 
-            <>
-            <Typography variant="h4" component="h1" className="project-page-project-title">
-              {projectName}
-            </Typography>
-            </>
+            <div className="project-page-project-title-container">
+              <Typography variant="h4" component="h1" className={generateProjectTitleClass()}>
+                {projectName}
+              </Typography>
+            </div>
           :
           <CircularProgress className="project-page-project-title" color="success"/>
         }

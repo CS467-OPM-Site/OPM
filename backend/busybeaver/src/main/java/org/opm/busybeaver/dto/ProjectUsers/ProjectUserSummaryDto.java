@@ -18,6 +18,7 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
     private String projectLocation;
     private final TeamSummaryInProjectSummaryDto team;
     private List<ProjectUserShortDto> users;
+    private ProjectUserShortDto currentUser;
 
     @ConstructorProperties({"project_name", "project_id", "last_updated", "team_id", "team_name"})
     public ProjectUserSummaryDto(String projectName, int projectID, OffsetDateTime lastUpdated, int teamID, String teamName) {
@@ -40,6 +41,10 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
                 "/" + getProjectID();
 
         this.team.setTeamLocation(PATH);
+    }
+
+    public void setCurrentUser(ProjectUserShortDto currentUser) {
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -67,6 +72,9 @@ public final class ProjectUserSummaryDto implements ProjectAndTeamInterface {
         return lastUpdated;
     }
 
+    public ProjectUserShortDto getCurrentUser() {
+        return currentUser;
+    }
     public List<ProjectUserShortDto> getUsers() {
         return users;
     }

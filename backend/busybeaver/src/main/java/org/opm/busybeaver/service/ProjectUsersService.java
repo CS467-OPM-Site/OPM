@@ -3,6 +3,7 @@ package org.opm.busybeaver.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.Users.UserDto;
 import org.opm.busybeaver.dto.Users.UsernameDto;
@@ -16,6 +17,8 @@ import org.opm.busybeaver.repository.UsersRepository;
 import org.opm.busybeaver.service.ServiceInterfaces.ValidateUserAndProjectInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -37,9 +40,16 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
     }
 
     public @NotNull ProjectUserSummaryDto getAllUsersInProject(UserDto userDto, int projectID, HttpServletRequest request) {
-       validateUserValidAndInsideValidProject(userDto, projectID, request);
+       BeaverusersRecord requestingUser = validateUserValidAndInsideValidProject(userDto, projectID, request);
 
        ProjectUserSummaryDto projectUserSummaryDto = projectUsersRepository.getAllUsersInProject(projectID);
+
+       Optional<ProjectUserShortDto> currentUser = projectUserSummaryDto.getUsers().stream()
+                       .filter(user -> user.userID() == requestingUser.getUserId())
+                       .findFirst();
+
+       currentUser.ifPresent(projectUserSummaryDto::setCurrentUser);
+
        projectUserSummaryDto.setLocations(request.getContextPath());
 
        return projectUserSummaryDto;

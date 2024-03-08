@@ -418,7 +418,12 @@ All endpoints should use this format as a prefix in their requests. For example,
 >           "username": "username2",
 >           "userID": 2
 >       },
->     ]
+>     ],
+>     "currentUser": {
+>         "username": "username1",
+>         "userID": 1,
+>         "userProjectID": 1
+>      },
 > }
 > ```
 

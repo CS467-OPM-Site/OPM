@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ProjectColumn from './ProjectColumns';
 import '../styles/ProjectContentContainer.css';
 import { Divider, Typography } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import { fetchProjectUsers } from '../services/projectUsers';
+import { fetchProjectSprints } from '../services/sprints';
 
 const ProjectContentContainer = ( { columns, extraProps } ) => {
-  const location = useLocation();
-  console.log(location.path);
-  console.log(location.state);
+  const params = useParams();
 
+  useEffect(() => {
+    const fetchSprints = async () => {
+      try {
+        const response = await fetchProjectSprints(params.projectID);         
+        const jsonData = await response.json();
+
+        if (response.status !== 200) {
+          return;
+        }
+        console.log(jsonData);
+
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await fetchProjectUsers(params.projectID);         
+        const jsonData = await response.json();
+
+        if (response.status !== 200) {
+          return;
+        }
+        console.log(jsonData);
+
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchSprints();
+    fetchUsers();
+  }, []);
 
   return ( 
   <div className='project-content-container'>

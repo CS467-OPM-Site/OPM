@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Route, Routes, Outlet } from 'react-router-dom';
+import { useLocation, Route, Routes, Outlet, useParams } from 'react-router-dom';
 import '../styles/ProjectManagementPage.css';
 import TopBar from './TopBar';
 import ProjectMenuBar from './ProjectMenuBar';
@@ -18,15 +18,12 @@ const ProjectManagementPage = () => {
   const [isTaskBeingAdded, setIsTaskBeingAdded] = useState(false);
   const [isTaskBeingShown, setIsTaskBeingShown] = useState(false);
   const [cannotLoadProjectError, setCannotLoadProjectError] = useState('');
-  const [projectLocation, setProjectLocation] = useState('');
-  const location = useLocation();
+  const params = useParams();
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const parsedPath = location.pathname.split("/");
-        const currentProjectID = parsedPath[parsedPath.length - 1];
-        const response = await fetchProjectDetails(currentProjectID);         
+        const response = await fetchProjectDetails(params.projectID);         
         const jsonData = await response.json();
 
         if (response.status !== 200) {
@@ -37,7 +34,6 @@ const ProjectManagementPage = () => {
         }
         setCannotLoadProjectError('');
         setProjectName(jsonData.projectName);
-        setProjectLocation(jsonData.projectLocation);
         console.log(jsonData);
         setColumns(jsonData.columns);
 

@@ -14,6 +14,7 @@ import org.opm.busybeaver.exceptions.Teams.*;
 import org.opm.busybeaver.exceptions.Users.UsersExceptions;
 import org.opm.busybeaver.jooq.tables.records.BeaverusersRecord;
 import org.opm.busybeaver.jooq.tables.records.TeamsRecord;
+import org.opm.busybeaver.repository.ProjectUsersRepository;
 import org.opm.busybeaver.repository.ProjectsRepository;
 import org.opm.busybeaver.repository.TeamsRepository;
 import org.opm.busybeaver.repository.UsersRepository;
@@ -30,17 +31,20 @@ public class TeamsService {
     private final TeamsRepository teamsRepository;
     private final UsersRepository usersRepository;
     private final ProjectsRepository projectsRepository;
+    private final ProjectUsersRepository projectUsersRepository;
     private static final String RID = BusyBeavConstants.REQUEST_ID.getValue();
 
     @Autowired
     public TeamsService(
             TeamsRepository teamsRepository,
             UsersRepository usersRepository,
-            ProjectsRepository projectsRepository
+            ProjectsRepository projectsRepository,
+            ProjectUsersRepository projectUsersRepository
     ) {
         this.teamsRepository = teamsRepository;
         this.usersRepository = usersRepository;
         this.projectsRepository = projectsRepository;
+        this.projectUsersRepository = projectUsersRepository;
     }
 
     public NewTeamDto makeNewTeam(UserDto userDto, @NotNull NewTeamDto newTeamDto, HttpServletRequest request) {
@@ -162,6 +166,9 @@ public class TeamsService {
         BeaverusersRecord userToAdd = usersRepository.getUserByUsername(usernameToAdd.username(), request);
 
         teamsRepository.addMemberToTeam(userToAdd, teamID, request);
+
+        // Add user to all projects of that team
+        projectUsersRepository.addUserToAllProjectsOfTeam(userToAdd.getUserId(), teamID);
 
         return request.getContextPath() + BusyBeavPaths.V1.getValue() + BusyBeavPaths.TEAMS.getValue() +
                 "/" + teamID + BusyBeavPaths.MEMBERS.getValue() + "/" + userToAdd.getUserId();

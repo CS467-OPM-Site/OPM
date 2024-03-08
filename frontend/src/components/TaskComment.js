@@ -1,17 +1,22 @@
-import { Typography, Divider, Button } from '@mui/material';
+import { Typography, Divider, Button, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import '../styles/Comments.css';
-import { calculateTimeSinceComment, deleteComment } from '../services/comments';
-import { DriveFileRenameOutlineTwoTone, DeleteTwoTone } from "@mui/icons-material";
+import { calculateTimeSinceComment, deleteComment, modifyComment } from '../services/comments';
+import { DriveFileRenameOutlineTwoTone, DeleteTwoTone, Cancel, CheckCircleRounded } from "@mui/icons-material";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const COULD_NOT_DELETE = "Could not delete comment"
-
+const MODIFY_COMMENT_ERROR = "Comment must not be empty or only spaces"
+const GENERAL_ERROR = "Unable to modify comment";
 
 
 const TaskComment = ( { comment, removeComment } ) => {
   const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
   const [deleteCommentModalAdditionalText, setDeleteCommentModalAdditionalText] = useState('');
+  const [isModifyingComment, setIsModifyingComment] = useState(false);
+  const [commentBody, setCommentBody] = useState(comment.commentBody);
+  const [modifyCommentError, setModifyCommentError] = useState('');
+
   const timeToPrint = calculateTimeSinceComment(comment.commentedAt);
 
   const openDeleteCommentDialog = () => {
@@ -34,6 +39,42 @@ const TaskComment = ( { comment, removeComment } ) => {
     setShowDeleteCommentModal(false);
   }
 
+  const openModifyCommentTextfield = () => {
+    setIsModifyingComment(true);
+  }
+
+  const closeModifyCommentTextfield = () => {
+    setIsModifyingComment(false);
+    setCommentBody(comment.commentBody);
+  }
+
+  const handleOnModifyComment = async () => {
+    if (commentBody.trim() === '') {
+      setModifyCommentError(MODIFY_COMMENT_ERROR);
+      return;
+    }
+    setModifyCommentError('');
+
+    const modifyCommentDetails = { commentBody: commentBody };
+
+    const response = await modifyComment(comment.commentLocation, modifyCommentDetails);
+    const responseJSON = await response.json();
+
+    switch (response.status) {
+      case 200: {
+        setIsModifyingComment(false);
+        break;
+      } 
+      default: {
+        if ("message" in responseJSON) {
+          setModifyCommentError(responseJSON.message);
+          return;
+        }
+        setModifyCommentError(GENERAL_ERROR);
+        return;
+      }
+    }
+  }
 
   return (
   <div key={comment.commentID} className="single-comment">
@@ -42,18 +83,49 @@ const TaskComment = ( { comment, removeComment } ) => {
       </div>
       <Divider className="comment-divider" orientation="horizontal" flexItem />
       <div className="comment-body">
-        <Typography>{comment.commentBody}</Typography>
+        {isModifyingComment ? 
+            <TextField 
+              className="add-comment-field"
+              label="Comment"
+              required
+              color="success"
+              variant="filled" 
+              error={modifyCommentError !== ''}
+              helperText={(modifyCommentError !== '') && modifyCommentError}
+              multiline 
+              rows={4}
+              value={commentBody}
+              onChange={(e) => { 
+                setCommentBody(e.target.value.trim() === '' ? '' : e.target.value) }
+              }
+              sx={{
+                label: { color: "#000000" },
+                fieldset: { color: "#000000" },
+                "& .MuiFilledInput-root::after": { borderColor: "rgba(129, 255, 154, 0.6)" }
+              }}/>
+          :
+            <Typography>{commentBody}</Typography>
+        }
       </div>
       <Divider className="comment-divider" orientation="horizontal" flexItem />
       <div className="comment-footer">
         <Typography className="italic">{timeToPrint}</Typography>
         {comment.isCommenter &&
           <div className="comment-owner-button-container">
-          <DeleteTwoTone className="comment-edit-delete-icons" color="warning" onClick={openDeleteCommentDialog} />
-          <DriveFileRenameOutlineTwoTone 
-            className="comment-edit-delete-icons" 
-            onClick={() => {}} 
-            color="secondary" />
+            { isModifyingComment ?
+              <>
+                <CheckCircleRounded className="icon modify-comment-icon" onClick={handleOnModifyComment} color="success" />
+                <Cancel className="icon modify-comment-icon" onClick={closeModifyCommentTextfield} color="error" />
+              </>
+              :
+              <>
+                <DriveFileRenameOutlineTwoTone 
+                  className="comment-edit-delete-icons" 
+                  onClick={openModifyCommentTextfield} 
+                  color="secondary" />
+                <DeleteTwoTone className="comment-edit-delete-icons" color="warning" onClick={openDeleteCommentDialog} />
+              </>
+            }
           </div>
         }
       </div>

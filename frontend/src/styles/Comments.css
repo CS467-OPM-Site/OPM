@@ -36,7 +36,7 @@
 
 .comment-owner-button-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   width: 20%;
   justify-content: space-between;
 }
@@ -76,4 +76,8 @@
   border-bottom: 5px solid rgba(229, 90, 60, 0.95);
   border-top: 5px solid rgba(229, 90, 60, 0.95);
   font-weight: 800!important;
+}
+
+.modify-comment-icon:hover {
+  filter: brightness(85%);
 }

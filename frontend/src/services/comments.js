@@ -18,6 +18,21 @@ export const addComment = async(taskLocation, commentDetails) => {
   return response;
 }
 
+export const modifyComment = async(commentLocation, commentDetails) => {
+  const idToken = await getIdToken();
+  const commentURL = commentLocation.slice(URL_TRIM.length);
+  const response = await fetch(`${API_BASE_URL}${commentURL}`, {
+    method: "PUT",
+    headers: {
+      'Authorization': `Bearer ${idToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(commentDetails)
+  });
+
+  return response;
+}
+
 export const deleteComment = async(commentLocation) => {
   const idToken = await getIdToken();
   const commentURL = commentLocation.slice(URL_TRIM.length);

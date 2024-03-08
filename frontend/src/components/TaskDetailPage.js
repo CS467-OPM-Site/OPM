@@ -169,6 +169,7 @@ const TaskDetailPage = ( { columns, setColumns } ) => {
     setTimeout(() => {
       setIsAddingComments(false);
       setNewCommentError('');
+      setNewComment('');
     }, 405);
   }
 

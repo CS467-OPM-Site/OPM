@@ -155,8 +155,48 @@ BEGIN
     --Comments require subquery to find correct project_id
     UPDATE Projects SET last_updated = CURRENT_TIMESTAMP 
     WHERE project_id = (SELECT project_id FROM Tasks WHERE task_id = NEW.task_id);
-
     RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ON DELETE
+-- Updates for last_updatd for Tasks and Projects for commments when comment is deleted
+CREATE OR REPLACE FUNCTION delete_comment_task_project_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Update the last_updated timestamp of the associated task
+    UPDATE Tasks SET last_updated = CURRENT_TIMESTAMP WHERE task_id = OLD.task_id;
+    -- Get the project_id from the task and update the project's last_updated timestamp
+    UPDATE Projects SET last_updated = CURRENT_TIMESTAMP
+    WHERE project_id = (SELECT project_id FROM Tasks WHERE task_id = OLD.task_id);
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Updates the last_updated of Projects table
+CREATE OR REPLACE FUNCTION delete_project_last_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Projects SET last_updated = CURRENT_TIMESTAMP WHERE project_id = OLD.project_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Updates the last_updated of Tasks table
+CREATE OR REPLACE FUNCTION delete_task_last_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Tasks SET last_updated = CURRENT_TIMESTAMP WHERE task_id = OLD.task_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Updates last_updated of called for Table
+CREATE OR REPLACE FUNCTION delete_last_updated()
+RETURNS TRIGGER AS $$
+BEGIN
+    OLD.last_updated = CURRENT_TIMESTAMP;
+    RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -174,6 +214,11 @@ BEFORE INSERT OR UPDATE ON Tasks
 FOR EACH ROW 
 EXECUTE FUNCTION update_project_last_updated();
 
+CREATE TRIGGER trigger_delete_tasks_project_last_updated
+BEFORE DELETE ON Tasks
+FOR EACH ROW 
+EXECUTE FUNCTION delete_project_last_updated();
+
 -- PROJECTS
 -- Updating Project's last_updated when Project is CRUD
 CREATE TRIGGER trigger_update_project_last_updated
@@ -188,12 +233,22 @@ BEFORE INSERT OR UPDATE ON Columns
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();
 
+CREATE TRIGGER trigger_delete_columns_project_last_updated
+BEFORE DELETE ON Columns
+FOR EACH ROW
+EXECUTE FUNCTION delete_project_last_updated();
+
 -- SPRINTS
 -- Updating Projects last_updated when Sprints is CRUD
 CREATE TRIGGER trigger_update_sprints_project_last_updated
 BEFORE INSERT OR UPDATE ON Sprints
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();
+
+CREATE TRIGGER trigger_delete_sprints_project_last_updated
+BEFORE DELETE ON Sprints
+FOR EACH ROW
+EXECUTE FUNCTION delete_project_last_updated();
 
 -- COMMENTS
 -- Updating Tasks and Projects last_updated when Comments is CRUD
@@ -202,8 +257,18 @@ BEFORE INSERT OR UPDATE ON Comments
 FOR EACH ROW
 EXECUTE FUNCTION update_comments_task_project_updated();
 
--- USERS
+CREATE TRIGGER trigger_delete_comments_project_task_last_updated
+BEFORE DELETE ON Comments
+FOR EACH ROW
+EXECUTE FUNCTION delete_comment_task_project_timestamp();
+
+-- PROJECTUSERS
 CREATE TRIGGER trigger_update_user_last_updated
 BEFORE INSERT OR UPDATE ON ProjectUsers
 FOR EACH ROW
 EXECUTE FUNCTION update_project_last_updated();
+
+CREATE TRIGGER trigger_delete_user_last_updated
+BEFORE DELETE ON ProjectUsers
+FOR EACH ROW
+EXECUTE FUNCTION delete_project_last_updated();

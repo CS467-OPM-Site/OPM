@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchProjectSprints, addSprint } from '../services/sprints';
+import { fetchProjectSprints, addSprint, deleteSprint } from '../services/sprints';
 import { Button, TextField, Typography } from '@mui/material';
-import { DriveFileRenameOutlineTwoTone, DeleteTwoTone, Cancel, CheckCircleRounded } from "@mui/icons-material";
+import { DriveFileRenameOutlineTwoTone, DeleteTwoTone } from "@mui/icons-material";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -25,6 +26,9 @@ const ProjectSprints = () => {
   const [newSprintEndDate, setNewSprintEndDate] = useState(dayjs().add(1, 'day'));
   const [newSprintStartDateError, setNewSprintStartDateError] = useState(null);
   const [newSprintEndDateError, setNewSprintEndDateError] = useState(null);
+  const [showDeleteSprintModal, setShowDeleteSprintModal] = useState(false);
+  const [sprintIDtoDelete, setSprintIDtoDelete] = useState(-1);
+  const [additionalModalDialogText, setAdditionalModalDialogText] = useState(null);
   const [generalError, setGeneralError] = useState('');
   const params = useParams();
 
@@ -176,6 +180,28 @@ const ProjectSprints = () => {
     }
   }, [newSprintEndDateError]);
 
+  const handleClickOnDeleteSprint = (sprintIDtoRemove) => {
+    setShowDeleteSprintModal(true);
+    setSprintIDtoDelete(sprintIDtoRemove);
+  }
+
+  const handleDeleteDialogClosed = () => {
+    setShowDeleteSprintModal(false);
+    setSprintIDtoDelete(-1);
+  }
+
+  const removeSprint = async () => {
+    const response = await deleteSprint(params.projectID, sprintIDtoDelete);
+
+    if (response.status !== 200) {
+      setAdditionalModalDialogText("Unable to delete sprint");
+      return;
+    };
+
+    let oldSprints = [...sprints];
+    setSprints(oldSprints.filter(sprint => sprint.sprintID !== sprintIDtoDelete));
+    handleDeleteDialogClosed();
+  }
 
   return ( 
       <div className="sprints-container">
@@ -195,7 +221,7 @@ const ProjectSprints = () => {
                       <Typography variant="h6">{sprint.sprintName}</Typography>
                       { sprintToShowIconsFor === sprint.sprintID &&
                         <div className={setIconsContainerClassName()}>
-                          <DeleteTwoTone className="icon sprint-member-icon" color="warning" />
+                          <DeleteTwoTone className="icon sprint-member-icon" color="warning" onClick={() => handleClickOnDeleteSprint(sprint.sprintID)} />
                           <DriveFileRenameOutlineTwoTone className="icon sprint-member-icon" color="secondary" />
                         </div>
                       }
@@ -281,6 +307,36 @@ const ProjectSprints = () => {
             }
           </div>
         </div>
+        
+        <Dialog
+          open={showDeleteSprintModal}
+          onClose={handleDeleteDialogClosed}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle className="alert-delete-sprint" id="alert-delete-sprint-dialog-title">
+            {"Delete this sprint?"}
+          </DialogTitle>
+          <DialogContent className="alert-delete-sprint" id="alert-delete-sprint-dialog-content">
+            <DialogContentText id="alert-dialog-description">
+              This cannot be undone. 
+            </DialogContentText>
+          {additionalModalDialogText &&
+            <DialogContentText id="alert-dialog-confirmation">
+              {additionalModalDialogText}
+            </DialogContentText>
+          }
+          </DialogContent>
+          <DialogActions className="alert-delete-sprint" id="alert-delete-sprint-dialog-actions">
+            <Button variant="contained" color="success" onClick={handleDeleteDialogClosed}>Cancel</Button>
+            <Button 
+              variant="contained" 
+              color="error" 
+              onClick={removeSprint} 
+              autoFocus>
+             Delete 
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
   );
 };

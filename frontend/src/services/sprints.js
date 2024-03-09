@@ -27,3 +27,17 @@ export const addSprint = async(projectID, newSprintDetails) => {
 
       return response;
 }
+
+export const deleteSprint = async(projectID, sprintID) => {
+      const idToken = await getIdToken();
+      const response = await fetch(`${API_BASE_URL}/projects/${projectID}/sprints/${sprintID}`, { 
+        method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+        },
+      });
+
+      return response;
+}
+
+

@@ -149,9 +149,6 @@ const ProjectColumn = memo(( {
   }
 
   const onMovePressed = async (isLeftMove) => {
-    // To safely deep copy in case invalid move
-    setOriginalColumnOrder(JSON.parse(JSON.stringify(columns)));
-
     // Create a shallow copy of columns in order to replace original
     const newColumns = [...columns];
 

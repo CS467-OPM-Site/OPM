@@ -13,3 +13,17 @@ export const fetchProjectSprints = async(projectID) => {
 
       return response;
 }
+
+export const addSprint = async(projectID, newSprintDetails) => {
+      const idToken = await getIdToken();
+      const response = await fetch(`${API_BASE_URL}/projects/${projectID}/sprints`, { 
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSprintDetails)
+      });
+
+      return response;
+}

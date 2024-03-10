@@ -118,6 +118,14 @@ public class ProjectUsersRepository {
         return (projectUserCount > 1);
     }
 
+    public boolean isUserInProject(int userID, int projectID) {
+        return create.fetchExists(
+                create.selectFrom(PROJECTUSERS)
+                        .where(PROJECTUSERS.PROJECT_ID.eq(projectID))
+                        .and(PROJECTUSERS.USER_ID.eq(userID))
+        );
+    }
+
     public boolean isUserInProjectAndDoesProjectExist(int userID, int projectID, HttpServletRequest request)
             throws ProjectsExceptions.UserNotInProjectOrProjectDoesNotExistException {
         // SELECT EXISTS(

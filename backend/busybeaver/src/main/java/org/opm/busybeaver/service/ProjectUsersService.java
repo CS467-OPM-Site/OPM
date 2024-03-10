@@ -55,7 +55,7 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
        return projectUserSummaryDto;
     }
 
-    public void addUserToProject(
+    public ProjectUserShortDto addUserToProject(
             UserDto userDto,
             int projectID,
             @NotNull UsernameDto usernameDto,
@@ -69,7 +69,7 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
         BeaverusersRecord userToAdd = usersRepository.getUserByUsername(usernameDto.username(), request);
 
         // Verify user is not in project
-        if (projectUsersRepository.isUserInProjectAndDoesProjectExist(userToAdd.getUserId(), projectID, request)) {
+        if (projectUsersRepository.isUserInProject(userToAdd.getUserId(), projectID)) {
             ProjectUsersExceptions.UserAlreadyInProject userAlreadyInProject =
                     new ProjectUsersExceptions.UserAlreadyInProject(
                             ErrorMessageConstants.USER_ALREADY_IN_PROJECT.getValue());
@@ -88,6 +88,8 @@ public final class ProjectUsersService implements ValidateUserAndProjectInterfac
 
         // Update last updated for project
         projectsRepository.updateLastUpdatedForProject(projectID);
+
+        return projectUsersRepository.getUserInProject(projectID, userToAdd, request);
     }
 
     public void removeUserFromProject(

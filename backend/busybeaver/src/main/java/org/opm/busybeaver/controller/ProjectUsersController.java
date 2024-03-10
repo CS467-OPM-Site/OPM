@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.opm.busybeaver.controller.ControllerInterfaces.GetUserFromBearerTokenInterface;
+import org.opm.busybeaver.dto.ProjectUsers.ProjectUserShortDto;
 import org.opm.busybeaver.dto.ProjectUsers.ProjectUserSummaryDto;
 import org.opm.busybeaver.dto.SmallJsonResponse;
 import org.opm.busybeaver.dto.Users.UserDto;
@@ -48,19 +49,16 @@ public class ProjectUsersController implements GetUserFromBearerTokenInterface {
     }
 
     @PostMapping(PROJECT_PATH + "/{projectID}" + USERS_PATH)
-    public SmallJsonResponse addUserToProject(
+    public ProjectUserShortDto addUserToProject(
             @NotNull HttpServletRequest request,
             @PathVariable int projectID,
             @Valid @RequestBody UsernameDto usernameDto,
             @ModelAttribute(BusyBeavConstants.Constants.USER_KEY_VAL) UserDto userDto
     ) {
-        projectUsersService.addUserToProject(userDto, projectID, usernameDto, request);
+        ProjectUserShortDto projectUserShortDto = projectUsersService.addUserToProject(userDto, projectID, usernameDto, request);
         log.info("Added a user to a project. | RID: {}", request.getAttribute(RID));
 
-        return new SmallJsonResponse(
-                HttpStatus.OK.value(),
-                usernameDto.username() + SuccessMessageConstants.USER_WAS_ADDED_TO_PROJECT.getValue()
-        );
+        return projectUserShortDto;
     }
 
     @DeleteMapping(PROJECT_PATH + "/{projectID}" + USERS_PATH)

@@ -181,11 +181,13 @@ const ProjectSprints = () => {
   }, [newSprintEndDateError]);
 
   const handleClickOnDeleteSprint = (sprintIDtoRemove) => {
+    setAdditionalModalDialogText(null);
     setShowDeleteSprintModal(true);
     setSprintIDtoDelete(sprintIDtoRemove);
   }
 
   const handleDeleteDialogClosed = () => {
+    setAdditionalModalDialogText('');
     setShowDeleteSprintModal(false);
     setSprintIDtoDelete(-1);
   }

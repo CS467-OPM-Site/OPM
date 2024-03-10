@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchProjectUsers } from '../services/projects';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Button, Typography, TextField } from '@mui/material';
@@ -26,6 +26,7 @@ const ProjectUsers = () => {
   const [newUsernameError, setNewUsernameError] = useState(false);
   const [newUsernameErrorString, setNewUsernameErrorString] = useState('');
   const [generalError, setGeneralError] = useState('');
+  const navigate = useNavigate();
   const params = useParams();
 
   useEffect(() => {
@@ -83,9 +84,9 @@ const ProjectUsers = () => {
   }
 
   const handleDeleteDialogClosed = () => {
-    setUsernameToRemove(null);
     setShowDeleteMemberModal(false);
     setAdditionalModalDialogText(null);
+    setTimeout(() => setUsernameToRemove(null), 120);
   }
 
   const removeMember = async () => {
@@ -96,6 +97,11 @@ const ProjectUsers = () => {
       return;
     }
     setAdditionalModalDialogText(null);
+
+    if (usernameToRemove === currentMember.username) {
+      navigate('/home');
+      return;
+    }
 
     let oldMembers = [...members];
     setMembers(oldMembers.filter(member => member.username !== usernameToRemove));
@@ -158,6 +164,12 @@ const ProjectUsers = () => {
 
     setMembers(oldMembers);
     handleHideAddMemberForm();
+  }
+
+  const handleLeaveProject = () => {
+    setUsernameToRemove(currentMember.username);
+    setShowDeleteMemberModal(true);
+    setAdditionalModalDialogText(null);
   }
 
 
@@ -227,7 +239,7 @@ const ProjectUsers = () => {
             :
               <>
                 <Button variant="contained" color="success" onClick={handleShowAddMemberForm}>Add Member</Button>
-                <Button variant="contained" color="error">Leave Project</Button>
+                <Button variant="contained" color="error" onClick={handleLeaveProject}>Leave Project</Button>
               </>
             }
           </div>
@@ -239,7 +251,7 @@ const ProjectUsers = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
           <DialogTitle className="alert-delete-member" id="alert-delete-member-dialog-title">
-            {"Delete this member?"}
+            {currentMember && (usernameToRemove === currentMember.username) ? "Leave this project?" : "Delete this member?"}
           </DialogTitle>
           <DialogContent className="alert-delete-member" id="alert-delete-member-dialog-content">
             <DialogContentText id="alert-dialog-description">

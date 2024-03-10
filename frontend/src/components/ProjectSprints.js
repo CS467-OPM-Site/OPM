@@ -227,8 +227,8 @@ const ProjectSprints = () => {
                       }
                     </div>
                     <div className="single-sprint-date-container">
-                      <Typography>Start: {sprint.startDate}</Typography>
-                      <Typography>End: {sprint.endDate}</Typography>
+                      <Typography>From: {sprint.startDate}</Typography>
+                      <Typography>To: {sprint.endDate}</Typography>
                     </div>
                   </div>
                 ))}

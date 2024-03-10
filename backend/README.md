@@ -438,7 +438,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects/{projectID}/user</b></code> <code>(add user to project)</code>:white_check_mark:</summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/users</b></code> <code>(add user to project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -477,7 +477,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/projects/{projectID}/user</b></code> <code>(remove user from project)</code>:white_check_mark:</summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/users</b></code> <code>(remove user from project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 

@@ -87,6 +87,7 @@
   font-weight: 600;
 }
 
+.members-inner-container,
 .sprints-inner-container {
   display: flex;
   flex-direction: column;
@@ -97,12 +98,13 @@
   gap: 5px;
 }
 
+.members-output-container,
 .sprint-output-container {
   min-height: 0%;
 }
 
 .sprint-output-container,
-.members-inner-container {
+.members-output-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -166,18 +168,21 @@
   gap: 10px;
 }
 
+.add-member-button-container,
 .add-sprint-button-container {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
 }
 
+.add-member-button-container,
 .add-sprint-button-container,
 .add-sprint-container {
   width: 90%;
   align-items: center;
 }
 
+.add-members-container,
 .add-sprint-container {
   display: flex;
   flex-direction: column;
@@ -188,9 +193,9 @@
   overflow: hidden;
 }
 
+.add-members-container-show,
 .add-sprint-container-show {
   display: flex!important;
-
 }
 
 .add-sprint-dates-container {
@@ -200,6 +205,7 @@
   gap: 10px;
 } 
 
+.show-add-members-container-animate,
 .show-add-sprint-container-animate {
   animation: slideInSprintAnimation ease-out 0.4s forwards;
 }
@@ -217,6 +223,7 @@
   }
 }
 
+.hide-add-member-container-animate,
 .hide-add-sprint-container-animate {
   animation: slideOutSprintAnimation 0.4s ease-in-out forwards;
 }
@@ -272,11 +279,20 @@
   color: white;
 }
 
+.add-members-name-field > .Mui-focused,
 .add-sprint-name-field > .Mui-focused {
   color: black!important;
 }
 
+.add-members-name-field,
 .add-sprint-name-field {
+  background: rgba(129, 178, 154, 0.85);
+  border-radius: 4px;
+  width: 100%;
+}
+
+.add-members-name-field:hover,
+.add-sprint-name-field:hover {
   background: rgba(129, 178, 154, 1);
   border-radius: 4px;
 }

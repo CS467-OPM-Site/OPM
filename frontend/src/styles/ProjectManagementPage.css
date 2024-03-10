@@ -28,6 +28,7 @@
 /**
  * Alert styles for deleting a project, or task, or column
  **/
+.alert-delete-member,
 .alert-delete-sprint,
 .alert-delete-comment,
 .alert-delete-task,
@@ -45,6 +46,7 @@
   width: 100%;
 }
 
+#alert-delete-member-dialog-title,
 #alert-delete-sprint-dialog-title,
 #alert-delete-comment-dialog-title,
 #alert-delete-task-dialog-title,
@@ -56,6 +58,8 @@
   gap: 10px;
 }
 
+#alert-delete-sprint-dialog-actions,
+#alert-delete-member-dialog-actions,
 #alert-delete-task-dialog-actions,
 #alert-delete-project-dialog-actions {
   border-bottom: 5px solid rgba(229, 90, 60, 0.95);

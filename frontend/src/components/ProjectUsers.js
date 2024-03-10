@@ -4,7 +4,7 @@ import { fetchProjectUsers } from '../services/projects';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Button, Typography, TextField } from '@mui/material';
 import { DeleteTwoTone } from '@mui/icons-material';
-import { deleteProjectUser } from '../services/projectUsers';
+import { addProjectUser, deleteProjectUser } from '../services/projectUsers';
 
 
 const BASE_MEMBER_CONTAINER_CLASS = "add-members-container";
@@ -130,7 +130,7 @@ const ProjectUsers = () => {
     return newUsernameErrorString;
   }
 
-  const handleRequestNewMember = () => {
+  const handleRequestNewMember = async () => {
     if (newUsername === null || newUsername.length < 3) {
       setNewUsernameErrorString("Username must be at least 3 characters");
       setNewUsernameError(true);
@@ -139,7 +139,25 @@ const ProjectUsers = () => {
     setNewUsernameErrorString('');
     setNewUsernameError(false);
 
+    const response = await addProjectUser(params.projectID, { username: newUsername });
+    const responseJSON = await response.json();
 
+    if (response.status !== 200) {
+      if ("message" in responseJSON) {
+        setNewUsernameErrorString(responseJSON.message);
+      } else {
+        setNewUsernameErrorString(USERNAME_ERROR);
+      }
+      setNewUsernameError(true);
+      return;
+    }
+
+    // Create shallow copy of members
+    let oldMembers = [...members];
+    oldMembers.push(responseJSON);
+
+    setMembers(oldMembers);
+    handleHideAddMemberForm();
   }
 
 

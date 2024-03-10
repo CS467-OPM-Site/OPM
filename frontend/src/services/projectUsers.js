@@ -31,7 +31,7 @@ export const deleteProjectUser = async(projectID, username) => {
 export const addProjectUser = async(projectID, username) => {
       const idToken = await getIdToken();
       const response = await fetch(`${API_BASE_URL}/projects/${projectID}/users`, { 
-        method: "DELETE",
+        method: "POST",
         headers: {
           'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json',

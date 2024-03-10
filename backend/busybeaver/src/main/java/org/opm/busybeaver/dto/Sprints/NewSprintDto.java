@@ -14,11 +14,9 @@ public record NewSprintDto(
         String sprintName,
         @NotNull(message = "Missing 'startDate' attribute in 'yyyy-MM-dd' format")
         @JsonFormat(pattern = "yyyy-MM-dd")
-        @FutureOrPresent(message = "Start date must be today, or a future date, in the 'yyyy-MM-dd' format")
         LocalDate startDate,
         @NotNull(message = "Missing 'startDate' attribute in 'yyyy-MM-dd' format")
         @JsonFormat(pattern = "yyyy-MM-dd")
-        @Future(message = "End date must be a future date, in the 'yyyy-MM-dd' format")
         LocalDate endDate) implements SprintInterface {
     @Override
     public String getSprintName() {

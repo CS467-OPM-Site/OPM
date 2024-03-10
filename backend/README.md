@@ -438,7 +438,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/projects/{projectID}/user</b></code> <code>(add user to project)</code>:white_check_mark:</summary>
+ <summary><code>POST</code> <code><b>/projects/{projectID}/users</b></code> <code>(add user to project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -477,7 +477,7 @@ All endpoints should use this format as a prefix in their requests. For example,
 </details>
 
 <details>
- <summary><code>DELETE</code> <code><b>/projects/{projectID}/user</b></code> <code>(remove user from project)</code>:white_check_mark:</summary>
+ <summary><code>DELETE</code> <code><b>/projects/{projectID}/users</b></code> <code>(remove user from project)</code>:white_check_mark:</summary>
 
 ##### Parameters
 
@@ -1168,11 +1168,9 @@ Sprints are ordered in ascending order by sprint end date.
 > | http code     | content-type                      | response  | details |
 > |---------------|-----------------------------------|-----------|---------------------------------------------------------|
 > | `201`         | `application/json`                | `See below.` | **Includes a URI to the sprint resource in the Location Header** |
-> | `400`         | `application/json`                | `{"code":"400","message":"Sprint name must be unique for project"}` | Sprint name must be unique for this project. |
 > | `400`         | `application/json`                | `{"code":"400","message":"Sprint dates are invalid"}` | Invalid date range for sprint. |
 > | `403`         | `application/json`                | `{"code":"403","message":"Not authorized"}` | User not in this project. |
 > | `404`         | `application/json`                | `{"code":"404","message":"Project does not exist"}` | Project not found. |
-> | `409`         | `application/json`                | `{"code":"409","message":"Project contains sprint with those dates already"}` | Sprint dates must be unique for this project. |
 > | `409`         | `application/json`                | `{"code":"409","message":"Project contains sprint with that name already"}` | Sprint name must be unique for this project. |
 > | `405`         | `text/html;charset=utf-8`         | None | Invalid HTTP method. |
 

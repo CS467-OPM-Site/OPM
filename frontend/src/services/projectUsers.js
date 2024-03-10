@@ -13,3 +13,31 @@ export const fetchProjectUsers = async(projectID) => {
 
       return response;
 }
+
+export const deleteProjectUser = async(projectID, username) => {
+      const idToken = await getIdToken();
+      const response = await fetch(`${API_BASE_URL}/projects/${projectID}/users`, { 
+        method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(username)
+      });
+
+      return response;
+}
+
+export const addProjectUser = async(projectID, username) => {
+      const idToken = await getIdToken();
+      const response = await fetch(`${API_BASE_URL}/projects/${projectID}/users`, { 
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(username)
+      });
+
+      return response;
+}

@@ -3,7 +3,8 @@
   flex-direction: row;
   width: 92%;
   height: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
   align-items: stretch;
   border: 2px rgba(36, 170, 126, 1) solid;
   background-color: rgba(34, 38, 41, 0.7);

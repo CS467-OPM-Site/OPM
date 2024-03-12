@@ -67,7 +67,7 @@ const SplashPage = () => {
   return (
     <div className="splash-container">
       <div className="centered-content">
-        <h1>Welcome to BusyBeaver.</h1>
+        <h1>Welcome to Busy Beaver.</h1>
         <img src={BusyBeaverNoBG} alt="Busy Beaver" />
         <h4>Let us solve your project management needs.</h4>
       </div>

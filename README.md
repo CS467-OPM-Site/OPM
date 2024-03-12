@@ -57,9 +57,10 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 Remember, Busy Beaver aims to simplify project and task management for teams. Explore the features and customize your workflow to best fit your team's needs.
 
 ## Screenshot or Video Recording
-WIP
-Gives a little demo or visual representation of the project
-![](my_video.mov)
+Watch the Busy Beaver [Team Project Demonstration Video!](https://www.youtube.com/watch?v=IDE-OPbbq5s)
 
 ## API Reference
 Our API documentation is kept [here](backend/README.md)
+
+## Acknowledgements and Citations
+- **Logo Creation:** The logo for Busy Beaver was generated with Bing Image Creator. This tool provided by Bing utilizes AI technology to create images based on user prompts. We acknowledge and appreciate the contribution of Bing Image Creator in helping visualize our project's identity.

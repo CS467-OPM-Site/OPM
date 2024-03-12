@@ -61,3 +61,6 @@ Watch the Busy Beaver [Team Project Demonstration Video!](https://www.youtube.co
 
 ## API Reference
 Our API documentation is kept [here](backend/README.md)
+
+## Acknowledgements and Citations
+- **Logo Creation:** The logo for Busy Beaver was generated with Bing Image Creator. This tool provided by Bing utilizes AI technology to create images based on user prompts. We acknowledge and appreciate the contribution of Bing Image Creator in helping visualize our project's identity.

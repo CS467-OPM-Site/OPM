@@ -177,8 +177,14 @@ const UserHomepage = () => {
       alert('You cannot delete this team because there are other members in it. Please remove all members except the creator before attempting to delete the team.');
       return;
     }
+
+     // Check if there are projects tied to the team
+    const projectsTiedToTeam = projects.filter(project => project.team?.teamID === teamID);
+    if (projectsTiedToTeam.length > 0) {
+      alert('You cannot delete this team because there are projects tied to it. Please delete all projects associated with the team before attempting to delete the team.');
+      return;
+    }
   
-    
     if (!window.confirm('Are you sure you want to delete this team?')) return;
   
     try {

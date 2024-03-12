@@ -57,9 +57,7 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 Remember, Busy Beaver aims to simplify project and task management for teams. Explore the features and customize your workflow to best fit your team's needs.
 
 ## Screenshot or Video Recording
-WIP
-Gives a little demo or visual representation of the project
-![](my_video.mov)
+Watch the Busy Beaver [Team Project Demonstration Video!](https://www.youtube.com/watch?v=IDE-OPbbq5s)
 
 ## API Reference
 Our API documentation is kept [here](backend/README.md)

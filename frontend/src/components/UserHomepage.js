@@ -123,7 +123,7 @@ const UserHomepage = () => {
       setError('');
     } catch (error) {
       console.error('Add Team Error:', error);
-      setError('Failed to add team.');
+      setTeamError('Failed to add team.');
     }
     setIsAddTeamModalOpen(false);
   };
@@ -204,7 +204,7 @@ const UserHomepage = () => {
       setTeamMembers([]); // Clear team members state
     } catch (error) {
       console.error('Delete Team Error:', error);
-      setError('Failed to delete team.');
+      setTeamError('Failed to delete team.');
     }
   };
   

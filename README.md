@@ -29,7 +29,7 @@ Do you ever need to organize a project with a team? Busy Beaver can do that for 
 ## How to Use
 
 ### Getting Started
-1. **Sign Up or Log In:** Begin by creating an account using your Gmail or GitHub credentials. If you already have an account, log in to access your dashboard.
+1. **Sign Up or Log In:** To get started with Busy Beaver, visit our live application at [Busy Beaver](https://busybeaver.pages.dev). For new users, sign up using your Gmail or GitHub credentials and create your unique username as part of the initial setup process. Existing users can simply log in to continue. Once you're logged in, you'll gain access to your dashboard, equipped with all the necessary tools for efficient project and task management.
 
 ### Setting Up Teams
 2. **Create a Team:** Before starting a project, you need to set up a team. Navigate to the 'Teams' section and click on 'Add Team.' Enter a name for your team.

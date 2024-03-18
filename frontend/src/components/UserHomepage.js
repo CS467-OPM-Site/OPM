@@ -18,6 +18,7 @@ const UserHomepage = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
+  const [teamError, setTeamError] = useState('');
   const [membersError, setMembersError] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ const UserHomepage = () => {
       setError('');
     } catch (error) {
       console.error('Add Team Error:', error);
-      setError('Failed to add team.');
+      setTeamError('Failed to add team.');
     }
     setIsAddTeamModalOpen(false);
   };
@@ -143,7 +144,7 @@ const UserHomepage = () => {
       fetchTeamMembers(teamID); // Refresh team members list
     } catch (error) {
       console.error('Add Member Error:', error);
-      setError('Failed to add team member.');
+      setTeamError('Failed to add team member.');
     }
   };
   
@@ -166,7 +167,7 @@ const UserHomepage = () => {
       fetchTeamMembers(teamID); // Refresh team members list
     } catch (error) {
       console.error('Remove Member Error:', error);
-      setError('Failed to remove team member.');
+      setTeamError('Failed to remove team member.');
     }
   };
   
@@ -203,7 +204,7 @@ const UserHomepage = () => {
       setTeamMembers([]); // Clear team members state
     } catch (error) {
       console.error('Delete Team Error:', error);
-      setError('Failed to delete team.');
+      setTeamError('Failed to delete team.');
     }
   };
   
@@ -332,7 +333,7 @@ const UserHomepage = () => {
             onClose={() => setIsAddMemberModalOpen(false)}
             onSubmit={(memberName) => handleAddMember(selectedTeam.teamID, memberName)}
           />
-          {error && <div className="error-message">{error}</div>}
+          {teamError && <div className="error-message">{teamError}</div>}
           {renderTeams()}
         </aside>
         <main className="project-list">
